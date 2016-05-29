@@ -1,0 +1,9 @@
+{
+	"ignored_packages":
+	[
+		"Vintage"
+	],
+	"theme": "Afterglow-green.sublime-theme",
+    "color_scheme": "Packages/Theme - Afterglow/Afterglow.tmTheme",
+    "tabs_medium": true
+}

@@ -1,0 +1,40 @@
+set smarttab
+set expandtab
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+
+syn on
+set guifont=Consolas:h10
+set encoding=utf-8
+set renderoptions=type:directx,renmode:5
+
+set nu
+set guioptions-=m
+set guioptions-=T
+
+nmap <C-v> "+gp
+imap <C-v> <Esc>"+gpa
+vmap <C-c> "+y
+
+set nocompatible              " be iMproved, required
+set backspace=indent,eol,start
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/vimfiles/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'HerringtonDarkholme/yats.vim'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mattn/emmet-vim'
+Plugin 'drmingdrmer/xptemplate'
+
+" Add plugins here
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
