@@ -1,0 +1,12 @@
+[core]
+	editor = vim
+	autocrlf = input
+[user]
+	name = Jonas
+	email = gaopinsong@live.cn
+[filter "lfs"]
+	smudge = git-lfs smudge %f
+	required = true
+	clean = git-lfs clean %f
+[push]
+	default = simple
