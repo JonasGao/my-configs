@@ -1,12 +1,12 @@
 " set default tab indent
 set expandtab
 set smarttab
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
 " set default ui
 set nu
-set guifont=Menlo\ Regular:h12
+set guifont=Droid\ Sans\ Mono\ for\ Powerline:h12
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -20,6 +20,7 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+Plugin 'vim-airline/vim-airline'
 Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'godlygeek/tabular'
@@ -36,3 +37,12 @@ Plugin 'terryma/vim-multiple-cursors'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
+
+" set airline
+let g:airline_theme = "luna"
+let g:airline_powerline_fonts = 1
+
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+
+set laststatus=2
