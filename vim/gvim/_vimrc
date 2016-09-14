@@ -5,9 +5,10 @@ set softtabstop=4
 set shiftwidth=4
 
 syn on
-set guifont=Consolas:h10
-set encoding=utf-8
-set renderoptions=type:directx,renmode:5
+set guifont=Droid\ Sans\ Mono\ for\ Powerline:h10
+"set guifont=Consolas:h10
+set encoding=utf-8   
+set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
 
 set nu
 set guioptions-=m
@@ -27,14 +28,23 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'HerringtonDarkholme/yats.vim'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mattn/emmet-vim'
 Plugin 'drmingdrmer/xptemplate'
+Plugin 'terryma/vim-multiple-cursors'
+Plugin 'plasticboy/vim-markdown'
 
 " Add plugins here
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
+
+" Set airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+set laststatus=2
