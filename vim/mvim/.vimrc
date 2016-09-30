@@ -6,7 +6,8 @@ set softtabstop=2
 set shiftwidth=2
 " set default ui
 set nu
-set guifont=Droid\ Sans\ Mono\ for\ Powerline:h12
+set hls
+set guifont=Droid\ Sans\ Mono\ for\ Powerline:h14
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -21,6 +22,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'godlygeek/tabular'
