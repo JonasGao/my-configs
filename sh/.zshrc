@@ -86,3 +86,19 @@ export LC_ALL=en_US.UTF-8
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 export DEFAULT_USER=$USER
+
+alias npm1="npm --registry=https://registry.npm.taobao.org \
+--cache=$HOME/.npm/.cache/cnpm \
+--disturl=https://npm.taobao.org/mirrors/node \
+--userconfig=$HOME/.cnpmrc"
+
+alias npm1g="sudo npm --global --registry=https://registry.npm.taobao.org \
+--cache=$HOME/.npm/.cache/cnpm \
+--disturl=https://npm.taobao.org/mirrors/node \
+--userconfig=$HOME/.cnpmrc"
+
+alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taobao.org"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/Users/minejjk/.sdkman"
+[[ -s "/Users/minejjk/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/minejjk/.sdkman/bin/sdkman-init.sh"
