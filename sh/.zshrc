@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/minejjk/.oh-my-zsh
+export ZSH=/Users/jonas/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -100,5 +100,36 @@ alias npm1g="sudo npm --global --registry=https://registry.npm.taobao.org \
 alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taobao.org"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/Users/minejjk/.sdkman"
-[[ -s "/Users/minejjk/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/minejjk/.sdkman/bin/sdkman-init.sh"
+export SDKMAN_DIR="/Users/jonas/.sdkman"
+[[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
+
+export GOPATH=/Users/jonas/Documents/Go/
+export PATH=$PATH:$GOPATH/bin
+
+#SVN THEME
+prompt_svn() {
+    local rev branch
+    if in_svn; then
+        rev=$(svn_get_rev_nr)
+        branch=$(svn_get_branch_name)
+        if [[ $(svn_dirty_choose_pwd 1 0) -eq 1 ]]; then
+            prompt_segment yellow black
+            echo -n "$rev@$branch"
+            echo -n "±"
+        else
+            prompt_segment green black
+            echo -n "$rev@$branch"
+        fi
+    fi
+}
+
+build_prompt() {
+    RETVAL=$?
+    prompt_status
+    prompt_context
+    prompt_dir
+    prompt_git
+    prompt_svn
+    prompt_end
+}
+#SVN THEME END
