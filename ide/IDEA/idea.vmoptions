@@ -1,0 +1,14 @@
+-Xms1024m
+-XX:ReservedCodeCacheSize=1024m
+-XX:+UseCompressedOops
+-Dide.no.platform.update=true
+-Xmx4096m
+-ea
+-server
+-XX:+UseStringCache
+-XX:+UseCompressedStrings 
+-XX:+OptimizeStringConcat
+-XX:+UseFastAccessorMethods  
+-XX:+UnlockDiagnosticVMOptions
+-XX:MetaspaceSize=512m
+-Xverify:none
