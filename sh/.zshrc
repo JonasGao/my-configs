@@ -87,6 +87,8 @@ export LC_ALL=en_US.UTF-8
 
 export DEFAULT_USER=$USER
 
+alias flushDns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder; say DNS cache flushed;"
+
 alias npm1="npm --registry=https://registry.npm.taobao.org \
 --cache=$HOME/.npm/.cache/cnpm \
 --disturl=https://npm.taobao.org/mirrors/node \
