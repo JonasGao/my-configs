@@ -107,6 +107,8 @@ export SDKMAN_DIR="/Users/jonas/.sdkman"
 
 export GOPATH=/Users/jonas/Documents/Go/
 export PATH=$PATH:$GOPATH/bin
+export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
+export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
 
 #SVN THEME
 prompt_svn() {
