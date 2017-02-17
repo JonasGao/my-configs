@@ -5,9 +5,11 @@ set tabstop=2
 set softtabstop=2
 set shiftwidth=2
 " set default ui
+color vividchalk
 set nu
+set nowrap
 set hls
-set guifont=Droid\ Sans\ Mono\ for\ Powerline:h14
+set guifont=Droid\ Sans\ Mono\ for\ Powerline:h12
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -35,6 +37,7 @@ Plugin 'suan/vim-instant-markdown'
 Plugin 'mattn/emmet-vim'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'terryma/vim-multiple-cursors'
+Plugin 'wincent/command-t'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
