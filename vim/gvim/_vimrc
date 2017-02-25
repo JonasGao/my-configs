@@ -5,18 +5,19 @@ set softtabstop=4
 set shiftwidth=4
 
 syn on
-set guifont=Droid\ Sans\ Mono\ for\ Powerline:h10
+set guifont=Meslo\ LG\ S\ for\ Powerline:h10
 "set guifont=Consolas:h10
 set encoding=utf-8   
-set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
-
+"set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
+set nowrap
 set nu
 set guioptions-=m
 set guioptions-=T
 
 nmap <C-v> "+gp
-imap <C-v> <Esc>"+gpa
+imap <C-v> <Esc>"+gpi
 vmap <C-c> "+y
+nmap <C-a> ggvG$
 
 set nocompatible              " be iMproved, required
 set backspace=indent,eol,start
