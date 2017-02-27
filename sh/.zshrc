@@ -101,14 +101,12 @@ alias npm1g="sudo npm --global --registry=https://registry.npm.taobao.org \
 
 alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taobao.org"
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/Users/jonas/.sdkman"
-[[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
-
 export GOPATH=/Users/jonas/Documents/Go/
-export PATH=$PATH:$GOPATH/bin
-export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
 export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
+# add go build bin to PATH
+export PATH=$PATH:$GOPATH/bin
+# add yarn global to PATH
+export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
 
 #SVN THEME
 prompt_svn() {
@@ -118,11 +116,11 @@ prompt_svn() {
         branch=$(svn_get_branch_name)
         if [[ $(svn_dirty_choose_pwd 1 0) -eq 1 ]]; then
             prompt_segment yellow black
-            echo -n "$rev@$branch"
+            echo -n "$rev" # "$rev@$branch"
             echo -n "±"
         else
             prompt_segment green black
-            echo -n "$rev@$branch"
+            echo -n "$rev" # "$rev@$branch"
         fi
     fi
 }
@@ -137,3 +135,7 @@ build_prompt() {
     prompt_end
 }
 #SVN THEME END
+	
+#THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
+[[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
+
