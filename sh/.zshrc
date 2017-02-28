@@ -133,7 +133,7 @@ build_prompt() {
 }
 #SVN THEME END
 
-#CUSTOM PROXY
+#CUSTOM FUNCTIONS
 
 proxy() {
   case "$1" in
@@ -149,12 +149,16 @@ proxy() {
       ;;
     *)
       echo "Usage: $0 {on|off}"
-      exit 1
       ;;
   esac
 }
 
-#CUSTOM PROXY END
+thereIsGoPath() {
+  export GOPATH=$(pwd)
+  export PATH="$PATH:$GOPATH/bin"
+}
+
+#CUSTOM FUNCTIONS END
 	
 #THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
 [[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
