@@ -101,10 +101,7 @@ alias npm1g="sudo npm --global --registry=https://registry.npm.taobao.org \
 
 alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taobao.org"
 
-export GOPATH=/Users/jonas/Documents/Go/
 export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
-# add go build bin to PATH
-export PATH=$PATH:$GOPATH/bin
 # add yarn global to PATH
 export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
 
@@ -135,6 +132,29 @@ build_prompt() {
     prompt_end
 }
 #SVN THEME END
+
+#CUSTOM PROXY
+
+proxy() {
+  case "$1" in
+    on)
+      export http_proxy="http://127.0.0.1:8899"
+      export https_proxy="http://127.0.0.1:8899"
+      echo "http(s) proxy => 127.0.0.1:8899"
+      ;;
+    off)
+      unset http_proxy
+      unset https_proxy
+      echo "unset http(s) proxy"
+      ;;
+    *)
+      echo "Usage: $0 {on|off}"
+      exit 1
+      ;;
+  esac
+}
+
+#CUSTOM PROXY END
 	
 #THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
 [[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
