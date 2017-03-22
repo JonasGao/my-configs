@@ -159,7 +159,7 @@ thereIsGoPath() {
   export PATH="$PATH:$GOPATH/bin"
 }
 
-syncConfigToGithub() {
+saveProfileToGithub() {
   cp ~/Library/Application\ Support/Proxifier/Profiles/*.ppx ~/Documents/GitHub/my-configs/proxifier/mac
   cp ~/.vimrc ~/Documents/GitHub/my-configs/vim/mvim/
   cp ~/.zshrc ~/Documents/GitHub/my-configs/sh/
