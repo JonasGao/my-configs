@@ -49,7 +49,7 @@ ZSH_THEME="agnoster"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git osx svn)
+plugins=(git osx svn docker)
 
 # User configuration
 
@@ -104,6 +104,7 @@ alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taob
 export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
 # add yarn global to PATH
 export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/"
 
 #SVN THEME
 prompt_svn() {
@@ -138,14 +139,14 @@ build_prompt() {
 proxy() {
   case "$1" in
     on)
-      export http_proxy="http://127.0.0.1:8899"
-      export https_proxy="http://127.0.0.1:8899"
-      echo "http(s) proxy => 127.0.0.1:8899"
+      export HTTP_PROXY="http://127.0.0.1:8899"
+      export HTTPS_PROXY="http://127.0.0.1:8899"
+      echo "HTTP(S) PROXY => 127.0.0.1:8899"
       ;;
     off)
-      unset http_proxy
-      unset https_proxy
-      echo "unset http(s) proxy"
+      unset HTTP_PROXY
+      unset HTTPS_PROXY
+      echo "unset HTTP(S) PROXY"
       ;;
     *)
       echo "Usage: $0 {on|off}"
@@ -158,8 +159,21 @@ thereIsGoPath() {
   export PATH="$PATH:$GOPATH/bin"
 }
 
+syncConfigToGithub() {
+  cp ~/Library/Application\ Support/Proxifier/Profiles/*.ppx ~/Documents/GitHub/my-configs/proxifier/mac
+  cp ~/.vimrc ~/Documents/GitHub/my-configs/vim/mvim/
+  cp ~/.zshrc ~/Documents/GitHub/my-configs/sh/
+  cp ~/.bash_profile ~/Documents/GitHub/my-configs/sh
+  cp ~/.bashrc ~/Documents/GitHub/my-configs/sh
+  cd ~/Documents/GitHub/my-configs
+  git add .
+  git status
+}
+
 #CUSTOM FUNCTIONS END
 	
 #THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
 [[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
 
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

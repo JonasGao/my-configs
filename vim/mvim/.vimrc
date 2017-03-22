@@ -4,12 +4,14 @@ set smarttab
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
+
 " set default ui
 color vividchalk
 set nu
 set nowrap
 set hls
-set guifont=Droid\ Sans\ Mono\ for\ Powerline:h12
+set guifont=Fira\ Mono\ for\ Powerline:h12
+" set guifont=Droid\ Sans\ Mono\ for\ Powerline:h12
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
