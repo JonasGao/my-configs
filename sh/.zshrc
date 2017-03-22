@@ -169,6 +169,7 @@ syncConfigToGithub() {
   git add .
   git status
   git commit -m 'update: sync mac profile'
+  echo '\n------------\n'
   echo 'waiting you push'
 }
 
