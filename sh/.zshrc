@@ -168,6 +168,8 @@ syncConfigToGithub() {
   cd ~/Documents/GitHub/my-configs
   git add .
   git status
+  git commit -m 'update: sync mac profile'
+  echo 'waiting you push'
 }
 
 #CUSTOM FUNCTIONS END
