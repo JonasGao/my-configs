@@ -27,10 +27,10 @@ ZSH_THEME="agnoster"
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
+ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -108,29 +108,31 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Ho
 
 #SVN THEME
 prompt_svn() {
-    local rev branch
-    if in_svn; then
-        rev=$(svn_get_rev_nr)
-        branch=$(svn_get_branch_name)
-        if [[ $(svn_dirty_choose_pwd 1 0) -eq 1 ]]; then
-            prompt_segment yellow black
-            echo -n "$rev" # "$rev@$branch"
-            echo -n "±"
-        else
-            prompt_segment green black
-            echo -n "$rev" # "$rev@$branch"
-        fi
+  local rev branch
+  if in_svn; then
+    rev=$(svn_get_rev_nr)
+    branch=$(svn_get_branch_name)
+    if [[ $(svn_dirty_choose_pwd 1 0) -eq 1 ]]; then
+      prompt_segment yellow black
+      echo -n "$rev" # "$rev@$branch"
+      echo -n "±"
+    else
+      prompt_segment green black
+      echo -n "$rev" # "$rev@$branch"
     fi
+  fi
 }
 
 build_prompt() {
-    RETVAL=$?
-    prompt_status
-    prompt_context
-    prompt_dir
-    prompt_git
-    prompt_svn
-    prompt_end
+  RETVAL=$?
+  prompt_status
+  prompt_virtualenv
+  prompt_context
+  prompt_dir
+  prompt_git
+  prompt_bzr
+  prompt_hg
+  prompt_end
 }
 #SVN THEME END
 
