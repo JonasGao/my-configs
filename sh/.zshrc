@@ -133,6 +133,7 @@ build_prompt() {
   prompt_bzr
   prompt_hg
   prompt_end
+  echo -n "\n$"
 }
 #SVN THEME END
 
