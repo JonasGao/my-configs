@@ -106,6 +106,7 @@ export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
 export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/"
 export ANDROID_HOME="/usr/local/share/android-sdk"
+export REPO_OS_OVERRIDE="macosx"
 
 #SVN THEME
 prompt_svn() {
