@@ -105,6 +105,7 @@ export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
 # add yarn global to PATH
 export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/"
+export ANDROID_HOME="/usr/local/share/android-sdk"
 
 #SVN THEME
 prompt_svn() {
@@ -133,7 +134,7 @@ build_prompt() {
   prompt_bzr
   prompt_hg
   prompt_end
-  echo -n "\n$"
+#  echo -n "\n$"
 }
 #SVN THEME END
 
@@ -182,6 +183,5 @@ saveProfileToGithub() {
 	
 #THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
 [[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
-
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
