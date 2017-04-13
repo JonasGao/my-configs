@@ -183,6 +183,7 @@ saveProfileToGithub() {
   cp -R ~/.vim/colors "$CONF_REPO/vim/mvim/.vim/"
   cp -R ~/.vim/ftplugin "$CONF_REPO/vim/mvim/.vim/"
 
+  PWD=`PWD`
   cd $CONF_REPO
   git diff
   echo "------------------------------------"
@@ -195,6 +196,7 @@ saveProfileToGithub() {
   echo 'already add & commit'
   echo "------------------------------------"
   echo 'waiting you push'
+  cd $PWD
 }
 
 #CUSTOM FUNCTIONS END
