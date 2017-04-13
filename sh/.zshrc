@@ -164,18 +164,35 @@ thereIsGoPath() {
 }
 
 saveProfileToGithub() {
-  cp ~/Library/Application\ Support/Proxifier/Profiles/*.ppx ~/Documents/GitHub/my-configs/proxifier/mac
-  cp ~/.vimrc ~/Documents/GitHub/my-configs/vim/mvim/
-  cp ~/.zshrc ~/Documents/GitHub/my-configs/sh/
-  cp ~/.bash_profile ~/Documents/GitHub/my-configs/sh
-  cp ~/.bashrc ~/Documents/GitHub/my-configs/sh
-  cd ~/Documents/GitHub/my-configs
+  CONF_REPO="$1"
+  if [[ "${CONF_REPO}X" == "X" ]]; then
+    CONF_REPO="$HOME/Documents/Github/my-configs"
+  fi
+  echo "------------------------------------"
+  echo "Will save profiles to [ \033[32m$CONF_REPO\033[0m ]"
+  echo "------------------------------------"
+  # save proxifier ppxs
+  cp ~/Library/Application\ Support/Proxifier/Profiles/*.ppx "$CONF_REPO/proxifier/mac"
+  # save sh rc files
+  cp ~/.zshrc "$CONF_REPO/sh/"
+  cp ~/.bash_profile "$CONF_REPO/sh"
+  cp ~/.bashrc "$CONF_REPO/sh"
+  # save vim profiles
+  cp ~/.vimrc "$CONF_REPO/vim/mvim/"
+  cp -R ~/.vim/colors "$CONF_REPO/vim/mvim/.vim/"
+  cp -R ~/.vim/ftplugin "$CONF_REPO/vim/mvim/.vim/"
+
+  cd $CONF_REPO
+  git diff
+  echo "------------------------------------"
   git add .
   git status
+  echo "------------------------------------"
+  read
   git commit -m 'update: sync mac profile'
-  echo '\n------------\n'
+  echo "------------------------------------"
   echo 'already add & commit'
-  echo '\n------------\n'
+  echo "------------------------------------"
   echo 'waiting you push'
 }
 
