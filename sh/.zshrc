@@ -184,7 +184,6 @@ saveProfileToGithub() {
   cp -R ~/.vim/ftplugin "$CONF_REPO/vim/mvim/.vim/"
 
   CURR=$(pwd)
-  echo $CURR
   cd $CONF_REPO
   git diff
   echo "------------------------------------"
