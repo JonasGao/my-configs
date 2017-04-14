@@ -195,7 +195,7 @@ saveProfileToGithub() {
   echo "------------------------------------"
   echo 'already add & commit'
   echo "------------------------------------"
-  echo 'waiting you push'
+  open "/Applications/GitHub Desktop.app"
   cd $PWD
 }
 
