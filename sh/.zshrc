@@ -183,7 +183,7 @@ saveProfileToGithub() {
   cp -R ~/.vim/colors "$CONF_REPO/vim/mvim/.vim/"
   cp -R ~/.vim/ftplugin "$CONF_REPO/vim/mvim/.vim/"
 
-  PWD=`PWD`
+  PWD=`pwd`
   cd $CONF_REPO
   git diff
   echo "------------------------------------"
