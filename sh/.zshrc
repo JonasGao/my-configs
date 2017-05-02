@@ -199,6 +199,11 @@ saveProfileToGithub() {
   cd $CURR
 }
 
+reflushDns () {
+  sudo dscacheutil -flushcache
+  sudo killall -HUP mDNSRespond
+}
+
 #CUSTOM FUNCTIONS END
 	
 #THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
