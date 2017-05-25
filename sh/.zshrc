@@ -142,11 +142,16 @@ build_prompt() {
 #CUSTOM FUNCTIONS
 
 proxy() {
+  local port
+  port="$2"
+  if [[ "x$2" == "x" ]]; then
+    port="8899"
+  fi
   case "$1" in
     on)
-      export HTTP_PROXY="http://127.0.0.1:8899"
-      export HTTPS_PROXY="http://127.0.0.1:8899"
-      echo "HTTP(S) PROXY => 127.0.0.1:8899"
+      export HTTP_PROXY="http://127.0.0.1:$port"
+      export HTTPS_PROXY="http://127.0.0.1:$port"
+      echo "HTTP(S) PROXY => 127.0.0.1:$port"
       ;;
     off)
       unset HTTP_PROXY
