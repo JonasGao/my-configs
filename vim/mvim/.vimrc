@@ -10,8 +10,7 @@ color vividchalk
 set nu
 set nowrap
 set hls
-set guifont=Fira\ Mono\ for\ Powerline:h12
-" set guifont=Droid\ Sans\ Mono\ for\ Powerline:h12
+set guifont=Fira\ Code:h12
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
