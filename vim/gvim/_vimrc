@@ -5,10 +5,9 @@ set softtabstop=4
 set shiftwidth=4
 
 syn on
-set guifont=Meslo\ LG\ S\ for\ Powerline:h10
-"set guifont=Consolas:h10
+set guifont=Fira_Code:h10
 set encoding=utf-8   
-"set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
+set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
 set nowrap
 set nu
 set guioptions-=m

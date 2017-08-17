@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ProxifierProfile version="101" platform="Windows" product_id="0" product_minver="310">
+  <Options>
+    <Resolve>
+      <AutoModeDetection enabled="true" />
+      <ViaProxy enabled="false">
+        <TryLocalDnsFirst enabled="false" />
+      </ViaProxy>
+      <ExclusionList>localhost;%SimpleHostnames%;%ComputerName%;*.local;
+</ExclusionList>
+    </Resolve>
+    <Encryption mode="basic" />
+    <HttpProxiesSupport enabled="false" />
+    <HandleDirectConnections enabled="false" />
+    <ConnectionLoopDetection enabled="true" />
+    <ProcessServices enabled="false" />
+    <ProcessOtherUsers enabled="false" />
+  </Options>
+  <ProxyList>
+    <Proxy id="100" type="SOCKS5">
+      <Address>127.0.0.1</Address>
+      <Port>1080</Port>
+      <Options>0</Options>
+    </Proxy>
+  </ProxyList>
+  <ChainList />
+  <RuleList>
+    <Rule enabled="true">
+      <Name>Localhost</Name>
+      <Targets>localhost; 127.0.0.1; ::1; %ComputerName%; 10.0.*.*</Targets>
+      <Action type="Direct" />
+    </Rule>
+    <Rule enabled="true">
+      <Name>shadowscoks</Name>
+      <Applications>ss-local; ShadowsocksX; ShadowsocksX-NG</Applications>
+      <Action type="Direct" />
+    </Rule>
+    <Rule enabled="true">
+      <Name>curl</Name>
+      <Applications>curl</Applications>
+      <Action type="Proxy">100</Action>
+    </Rule>
+    <Rule enabled="true">
+      <Name>java</Name>
+      <Applications>java</Applications>
+      <Action type="Proxy">100</Action>
+    </Rule>
+    <Rule enabled="true">
+      <Name>git</Name>
+      <Applications>git;git-remote-https</Applications>
+      <Action type="Proxy">100</Action>
+    </Rule>
+    <Rule enabled="true">
+      <Name>node</Name>
+      <Applications>node</Applications>
+      <Action type="Proxy">100</Action>
+    </Rule>
+    <Rule enabled="false">
+      <Name>Sublime Text</Name>
+      <Applications>"Sublime Text"; plugin_host</Applications>
+      <Action type="Proxy">100</Action>
+    </Rule>
+    <Rule enabled="true">
+      <Name>idea</Name>
+      <Applications>idea</Applications>
+      <Action type="Proxy">100</Action>
+    </Rule>
+    <Rule enabled="false">
+      <Name>jetbrains-toolbox</Name>
+      <Applications>jetbrains-toolbox</Applications>
+      <Action type="Proxy">100</Action>
+    </Rule>
+    <Rule enabled="true">
+      <Name>Default</Name>
+      <Action type="Direct" />
+    </Rule>
+  </RuleList>
+</ProxifierProfile>
