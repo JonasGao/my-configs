@@ -19,7 +19,7 @@
     <ProxyList>
         <Proxy id="101" type="SOCKS5">
             <Address>127.0.0.1</Address>
-            <Port>1086</Port>
+            <Port>9091</Port>
             <Options>0</Options>
         </Proxy>
     </ProxyList>
@@ -27,17 +27,13 @@
     <RuleList>
         <Rule enabled="true">
             <Name>Localhost</Name>
+            <Applications>*specht*; *shadowsocks*</Applications>
             <Targets>localhost; 127.0.0.1; ::1; %ComputerName%</Targets>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
             <Name>idea</Name>
-            <Applications>idea</Applications>
-            <Action type="Proxy">101</Action>
-        </Rule>
-        <Rule enabled="true">
-            <Name>java</Name>
-            <Applications>java</Applications>
+            <Applications>idea*; java*;</Applications>
             <Action type="Proxy">101</Action>
         </Rule>
         <Rule enabled="true">
