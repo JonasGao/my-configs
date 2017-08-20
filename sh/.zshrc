@@ -49,7 +49,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git osx svn docker ssh-agent)
+plugins=(git osx svn docker ssh-agent mvn nvm npm node zsh-nvm zsh-syntax-highlighting)
 
 # User configuration
 

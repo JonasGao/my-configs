@@ -6,7 +6,7 @@ set softtabstop=2
 set shiftwidth=2
 
 " set default ui
-color vividchalk
+color neuromancer
 set nu
 set nowrap
 set hls
@@ -34,12 +34,14 @@ Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
 Plugin 'garbas/vim-snipmate'
 Plugin 'honza/vim-snippets'
+Plugin 'valloric/youcompleteme'
 Plugin 'suan/vim-instant-markdown'
 Plugin 'mattn/emmet-vim'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'wincent/command-t'
 Plugin 'leafgarland/typescript-vim'
+Plugin 'chr4/nginx.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
