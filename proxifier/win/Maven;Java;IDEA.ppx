@@ -31,13 +31,8 @@
       <Action type="Direct" />
     </Rule>
     <Rule enabled="true">
-      <Name>idea</Name>
-      <Applications>idea.exe; idea64.exe</Applications>
-      <Action type="Proxy">101</Action>
-    </Rule>
-    <Rule enabled="true">
       <Name>java</Name>
-      <Applications>java.exe</Applications>
+      <Applications>java.exe; idea.exe; idea64.exe; curl*</Applications>
       <Action type="Proxy">101</Action>
     </Rule>
     <Rule enabled="true">
