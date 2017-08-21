@@ -7,6 +7,7 @@ set shiftwidth=2
 
 " set default ui
 color neuromancer
+
 set nu
 set nowrap
 set hls

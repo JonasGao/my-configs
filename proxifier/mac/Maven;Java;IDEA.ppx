@@ -27,8 +27,12 @@
     <RuleList>
         <Rule enabled="true">
             <Name>Localhost</Name>
-            <Applications>*specht*; *shadowsocks*</Applications>
             <Targets>localhost; 127.0.0.1; ::1; %ComputerName%</Targets>
+            <Action type="Direct"/>
+        </Rule>
+        <Rule enabled="true">
+            <Name>proxy app</Name>
+            <Applications>*specht*; *shadowsocks*</Applications>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
