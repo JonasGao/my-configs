@@ -14,7 +14,7 @@ set guioptions-=m
 set guioptions-=T
 
 nmap <C-v> "+gp
-imap <C-v> <Esc>"+gpi
+imap <C-v> <Esc>"+gpa
 vmap <C-c> "+y
 nmap <C-a> ggvG$
 
@@ -28,8 +28,10 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
+
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'godlygeek/tabular'
 Plugin 'HerringtonDarkholme/yats.vim'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'pangloss/vim-javascript'
@@ -37,6 +39,10 @@ Plugin 'mattn/emmet-vim'
 Plugin 'drmingdrmer/xptemplate'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'plasticboy/vim-markdown'
+Plugin 'chr4/nginx.vim'
+Plugin 'valloric/youcompleteme'
+Plugin 'Chiel92/vim-autoformat'
+Plugin 'wincent/command-t'
 
 " Add plugins here
 

@@ -26,12 +26,13 @@
   <RuleList>
     <Rule enabled="true">
       <Name>Localhost</Name>
+      <Applications>*shadowsocks*; *privoxy*; </Applications>
       <Targets>localhost; 127.0.0.1; %ComputerName%</Targets>
       <Action type="Direct" />
     </Rule>
     <Rule enabled="true">
       <Name>powershell</Name>
-      <Applications>powershell.exe; nvm.exe; java*.exe; curl*; node*;</Applications>
+      <Applications>powershell.exe; nvm.exe; java*.exe; curl*; node*; git*; cmake*; cmder*; hyper*;</Applications>
       <Action type="Proxy">100</Action>
     </Rule>
     <Rule enabled="true">
