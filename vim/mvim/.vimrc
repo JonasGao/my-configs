@@ -6,6 +6,7 @@ set softtabstop=2
 set shiftwidth=2
 
 " set default ui
+set t_Co=256
 color neuromancer
 
 set nu
@@ -56,3 +57,4 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
 
 set laststatus=2
+
