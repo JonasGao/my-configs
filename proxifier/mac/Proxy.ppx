@@ -19,7 +19,7 @@
     <ProxyList>
         <Proxy id="100" type="SOCKS5">
             <Address>127.0.0.1</Address>
-            <Port>1086</Port>
+            <Port>9091</Port>
             <Options>0</Options>
         </Proxy>
     </ProxyList>
@@ -28,6 +28,11 @@
         <Rule enabled="true">
             <Name>Localhost</Name>
             <Targets>localhost; 127.0.0.1; ::1; %ComputerName%; 10.0.*.*</Targets>
+            <Action type="Direct"/>
+        </Rule>
+        <Rule enabled="true">
+            <Name>SpechtLite [auto-created]</Name>
+            <Applications>SpechtLite</Applications>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
@@ -72,7 +77,7 @@
         </Rule>
         <Rule enabled="true">
             <Name>Default</Name>
-            <Action type="Direct"/>
+            <Action type="Proxy">100</Action>
         </Rule>
     </RuleList>
 </ProxifierProfile>

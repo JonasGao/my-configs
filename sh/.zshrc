@@ -49,7 +49,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git osx svn docker ssh-agent mvn nvm npm node zsh-nvm zsh-syntax-highlighting)
+plugins=(git osx svn docker ssh-agent mvn npm node zsh-syntax-highlighting spring)
 
 # User configuration
 
@@ -103,10 +103,10 @@ alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taob
 
 export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
 # add yarn global to PATH
-export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/"
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-9.0.1.jdk/Contents/Home/"
 export ANDROID_HOME="/usr/local/share/android-sdk"
 export REPO_OS_OVERRIDE="macosx"
+export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin:$JAVA_HOME/bin"
 
 #SVN THEME
 prompt_svn() {
@@ -144,8 +144,9 @@ build_prompt() {
 proxy() {
   local port
   port="$2"
-  if [[ "x$2" == "x" ]]; then
-    port="8899"
+  if [[ "$2" == "" ]]; then
+    echo '请指定端口'
+    exit 1
   fi
   case "$1" in
     on)
