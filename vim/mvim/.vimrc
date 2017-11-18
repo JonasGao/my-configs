@@ -44,6 +44,7 @@ Plugin 'terryma/vim-multiple-cursors'
 Plugin 'wincent/command-t'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'chr4/nginx.vim'
+Plugin 'scrooloose/nerdtree'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required

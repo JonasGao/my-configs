@@ -145,12 +145,12 @@ build_prompt() {
 proxy() {
   local port
   port="$2"
-  if [[ "$2" == "" ]]; then
-    echo '请指定端口'
-    exit 1
-  fi
   case "$1" in
     on)
+      if [[ "$2" == "" ]]; then
+        echo '请指定端口'
+        return 1
+      fi
       export HTTP_PROXY="http://127.0.0.1:$port"
       export HTTPS_PROXY="http://127.0.0.1:$port"
       echo "HTTP(S) PROXY => 127.0.0.1:$port"

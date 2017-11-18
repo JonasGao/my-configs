@@ -26,18 +26,23 @@
     <ChainList/>
     <RuleList>
         <Rule enabled="true">
-            <Name>ss-local [auto-created]</Name>
-            <Applications>ss-local</Applications>
-            <Action type="Direct"/>
-        </Rule>
-        <Rule enabled="true">
             <Name>Localhost</Name>
             <Targets>localhost; 127.0.0.1; ::1; %ComputerName%</Targets>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
-            <Name>Default</Name>
+            <Name>Microsoft AutoUpdate</Name>
+            <Applications>"Microsoft AutoUpdate"</Applications>
             <Action type="Proxy">100</Action>
+        </Rule>
+        <Rule enabled="true">
+            <Name>iTerm2</Name>
+            <Applications>iTerm2</Applications>
+            <Action type="Proxy">100</Action>
+        </Rule>
+        <Rule enabled="true">
+            <Name>Default</Name>
+            <Action type="Direct"/>
         </Rule>
     </RuleList>
 </ProxifierProfile>
