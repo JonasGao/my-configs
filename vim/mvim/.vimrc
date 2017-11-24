@@ -1,9 +1,13 @@
+fu! SetTab(size)
+  let &l:tabstop=a:size
+  let &l:softtabstop=a:size
+  let &l:shiftwidth=a:size
+endfu
+
 " set default tab indent
 set expandtab
 set smarttab
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
+call SetTab(2)
 
 " set default ui
 set t_Co=256
