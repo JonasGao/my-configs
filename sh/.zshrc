@@ -143,25 +143,30 @@ build_prompt() {
 #CUSTOM FUNCTIONS
 
 proxy() {
-  local port
-  port="$2"
+  local port1
+  local port2
+  port1="$2"
+  port2="$3"
   case "$1" in
     on)
       if [[ "$2" == "" ]]; then
         echo '请指定端口'
         return 1
       fi
-      export HTTP_PROXY="http://127.0.0.1:$port"
-      export HTTPS_PROXY="http://127.0.0.1:$port"
-      echo "HTTP(S) PROXY => 127.0.0.1:$port"
+      export HTTP_PROXY="http://127.0.0.1:$port1"
+      export HTTPS_PROXY="http://127.0.0.1:$port1"
+      export ALL_PROXY="socks5://127.0.0.1:$port2"
+      echo "HTTP(S) => 127.0.0.1:$port1"
+      echo "SOCKS5  => 127.0.0.1:$port2"
       ;;
     off)
       unset HTTP_PROXY
       unset HTTPS_PROXY
-      echo "unset HTTP(S) PROXY"
+      unset ALL_PROXY
+      echo "unset PROXY"
       ;;
     *)
-      echo "Usage: $0 {on|off}"
+      echo "Usage: $0 {on|off} p1 p2"
       ;;
   esac
 }
