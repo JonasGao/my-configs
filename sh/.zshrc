@@ -166,7 +166,9 @@ proxy() {
       echo "unset PROXY"
       ;;
     *)
-      echo "Usage: $0 {on|off} p1 p2"
+      echo "$HTTP_PROXY"
+      echo "$HTTPS_PROXY"
+      echo "$ALL_PROXY"
       ;;
   esac
 }
