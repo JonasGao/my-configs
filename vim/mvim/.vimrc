@@ -11,7 +11,9 @@ call SetTab(2)
 
 " set default ui
 set t_Co=256
-color neuromancer
+set go-=r
+set background=dark
+color solarized
 
 set nu
 set nowrap
