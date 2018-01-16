@@ -13,6 +13,8 @@ call SetTab(2)
 set t_Co=256
 set go-=r
 set background=dark
+syntax enable
+let g:solarized_termcolors=256
 color solarized
 
 set nu
