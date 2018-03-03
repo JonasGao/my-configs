@@ -1,0 +1,11 @@
+{
+    "editor.fontFamily": "'Fira Code', monospace",
+    "editor.fontLigatures": true,
+    "files.autoSave": "onWindowChange",
+    "workbench.activityBar.visible": true,
+    "workbench.colorTheme": "Abyss",
+    "editor.smoothScrolling": true,
+    "workbench.iconTheme": "vscode-icons",
+    "eslint.packageManager": "yarn",
+    "window.zoomLevel": 0
+}
