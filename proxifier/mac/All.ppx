@@ -16,17 +16,23 @@
         <ProcessServices enabled="false"/>
         <ProcessOtherUsers enabled="false"/>
     </Options>
-    <ProxyList/>
+    <ProxyList>
+        <Proxy id="100" type="SOCKS5">
+            <Address>127.0.0.1</Address>
+            <Port>9091</Port>
+            <Options>0</Options>
+        </Proxy>
+    </ProxyList>
     <ChainList/>
     <RuleList>
         <Rule enabled="true">
             <Name>Localhost</Name>
-            <Targets>localhost; 127.0.0.1; ::1; %ComputerName%</Targets>
+            <Targets>localhost; 127.0.0.1; ::1; %ComputerName%; 10.0.*.*</Targets>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
             <Name>Default</Name>
-            <Action type="Direct"/>
+            <Action type="Proxy">100</Action>
         </Rule>
     </RuleList>
 </ProxifierProfile>

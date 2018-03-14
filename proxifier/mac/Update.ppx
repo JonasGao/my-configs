@@ -41,6 +41,11 @@
             <Action type="Proxy">100</Action>
         </Rule>
         <Rule enabled="true">
+            <Name>Sublime</Name>
+            <Applications>*Sublime*</Applications>
+            <Action type="Proxy">100</Action>
+        </Rule>
+        <Rule enabled="true">
             <Name>Default</Name>
             <Action type="Direct"/>
         </Rule>

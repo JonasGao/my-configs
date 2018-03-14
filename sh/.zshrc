@@ -107,6 +107,7 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Ho
 # export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-9.0.1.jdk/Contents/Home/"
 export ANDROID_HOME="/usr/local/share/android-sdk"
 export REPO_OS_OVERRIDE="macosx"
+export PATH="/usr/local/sbin:$PATH"
 export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin:$JAVA_HOME/bin"
 
 #SVN THEME
