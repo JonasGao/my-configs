@@ -103,8 +103,8 @@ alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taob
 
 export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
 # add yarn global to PATH
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/"
-# export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-9.0.1.jdk/Contents/Home/"
+export JDK8_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/"
+export JAVA_HOME="$JDK8_HOME"
 export ANDROID_HOME="/usr/local/share/android-sdk"
 export REPO_OS_OVERRIDE="macosx"
 export PATH="/usr/local/sbin:$PATH"

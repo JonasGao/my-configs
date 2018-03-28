@@ -6,8 +6,8 @@
             <ViaProxy enabled="false">
                 <TryLocalDnsFirst enabled="false"/>
             </ViaProxy>
-            <ExclusionList ExcludeSimpleHostnames="true" ExcludeLocalhost="true" ExcludeSelfHostname="true" ExcludeLocalDomain="true">localhost;%SimpleHostnames%;%ComputerName%;*.local;
-</ExclusionList>
+            <ExclusionList ExcludeSimpleHostnames="false" ExcludeLocalhost="true" ExcludeSelfHostname="true" ExcludeLocalDomain="true">localhost;%ComputerName%;*.local;
+  </ExclusionList>
         </Resolve>
         <Encryption mode="basic"/>
         <HttpProxiesSupport enabled="false"/>
@@ -17,28 +17,28 @@
         <ProcessOtherUsers enabled="false"/>
     </Options>
     <ProxyList>
-        <Proxy id="101" type="SOCKS5">
-            <Address>127.0.0.1</Address>
-            <Port>1086</Port>
-            <Options>0</Options>
+        <Proxy id="102" type="SOCKS5">
+            <Address>10.0.1.51</Address>
+            <Port>1080</Port>
+            <Options>48</Options>
+            <Authentication enabled="true">
+                <Username>User-001</Username>
+                <Password>AAACf1usYx23JqzIiHq3LoAzYFIKZ/NEx3vGGyJ1daHZM2t=</Password>
+            </Authentication>
         </Proxy>
     </ProxyList>
     <ChainList/>
     <RuleList>
         <Rule enabled="true">
             <Name>Localhost</Name>
-            <Targets>localhost; 127.0.0.1; ::1; %ComputerName%</Targets>
+            <Targets>localhost; 127.0.0.1; %ComputerName%</Targets>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
-            <Name>proxy app</Name>
-            <Applications>*specht*; *shadowsocks*</Applications>
-            <Action type="Direct"/>
-        </Rule>
-        <Rule enabled="true">
-            <Name>idea</Name>
-            <Applications>idea*; java*; gradle*; maven*; datagrip*;</Applications>
-            <Action type="Proxy">101</Action>
+            <Name>hs_access</Name>
+            <Applications>postman; java</Applications>
+            <Targets>172.17.*.*</Targets>
+            <Action type="Proxy">102</Action>
         </Rule>
         <Rule enabled="true">
             <Name>Default</Name>

@@ -19,15 +19,25 @@
     <ProxyList>
         <Proxy id="100" type="SOCKS5">
             <Address>127.0.0.1</Address>
-            <Port>9091</Port>
+            <Port>1086</Port>
             <Options>0</Options>
         </Proxy>
     </ProxyList>
     <ChainList/>
     <RuleList>
         <Rule enabled="true">
+            <Name>ss-local [auto-created]</Name>
+            <Applications>ss-local</Applications>
+            <Action type="Direct"/>
+        </Rule>
+        <Rule enabled="true">
             <Name>Localhost</Name>
             <Targets>localhost; 127.0.0.1; ::1; %ComputerName%; 10.0.*.*</Targets>
+            <Action type="Direct"/>
+        </Rule>
+        <Rule enabled="true">
+            <Name>shadowsocks</Name>
+            <Applications>*specht*; *shadowsocks*</Applications>
             <Action type="Direct"/>
         </Rule>
         <Rule enabled="true">
