@@ -102,12 +102,10 @@ alias npm1g="sudo npm --global --registry=https://registry.npm.taobao.org \
 alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taobao.org"
 
 export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
-export JDK8_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/"
-export JAVA_HOME="$JDK8_HOME"
 export ANDROID_HOME="/usr/local/share/android-sdk"
 export REPO_OS_OVERRIDE="macosx"
 export PATH="/usr/local/sbin:$PATH"
-export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin:$JAVA_HOME/bin"
+export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
 export PATH="$HOME/.jenv/bin:$PATH"
 
 #SVN THEME
