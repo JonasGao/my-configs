@@ -213,7 +213,7 @@ saveProfileToGithub() {
   echo "------------------------------------"
   echo 'already add & commit'
   echo "------------------------------------"
-  open "/Applications/GitHub Desktop.app"
+  git push
   cd $CURR
 }
 
