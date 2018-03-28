@@ -101,12 +101,17 @@ alias npm1g="sudo npm --global --registry=https://registry.npm.taobao.org \
 
 alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taobao.org"
 
+export REPO_OS_OVERRIDE="macosx"
+
 export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
 export ANDROID_HOME="/usr/local/share/android-sdk"
-export REPO_OS_OVERRIDE="macosx"
+export JDK8_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home"
+export JDK10_HOME="/Library/Java/JavaVirtualMachines/jdk-10.jdk/Contents/Home"
+export JAVA_HOME="$JDK10_HOME"
+
 export PATH="/usr/local/sbin:$PATH"
 export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
-export PATH="$HOME/.jenv/bin:$PATH"
+export PATH="$PATH:$JAVA_HOME/bin"
 
 #SVN THEME
 prompt_svn() {
@@ -223,7 +228,4 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 #THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
 [[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
-
-#INIT jenv
-eval "$(jenv init -)"
 
