@@ -1,0 +1,23 @@
+{
+	"color_scheme": "Packages/ayu/ayu-dark.tmTheme",
+	"font_face": "Fira Code",
+	"font_options":
+	[
+		"subpixel_antialias"
+	],
+	"highlight_line": true,
+	"ignored_packages":
+	[
+		"Vintage"
+	],
+	"skin": "ayu/ayu mirage",
+	"theme": "ayu-dark.sublime-theme",
+	"ui_big_tabs": true,
+	"ui_fix_tab_labels": true,
+	"ui_font_size_small": true,
+	"ui_font_source_code_pro": false,
+	"ui_separator": false,
+	"ui_wide_scrollbars": true,
+	"word_wrap": false,
+	"save_on_focus_lost": true
+}
