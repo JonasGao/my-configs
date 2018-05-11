@@ -105,9 +105,11 @@ export REPO_OS_OVERRIDE="macosx"
 
 export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
 export ANDROID_HOME="/usr/local/share/android-sdk"
-export JDK8_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home"
+export JDK8_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home"
 export JDK10_HOME="/Library/Java/JavaVirtualMachines/jdk-10.jdk/Contents/Home"
 export JAVA_HOME="$JDK8_HOME"
+export PY2_HOME="/usr/local/Cellar/python@2/2.7.14_3"
+export PY3_HOME="/usr/local/Cellar/python/3.6.5/libexec"
 
 export PATH="/usr/local/sbin:$PATH"
 export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
