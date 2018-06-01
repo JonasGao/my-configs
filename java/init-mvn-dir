@@ -1,0 +1,19 @@
+#!/usr/local/bin/python3
+
+from glob import glob
+from os.path import dirname, join
+from os import makedirs
+
+
+def mkdirs(target_dir):
+    makedirs(target_dir, 0o755, True)
+    print("already mkdir -p %s" % target_dir)
+
+
+for file in glob("./**/pom.xml", recursive=True):
+    if all("<packaging>pom</packaging>" not in line for line in open(file, 'r').readlines()):
+        path = dirname(file)
+        mkdirs(join(path, "src/main/java"))
+        mkdirs(join(path, "src/main/resources"))
+        mkdirs(join(path, "src/test/java"))
+        mkdirs(join(path, "src/test/resources"))
