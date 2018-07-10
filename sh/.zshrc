@@ -49,7 +49,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git osx svn docker ssh-agent mvn npm node zsh-syntax-highlighting zsh-autosuggestions spring)
+plugins=(git osx svn docker ssh-agent mvn nvm npm node zsh-syntax-highlighting zsh-autosuggestions spring)
 
 # User configuration
 
@@ -114,6 +114,7 @@ export PY3_HOME="/usr/local/Cellar/python/3.6.5/libexec"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
 export PATH="$PATH:$JAVA_HOME/bin"
+export PATH="$PATH:$HOME/.bin"
 
 #SVN THEME
 prompt_svn() {
@@ -147,7 +148,6 @@ build_prompt() {
 #SVN THEME END
 
 #CUSTOM FUNCTIONS
-
 proxy() {
   local port1
   local port2
@@ -179,6 +179,14 @@ proxy() {
   esac
 }
 
+git_set_proxy() {
+  git config --global http.proxy http://127.0.0.1:9090
+}
+
+git_unset_proxy() {
+  git config --global --unset http.proxy
+}
+
 thereIsGoPath() {
   export GOPATH=$(pwd)
   export PATH="$PATH:$GOPATH/bin"
@@ -193,7 +201,7 @@ saveProfileToGithub() {
   echo "Will save profiles to [ \033[32m$CONF_REPO\033[0m ]"
   echo "------------------------------------"
   # save proxifier ppxs
-  cp ~/Library/Application\ Support/Proxifier/Profiles/*.ppx "$CONF_REPO/proxifier/mac"
+  # cp ~/Library/Application\ Support/Proxifier/Profiles/*.ppx "$CONF_REPO/proxifier/mac"
   # save sh rc files
   cp ~/.zshrc "$CONF_REPO/sh/"
   cp ~/.bash_profile "$CONF_REPO/sh"
@@ -231,3 +239,7 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 #THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
 [[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
 
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
