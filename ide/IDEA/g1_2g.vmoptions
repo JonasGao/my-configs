@@ -1,0 +1,13 @@
+# 参考 https://github.com/FoxxMD/intellij-jvm-options-explained
+# 2g 内存版本
+
+-server
+-ea
+-Xmx2g
+-Xms1g
+-XX:+UseG1GC
+-XX:-UseParNewGC
+-XX:-UseConcMarkSweepGC
+-XX:ReservedCodeCacheSize=256m
+-XX:+OmitStackTraceInFastThrow
+-Dsun.io.useCanonCaches=false
