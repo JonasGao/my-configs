@@ -57,6 +57,7 @@ plugins=(git osx svn docker ssh-agent mvn nvm npm node zsh-syntax-highlighting z
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
+source $HOME/myenv
 
 # You may need to manually set your language environment
 export LANG=en_US.UTF-8
@@ -179,8 +180,8 @@ thereIsGoPath() {
 
 saveProfileToGithub() {
   CONF_REPO="$1"
-  if [[ "${CONF_REPO}X" == "X" ]]; then
-    CONF_REPO="$HOME/Documents/Github/my-configs"
+  if [ -z $CONF_REPO ]; then
+    CONF_REPO="$MY_CONFIG_ROOT"
   fi
   echo "------------------------------------"
   echo "Will save profiles to [ \033[32m$CONF_REPO\033[0m ]"
@@ -215,6 +216,21 @@ saveProfileToGithub() {
 reflushDns () {
   sudo dscacheutil -flushcache
   sudo killall -HUP mDNSRespond
+}
+
+cdtemp() {
+  tmp_root="$1"
+  if [ -z $tmp_root ]; then
+    tmp_root="$MY_TEMP_ROOT"
+  fi
+  if [ -z $tmp_root ]; then
+    echo "No temp root dir config"
+    exit 1
+  fi
+  cd $tmp_root
+  tmp=$(date | shasum | cut -c1-6)
+  mkdir $tmp
+  cd $tmp
 }
 
 #CUSTOM FUNCTIONS END
