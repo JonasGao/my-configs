@@ -186,6 +186,7 @@ saveProfileToGithub() {
   echo "------------------------------------"
   echo "Will save profiles to [ \033[32m$CONF_REPO\033[0m ]"
   echo "------------------------------------"
+  read
   # save proxifier ppxs
   # cp ~/Library/Application\ Support/Proxifier/Profiles/*.ppx "$CONF_REPO/proxifier/mac"
   # save sh rc files
