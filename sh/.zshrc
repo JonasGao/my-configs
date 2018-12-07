@@ -5,10 +5,10 @@ export ZSH=/Users/jonas/.oh-my-zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="agnoster"
+ZSH_THEME="awesomepanda"
 
 # Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+CASE_SENSITIVE="true"
 
 # Uncomment the following line to use hyphen-insensitive completion. Case
 # sensitive completion must be off. _ and - will be interchangeable.
@@ -87,25 +87,10 @@ export LC_ALL=en_US.UTF-8
 
 export DEFAULT_USER=$USER
 
-alias flushDns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder; say DNS cache flushed;"
-
-alias npm1="npm --registry=https://registry.npm.taobao.org \
---cache=$HOME/.npm/.cache/cnpm \
---disturl=https://npm.taobao.org/mirrors/node \
---userconfig=$HOME/.cnpmrc"
-
-alias npm1g="sudo npm --global --registry=https://registry.npm.taobao.org \
---cache=$HOME/.npm/.cache/cnpm \
---disturl=https://npm.taobao.org/mirrors/node \
---userconfig=$HOME/.cnpmrc"
-
-alias update-cnpm="npm --global update cnpm --registry=https://registry.npm.taobao.org"
-
 export REPO_OS_OVERRIDE="macosx"
-
 export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
 export ANDROID_HOME="/usr/local/share/android-sdk"
-export JDK8_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home"
+export JDK8_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home"
 export JDK10_HOME="/Library/Java/JavaVirtualMachines/jdk-10.jdk/Contents/Home"
 export JAVA_HOME="$JDK8_HOME"
 export PY2_HOME="/usr/local/Cellar/python@2/2.7.14_3"
@@ -149,22 +134,21 @@ build_prompt() {
 
 #CUSTOM FUNCTIONS
 proxy() {
-  local host="127.0.0.1"
-  if [ -n "$4" ] 
-  then
-    echo "not empty"
-    host=$4
-  fi
+  local port1
+  local port2
+  port1="$2"
+  port2="$3"
   case "$1" in
     on)
       if [[ "$2" == "" ]]; then
         echo '请指定端口'
         return 1
       fi
-      export HTTP_PROXY="http://$host:$2"
-      export HTTPS_PROXY="http://$host:$2"
-      export ALL_PROXY="socks5://$host:$3"
-      proxy
+      export HTTP_PROXY="http://127.0.0.1:$port1"
+      export HTTPS_PROXY="http://127.0.0.1:$port1"
+      export ALL_PROXY="socks5://127.0.0.1:$port2"
+      echo "HTTP(S) => 127.0.0.1:$port1"
+      echo "SOCKS5  => 127.0.0.1:$port2"
       ;;
     off)
       unset HTTP_PROXY
@@ -173,9 +157,9 @@ proxy() {
       echo "unset PROXY"
       ;;
     *)
-      echo "HTTP  = $HTTP_PROXY"
-      echo "HTTPS = $HTTPS_PROXY"
-      echo "ALL   = $ALL_PROXY"
+      echo "$HTTP_PROXY"
+      echo "$HTTPS_PROXY"
+      echo "$ALL_PROXY"
       ;;
   esac
 }
@@ -237,10 +221,18 @@ reflushDns () {
 	
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-#THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
-[[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
+# Specify your defaults in this environment variable
+export HOMEBREW_CASK_OPTS="--appdir=/Volumes/Store/Applications"
 
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/Volumes/Store/home/jonas/sdkman"
+[[ -s "/Volumes/Store/home/jonas/sdkman/bin/sdkman-init.sh" ]] && source "/Volumes/Store/home/jonas/sdkman/bin/sdkman-init.sh"
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+#NVM
+export NVM_DIR="/Volumes/Store/home/jonas/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+alias flushDns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder; say DNS cache flushed;"
+alias y=yarn
+
