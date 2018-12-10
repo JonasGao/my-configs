@@ -193,6 +193,7 @@ saveProfileToGithub() {
   cp ~/.zshrc "$CONF_REPO/sh/"
   cp ~/.bash_profile "$CONF_REPO/sh"
   cp ~/.bashrc "$CONF_REPO/sh"
+  cp ~/.bin/* "$CONF_REPO/sh/bin/"
   # save vim profiles
   cp ~/.vimrc "$CONF_REPO/vim/mvim/"
   cp -R ~/.vim/colors "$CONF_REPO/vim/mvim/.vim/"
