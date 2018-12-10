@@ -137,17 +137,33 @@ build_prompt() {
 
 cdtemp() {
   tmp_root="$1"
+  referer="$(pwd)"
   if [ -z $tmp_root ]; then
     tmp_root="$MY_TEMP_ROOT"
   fi
   if [ -z $tmp_root ]; then
     echo "No temp root dir config"
-    exit 1
+    return 1
   fi
   cd $tmp_root
   tmp=tmp-$(date | shasum | cut -c1-6)
   mkdir $tmp
   cd $tmp
+  export TMP_REFERER="$referer"
+  export TMP_REFERER_TG="$(pwd)"
+}
+
+rmtemp() {
+  if [ -z "$TMP_REFERER" ]; then
+    echo "No Referer"
+    return 0
+  fi
+  if [ -n "$TMP_REFERER_TG" ]; then
+    rm -rf $TMP_REFERER_TG
+    unset TMP_REFERER_TG
+  fi 
+  cd $TMP_REFERER
+  unset TMP_REFERER
 }
 
 proxy() {
