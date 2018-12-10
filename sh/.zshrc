@@ -135,6 +135,50 @@ build_prompt() {
 
 #CUSTOM FUNCTIONS
 
+cdtemp() {
+  tmp_root="$1"
+  if [ -z $tmp_root ]; then
+    tmp_root="$MY_TEMP_ROOT"
+  fi
+  if [ -z $tmp_root ]; then
+    echo "No temp root dir config"
+    exit 1
+  fi
+  cd $tmp_root
+  tmp=tmp-$(date | shasum | cut -c1-6)
+  mkdir $tmp
+  cd $tmp
+}
+
+proxy() {
+  port1="$2"
+  port2="$3"
+  case "$1" in
+    on)
+      if [[ "$2" == "" ]]; then
+        echo '请指定端口'
+        return 1
+      fi
+      export HTTP_PROXY="http://127.0.0.1:$port1"
+      export HTTPS_PROXY="http://127.0.0.1:$port1"
+      export ALL_PROXY="socks5://127.0.0.1:$port2"
+      echo "HTTP(S) => 127.0.0.1:$port1"
+      echo "SOCKS5  => 127.0.0.1:$port2"
+      ;;
+    off)
+      unset HTTP_PROXY
+      unset HTTPS_PROXY
+      unset ALL_PROXY
+      echo "unset PROXY"
+      ;;
+    *)
+      echo "$HTTP_PROXY"
+      echo "$HTTPS_PROXY"
+      echo "$ALL_PROXY"
+      ;;
+  esac
+}
+
 #CUSTOM FUNCTIONS END
 	
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

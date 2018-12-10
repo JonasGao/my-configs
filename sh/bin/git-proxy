@@ -1,0 +1,16 @@
+#! /bin/zsh
+
+case "$1" in
+  on)
+    git config --global http.proxy http://127.0.0.1:9090
+    ;;
+  off)
+    git config --global --unset http.proxy
+    ;;
+  *)
+    git config --get http.proxy
+    ;;
+esac
+
+
+
