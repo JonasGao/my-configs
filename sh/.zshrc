@@ -229,7 +229,7 @@ cdtemp() {
     exit 1
   fi
   cd $tmp_root
-  tmp=$(date | shasum | cut -c1-6)
+  tmp=tmp-$(date | shasum | cut -c1-6)
   mkdir $tmp
   cd $tmp
 }
