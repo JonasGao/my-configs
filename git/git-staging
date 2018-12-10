@@ -1,5 +1,6 @@
 #! /bin/bash
 
+next_br="$1"
 curr_br=$(git symbolic-ref --short HEAD)
 
 # check branch ok
@@ -22,5 +23,12 @@ git merge master
 git push
 
 # back to start
-git checkout $curr_br
+if [ -n $next_br ]; then
+  git br -D $curr_br
+  git checkout master
+  git push origin HEAD:$next_br
+  git checkout $next_br
+else
+  git checkout $curr_br
+fi
 
