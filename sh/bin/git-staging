@@ -1,34 +1,44 @@
-#! /bin/bash
+#! /bin/zsh
 
 next_br="$1"
 curr_br=$(git symbolic-ref --short HEAD)
 
+g() {
+  param="$@"
+  printf "\n> g $param \n\n"
+  git $@
+  if [ "$?" != 0 ]; then
+    exit 1
+  fi
+}
+
 # check branch ok
-git pull
+g pull
+g push
 
 # keep master up to date
-git checkout master
-git pull
+g checkout master
+g pull
 
 # back to here, and lets rebase
-git checkout $curr_br
-git rebase master
-git checkout master
-git merge $curr_br
-git push
+g checkout $curr_br
+g rebase master
+g checkout master
+g merge $curr_br
+g push
 
 # push to staging
-git checkout staging
-git merge master
-git push
+g checkout staging
+g merge master
+g push
 
 # back to start
-if [ -n $next_br ]; then
-  git br -D $curr_br
-  git checkout master
-  git push origin HEAD:$next_br
-  git checkout $next_br
+if [ -n "$next_br" ]; then
+  g br -D $curr_br
+  g checkout master
+  g push origin HEAD:$next_br
+  g checkout $next_br
 else
-  git checkout $curr_br
+  g checkout $curr_br
 fi
 
