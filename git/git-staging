@@ -1,0 +1,26 @@
+#! /bin/bash
+
+curr_br=$(git symbolic-ref --short HEAD)
+
+# check branch ok
+git pull
+
+# keep master up to date
+git checkout master
+git pull
+
+# back to here, and lets rebase
+git checkout $curr_br
+git rebase master
+git checkout master
+git merge $curr_br
+git push
+
+# push to staging
+git checkout staging
+git merge master
+git push
+
+# back to start
+git checkout $curr_br
+
