@@ -214,4 +214,5 @@ export NVM_DIR="/Volumes/Store/home/jonas/nvm"
 alias flushDns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder; say DNS cache flushed;"
 alias y=yarn
 alias g=git
+alias b=brew
 

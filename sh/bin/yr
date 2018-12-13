@@ -1,0 +1,14 @@
+#! /bin/zsh
+
+case "$1" in
+  i)
+  brew install yarn --without-node
+  ;;
+  u)
+  brew upgrade yarn
+  ;;
+  *)
+  echo "Install yarn or upgrade by Homebrew, only i or u, eg: yr i or yr u"
+  ;;
+esac
+

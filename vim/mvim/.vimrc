@@ -15,7 +15,8 @@ set go-=r
 set background=dark
 syntax enable
 let g:solarized_termcolors=256
-color solarized
+"color solarized
+colorscheme vividchalk 
 
 set nu
 set nowrap

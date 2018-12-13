@@ -1,0 +1,17 @@
+#! /bin/zsh
+
+if [ "$#" != "2" ]; then
+  echo "Invalid options"
+  exit 1
+fi
+
+source="$1"
+target="$MY_CONFIG_ROOT/$2"
+
+echo "------------------------------------"
+echo "Will save to [ \033[32m$target\033[0m ]"
+echo "------------------------------------"
+read
+
+cp $source $target
+

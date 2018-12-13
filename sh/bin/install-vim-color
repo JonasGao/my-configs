@@ -1,0 +1,14 @@
+#! /bin/zsh
+
+url="$1"
+name="$2"
+
+if [ -z "$name" ] || [ -z "$url" ]; then
+  echo "Invalid options, eg: '$0 https://www.vim.org/scripts/download_script.php?src_id=2038' color_name"
+  exit 1
+fi
+
+wget $url -O $HOME/.vim/colors/$name.vim
+
+echo "Complete install [$name]"
+
