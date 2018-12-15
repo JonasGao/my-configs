@@ -1,37 +1,19 @@
 #! /bin/zsh
 
-CONF_REPO="$1"
-if [ -z $CONF_REPO ]; then
-  CONF_REPO="$MY_CONFIG_ROOT"
-fi
 echo "------------------------------------"
-echo "Will save profiles to [ \033[32m$CONF_REPO\033[0m ]"
+echo "Will save profiles to [ \033[32m$MY_CONFIG_ROOT\033[0m ]"
 echo "------------------------------------"
 read
 
-#<copy>
-
-# save proxifier ppxs
-# cp ~/Library/Application\ Support/Proxifier/Profiles/*.ppx "$CONF_REPO/proxifier/mac"
-# save sh rc files
-cp ~/.zshrc "$CONF_REPO/sh/"
-cp ~/.bash_profile "$CONF_REPO/sh"
-cp ~/.bashrc "$CONF_REPO/sh"
-cp ~/.tern-config "$CONF_REPO/sh"
-my_bin="$CONF_REPO/sh/bin/"
-if [ ! -d $my_bin ]; then
-  mkdir -p $my_bin
-fi
-cp -R ~/.bin/* "$CONF_REPO/sh/bin/"
-# save vim profiles
-cp ~/.vimrc "$CONF_REPO/vim/mvim/"
-cp -R ~/.vim/colors "$CONF_REPO/vim/mvim/.vim/"
-cp -R ~/.vim/ftplugin "$CONF_REPO/vim/mvim/.vim/"
-
-#</copy>
+cat which-is-my-config | while read line; do
+  if [ -z "$line" ] || [[ "$line" =~ ^# ]]; then
+    continue
+  fi
+  eval ./save-to-my-config ${=line}
+done
 
 CURR=$(pwd)
-cd $CONF_REPO
+cd $MY_CONFIG_ROOT
 git diff
 echo "------------------------------------"
 git add .

@@ -1,17 +1,42 @@
 #! /bin/zsh
 
+if [ -n "$DEBUG" ]; then
+  echo "DEBUG: 1=[$1] 2=[$2]"
+fi
+
 if [ "$#" != "2" ]; then
   echo "Invalid options"
   exit 1
 fi
 
 source="$1"
+
+if [ -z "$source" ]; then
+  echo "Invalid source"
+  exit 2
+fi
+
+if [ -z "$MY_CONFIG_ROOT" ]; then
+  echo "Invalid MY_CONFIG_ROOT"
+  exit 3
+fi
+
 target="$MY_CONFIG_ROOT/$2"
 
-echo "------------------------------------"
-echo "Will save to [ \033[32m$target\033[0m ]"
-echo "------------------------------------"
-read
+if [ ! -d "$target" ]; then
+  if [ -e "$target" ]; then
+    echo "Invalid target, target must be dir"
+    exit 4
+  else
+    mkdir -p "$target"
+  fi
+fi
 
-cp $source $target
+if [ -d "$source" ]; then
+  echo "save [ $source ] all to [ \033[32m$target\033[0m ]"
+  cp -R $source $target
+else
+  echo "save [ $source ] to [ \033[32m$target\033[0m ]"
+  cp $source $target
+fi 
 
