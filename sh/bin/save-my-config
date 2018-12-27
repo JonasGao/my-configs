@@ -5,11 +5,11 @@ echo "Will save profiles to [ \033[32m$MY_CONFIG_ROOT\033[0m ]"
 echo "------------------------------------"
 read
 
-cat which-is-my-config | while read line; do
+cat $HOME/.bin/which-is-my-config | while read line; do
   if [ -z "$line" ] || [[ "$line" =~ ^# ]]; then
     continue
   fi
-  eval ./save-to-my-config ${=line}
+  eval $HOME/.bin/save-to-my-config ${=line}
 done
 
 CURR=$(pwd)

@@ -5,7 +5,7 @@ export ZSH=/Users/jonas/.oh-my-zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="awesomepanda"
+ZSH_THEME="agnoster"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -88,15 +88,6 @@ export LC_ALL=en_US.UTF-8
 
 export DEFAULT_USER=$USER
 
-export REPO_OS_OVERRIDE="macosx"
-export GRADLE_HOME=/Users/jonas/.sdkman/candidates/gradle/current/bin
-export ANDROID_HOME="/usr/local/share/android-sdk"
-export JDK8_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home"
-export JDK10_HOME="/Library/Java/JavaVirtualMachines/jdk-10.jdk/Contents/Home"
-export JAVA_HOME="$JDK8_HOME"
-export PY2_HOME="/usr/local/Cellar/python@2/2.7.14_3"
-export PY3_HOME="/usr/local/Cellar/python/3.6.5/libexec"
-
 export PATH="/usr/local/sbin:$PATH"
 export PATH="$PATH:$HOME/.config/yarn/global/node_modules/.bin"
 export PATH="$PATH:$JAVA_HOME/bin"
@@ -167,19 +158,22 @@ rmtemp() {
 }
 
 proxy() {
-  port1="$2"
-  port2="$3"
+  local host="127.0.0.1"
+  if [ -n "$4" ] 
+  then
+    echo "not empty"
+    host=$4
+  fi
   case "$1" in
     on)
       if [[ "$2" == "" ]]; then
         echo '请指定端口'
         return 1
       fi
-      export HTTP_PROXY="http://127.0.0.1:$port1"
-      export HTTPS_PROXY="http://127.0.0.1:$port1"
-      export ALL_PROXY="socks5://127.0.0.1:$port2"
-      echo "HTTP(S) => 127.0.0.1:$port1"
-      echo "SOCKS5  => 127.0.0.1:$port2"
+      export HTTP_PROXY="http://$host:$2"
+      export HTTPS_PROXY="http://$host:$2"
+      export ALL_PROXY="socks5://$host:$3"
+      proxy
       ;;
     off)
       unset HTTP_PROXY
@@ -188,9 +182,9 @@ proxy() {
       echo "unset PROXY"
       ;;
     *)
-      echo "$HTTP_PROXY"
-      echo "$HTTPS_PROXY"
-      echo "$ALL_PROXY"
+      echo "HTTP  = $HTTP_PROXY"
+      echo "HTTPS = $HTTPS_PROXY"
+      echo "ALL   = $ALL_PROXY"
       ;;
   esac
 }
@@ -199,20 +193,11 @@ proxy() {
 	
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-# Specify your defaults in this environment variable
-export HOMEBREW_CASK_OPTS="--appdir=/Volumes/Store/Applications"
+#THIS MUST BE AT THE END OF THE FILE FOR GVM TO WORK!!!
+[[ -s "/Users/jonas/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jonas/.sdkman/bin/sdkman-init.sh"
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/Volumes/Store/home/jonas/sdkman"
-[[ -s "/Volumes/Store/home/jonas/sdkman/bin/sdkman-init.sh" ]] && source "/Volumes/Store/home/jonas/sdkman/bin/sdkman-init.sh"
 
-#NVM
-export NVM_DIR="/Volumes/Store/home/jonas/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-alias flushDns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder; say DNS cache flushed;"
-alias y=yarn
-alias g=git
-alias b=brew
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 

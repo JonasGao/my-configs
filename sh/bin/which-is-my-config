@@ -5,7 +5,7 @@ $HOME/.zshrc        sh/
 $HOME/.bash_profile sh/
 $HOME/.bashrc       sh/
 $HOME/.tern-config  sh/
-$HOME/.bin          sh/bin/
+$HOME/.bin/         sh/bin/
 $HOME/.vimrc        vim/mvim/
 $HOME/.vim/colors   vim/mvim/.vim/
 $HOME/.vim/ftplugin vim/mvim/.vim/

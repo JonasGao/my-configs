@@ -15,8 +15,7 @@ set go-=r
 set background=dark
 syntax enable
 let g:solarized_termcolors=256
-"color solarized
-colorscheme vividchalk 
+color solarized
 
 set nu
 set nowrap
@@ -66,7 +65,6 @@ let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
 
-" set emmet
 let g:user_emmet_mode='inv'
 
 set laststatus=2
