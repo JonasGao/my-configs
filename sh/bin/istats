@@ -1,0 +1,9 @@
+#!/bin/zsh
+
+if [ "$1" == "i" ]; then
+  brew install ruby
+  /usr/local/opt/ruby/bin/gem install iStats
+fi
+
+/usr/local/lib/ruby/gems/2.6.0/bin/istats
+
