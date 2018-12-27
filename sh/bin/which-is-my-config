@@ -9,4 +9,5 @@ $HOME/.bin/         sh/bin/
 $HOME/.vimrc        vim/mvim/
 $HOME/.vim/colors   vim/mvim/.vim/
 $HOME/.vim/ftplugin vim/mvim/.vim/
+$HOME/myenv         sh/
 
