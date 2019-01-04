@@ -86,6 +86,8 @@ export LC_ALL=en_US.UTF-8
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+alias ls=exa
+
 export DEFAULT_USER=$USER
 
 export PATH="/usr/local/sbin:$PATH"
