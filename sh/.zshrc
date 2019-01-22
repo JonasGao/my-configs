@@ -147,15 +147,21 @@ cdtemp() {
 }
 
 rmtemp() {
-  if [ -z "$TMP_REFERER" ]; then
-    echo "No Referer"
-    return 0
-  fi
   if [ -n "$TMP_REFERER_TG" ]; then
     rm -rf $TMP_REFERER_TG
-    unset TMP_REFERER_TG
+  else
+    CURR=$(pwd)
+    SUB=${CURR##$MY_TEMP_ROOT}
+    if [ -n "$SUB" ] && [ "$SUB" != "$CURR" ]; then
+      rm -rf $CURR
+    fi
   fi 
-  cd $TMP_REFERER
+  if [ -n "$TMP_REFERER" ]; then
+    cd $TMP_REFERER
+  else
+    cd $HOME
+  fi
+  unset TMP_REFERER_TG
   unset TMP_REFERER
 }
 
@@ -202,4 +208,6 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+. /usr/local/etc/profile.d/z.sh
 
