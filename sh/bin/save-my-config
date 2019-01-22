@@ -1,5 +1,11 @@
 #! /bin/zsh
 
+COMMIT_MSG="update: sync mac profile"
+
+if [ -n "$1" ]; then
+  COMMIT_MSG=$1
+fi
+
 echo "------------------------------------"
 echo "Will save profiles to [ \033[32m$MY_CONFIG_ROOT\033[0m ]"
 echo "------------------------------------"
@@ -20,7 +26,7 @@ git add .
 git status
 echo "------------------------------------"
 read
-git commit -m 'update: sync mac profile'
+git commit -m $COMMIT_MSG
 echo "------------------------------------"
 echo 'already add & commit'
 echo "------------------------------------"
