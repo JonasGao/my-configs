@@ -155,12 +155,14 @@ rmtemp() {
     if [ -n "$SUB" ] && [ "$SUB" != "$CURR" ]; then
       rm -rf $CURR
     fi
-  fi 
-  if [ -n "$TMP_REFERER" ]; then
-    cd $TMP_REFERER
-  else
-    cd $HOME
   fi
+  if [ "$1" != "exit" ]; then 
+    if [ -n "$TMP_REFERER" ]; then
+      cd $TMP_REFERER
+    else
+      cd $HOME
+    fi
+  fi 
   unset TMP_REFERER_TG
   unset TMP_REFERER
 }
@@ -211,3 +213,6 @@ export NVM_DIR="$HOME/.nvm"
 
 . /usr/local/etc/profile.d/z.sh
 
+trap '
+ rmtemp
+' EXIT
