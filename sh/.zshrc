@@ -146,23 +146,19 @@ cdtemp() {
   export TMP_REFERER_TG="$(pwd)"
 }
 
+temp_here() {
+  export TMP_REFERER_TG=`pwd`
+}
+
 rmtemp() {
   if [ -n "$TMP_REFERER_TG" ]; then
     rm -rf $TMP_REFERER_TG
-  else
-    CURR=$(pwd)
-    SUB=${CURR##$MY_TEMP_ROOT}
-    if [ -n "$SUB" ] && [ "$SUB" != "$CURR" ]; then
-      rm -rf $CURR
-    fi
-  fi
-  if [ "$1" != "exit" ]; then 
     if [ -n "$TMP_REFERER" ]; then
       cd $TMP_REFERER
     else
-      cd $HOME
+      cd $MY_TEMP_ROOT
     fi
-  fi 
+  fi
   unset TMP_REFERER_TG
   unset TMP_REFERER
 }
@@ -213,6 +209,3 @@ export NVM_DIR="$HOME/.nvm"
 
 . /usr/local/etc/profile.d/z.sh
 
-trap '
- rmtemp
-' EXIT
