@@ -146,7 +146,7 @@ cdtemp() {
   export TMP_REFERER_TG="$(pwd)"
 }
 
-temp_here() {
+temphere() {
   export TMP_REFERER_TG=`pwd`
 }
 
