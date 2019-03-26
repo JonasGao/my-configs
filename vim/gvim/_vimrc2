@@ -2,8 +2,8 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 " set the runtime path to include Vundle and initialize
-set rtp+=~/vimfiles/bundle/Vundle.vim
-call vundle#begin()
+set rtp+=$HOME/vimfiles/bundle/Vundle.vim/
+call vundle#begin('$HOME/vimfiles/bundle/')
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
 
@@ -52,7 +52,7 @@ set whichwrap=b,s,<,>,[,]
 set nobomb
 set backspace=indent,eol,start whichwrap+=<,>,[,]
 " Vim 的默认寄存器和系统剪贴板共享
-set clipboard+=unnamed
+" set clipboard+=unnamed
 " 设置 alt 键不映射到菜单栏
 set winaltkeys=no
 " }}}
@@ -174,3 +174,4 @@ nnoremap <C-left> :bn<CR>
 nnoremap <C-right> :bp<CR>
 
 " }}}
+

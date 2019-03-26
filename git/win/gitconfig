@@ -1,0 +1,2 @@
+[core]
+	editor = 'C:\\WINDOWS\\gvim.bat' -f -i NONE

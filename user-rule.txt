@@ -4,3 +4,5 @@
 ||slackdemo.com
 ||slack.com
 ||atlassian.com
+||jetbrains.com
+||githubusercontent.com
