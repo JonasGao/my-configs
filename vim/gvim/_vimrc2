@@ -106,7 +106,8 @@ syntax on
 let mapleader=","
 
 nmap <leader>s :source $VIM/_vimrc<cr>
-nmap <leader>e :e $VIM/_vimrc<cr>
+nmap <leader>e0 :e $VIM/_vimrc<cr>
+nmap <leader>e1 :e $HOME/_vimrc<cr>
 
 map <leader>tn :tabnew<cr>
 map <leader>tc :tabclose<cr>
@@ -144,13 +145,14 @@ cnoremap <C-e> <end>
 nnoremap <F2> :setlocal number!<cr>
 nnoremap <leader>w :set wrap!<cr>
 
-imap <C-v>          "+gP
-vmap <C-c>          "+y
+nmap <C-a> ggvG$
+imap <C-v> "+gP
+vmap <C-c> "+y
 vnoremap <BS> d
-vnoremap <C-C>      "+y
+vnoremap <C-C> "+y
 vnoremap <C-Insert> "+y
-imap <C-V>          "+gP
-map <S-Insert>      "+gP
+imap <C-V> "+gP
+map <S-Insert> "+gP
 cmap <C-V> <C-R>+
 cmap <S-Insert> <C-R>+
 
@@ -174,4 +176,3 @@ nnoremap <C-left> :bn<CR>
 nnoremap <C-right> :bp<CR>
 
 " }}}
-
