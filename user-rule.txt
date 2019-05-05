@@ -6,3 +6,10 @@
 ||atlassian.com
 ||jetbrains.com
 ||githubusercontent.com
+||material.io
+||jsfiddle.net
+||egghead.io
+||github.io
+||en.wikipedia.org
+||material-theme.com
+||blog.npmjs.org
