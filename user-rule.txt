@@ -13,3 +13,7 @@
 ||en.wikipedia.org
 ||material-theme.com
 ||blog.npmjs.org
+||mozilla.org
+||msdn.microsoft.com
+||dzone.com
+||sales.jetbrains.com
