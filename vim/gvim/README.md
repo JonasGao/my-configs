@@ -11,4 +11,5 @@ Windows GVIM 配置保存
 
 ## 3. _vimrc2_update
 
-基于 _vimrc2，合并了 _vimrc 的插件。并精简了快捷键部分。
+基于 \_vimrc2，合并了 \_vimrc 的插件。并精简了快捷键部分。
+主题使用 https://vimawesome.com/plugin/solarized-8
