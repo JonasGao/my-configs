@@ -103,9 +103,10 @@ set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
 " Format {{{
 set autoindent
 set smartindent
-set tabstop=2
 set expandtab
+set tabstop=2
 set softtabstop=2
+set shiftwidth=2
 set foldmethod=indent
 syntax on
 " }}}
