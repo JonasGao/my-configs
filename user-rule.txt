@@ -19,3 +19,4 @@
 ||mozilla.org
 ||msdn.microsoft.com
 ||dzone.com
+||office365.com
