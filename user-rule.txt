@@ -20,3 +20,4 @@
 ||msdn.microsoft.com
 ||dzone.com
 ||office365.com
+||lastpass.com
