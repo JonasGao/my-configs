@@ -1,11 +1,19 @@
 {
-    "editor.fontFamily": "'Fira Code', monospace",
-    "editor.fontLigatures": true,
-    "files.autoSave": "onWindowChange",
     "workbench.activityBar.visible": true,
-    "workbench.colorTheme": "Abyss",
     "editor.smoothScrolling": true,
-    "workbench.iconTheme": "vscode-icons",
     "eslint.packageManager": "yarn",
-    "window.zoomLevel": 0
+    "workbench.colorTheme": "Solarized Dark",
+    "workbench.iconTheme": "material-icon-theme",
+    "files.autoSave": "onWindowChange",
+    "terminal.integrated.fontFamily": "Fira Code",
+    "editor.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.tabSize": 2,
+    "window.zoomLevel": 0,
+    "search.location": "sidebar",
+    "java.configuration.checkProjectSettingsExclusions": false,
+    "editor.suggestSelection": "first",
+    "materialTheme.fixIconsRunning": false,
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "workbench.editor.enablePreview": false
 }
