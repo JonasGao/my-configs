@@ -22,8 +22,8 @@ Plugin 'Chiel92/vim-autoformat'
 Plugin 'godlygeek/tabular'
 Plugin 'HerringtonDarkholme/yats.vim'
 Plugin 'drmingdrmer/xptemplate'
+Plugin 'zxqfl/tabnine-vim'
 "Plugin 'valloric/youcompleteme'
-Plugin 'Chiel92/vim-autoformat'
 Plugin 'wincent/command-t'
 
 " All of your Plugins must be added before the following line
