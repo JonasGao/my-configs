@@ -15,9 +15,17 @@
 ||blog.npmjs.org
 ||duyaoss.com
 ||zeit.co
+||now.sh
 ||gravatar.com
 ||mozilla.org
 ||msdn.microsoft.com
 ||dzone.com
+||githubassets.com
 ||office365.com
 ||lastpass.com
+||atom.io
+||freetls.fastly.net
+||discourse-cdn.com
+||jotfor.ms
+||jotform.com
+||spotify.com
