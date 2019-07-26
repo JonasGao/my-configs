@@ -130,11 +130,3 @@ let g:airline_powerline_fonts = 1
 set laststatus=2
 set noshowmode
 " }}}
-
-" Other {{{
-" Replace default shell 'cmd.exe' to Powershell!
-set shell=powershell.exe
-set shellcmdflag=-NoProfile\ -NoLogo\ -NonInteractive\ -Command
-set shellpipe=|
-set shellredir=>
-}}}
