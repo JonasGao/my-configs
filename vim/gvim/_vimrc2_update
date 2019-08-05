@@ -25,6 +25,7 @@ Plugin 'drmingdrmer/xptemplate'
 Plugin 'zxqfl/tabnine-vim'
 "Plugin 'valloric/youcompleteme'
 Plugin 'wincent/command-t'
+Plugin 'jeetsukumaran/vim-buffergator'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
