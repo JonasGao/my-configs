@@ -1,16 +1,21 @@
 #!/bin/bash
 
-## How to use
-# curl https://raw.githubusercontent.com/JonasGao/my-configs/master/git/init.sh --socks5 127.0.0.1:1080 -O init.sh && chmod u+x ./init.sh && ./init.sh && rm ./init.sh
-# if no proxy
-# curl https://raw.githubusercontent.com/JonasGao/my-configs/master/git/init.sh -O init.sh && chmod u+x ./init.sh && ./init.sh && rm ./init.sh
+## Remote use
+# curl -s https://raw.githubusercontent.com/JonasGao/my-configs/master/git/init.sh | bash
+## If you need proxy
+# curl -s https://raw.githubusercontent.com/JonasGao/my-configs/master/git/init.sh --socks5 127.0.0.1:1080 | bash
 
+printf """
+Hello, Git!
+This will setup some alias~
+"""
 git config --global alias.co checkout
 git config --global alias.br branch
 git config --global alias.ci commit
 git config --global alias.st status
 git config --global alias.curr-br git symbolic-ref --short HEAD
 git config --global alias.push-new push origin $(git curr-br)
+echo "Setup completion"
 
 ## editor settings
 # for mac or linux
