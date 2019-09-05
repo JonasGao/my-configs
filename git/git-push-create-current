@@ -1,0 +1,8 @@
+#!/bin/bash
+
+## Remote use
+# cd $HOME/bin && curl -sO https://raw.githubusercontent.com/JonasGao/my-configs/master/git/git-push-create-current && chmod 700 git-push-create-current
+## If you need proxy
+# add "--socks5 127.0.0.1:1080" to curl
+
+git push -u origin $(git symbolic-ref --short HEAD)
