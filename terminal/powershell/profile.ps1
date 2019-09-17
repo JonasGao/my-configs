@@ -17,9 +17,11 @@ Set-PSReadlineKeyHandler -Key Tab -Function Complete
 #
 # Install-Module posh-git -Scope CurrentUser
 # Install-Module oh-my-posh -Scope CurrentUser
+# Install-Module DockerCompletion -Scope CurrentUser
 #
 Import-Module posh-git
 Import-Module oh-my-posh
+Import-Module DockerCompletion
 # -- Optional Module --
 # Import-Module posh-gvm
 
