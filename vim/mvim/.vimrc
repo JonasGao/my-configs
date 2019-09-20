@@ -1,3 +1,8 @@
+"""
+" Download this config
+" curl https://raw.githubusercontent.com/JonasGao/my-configs/master/vim/mvim/.vimrc -o .vimrc
+"""
+
 " Vundle {{{
 set nocompatible              " be iMproved, required
 filetype off                  " required
@@ -110,7 +115,7 @@ syntax on
 " Keymap {{{
 let mapleader=","
 
-nmap <leader>s :source $VIM/_vimrc<cr>
-nmap <leader>e0 :e $VIM/_vimrc<cr>
-nmap <leader>e1 :e $HOME/_vimrc<cr>
+nmap <leader>s :source $VIM/.vimrc<cr>
+nmap <leader>e0 :e $VIM/.vimrc<cr>
+nmap <leader>e1 :e $HOME/.vimrc<cr>
 " }}}
