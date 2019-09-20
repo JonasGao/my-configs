@@ -1,6 +1,6 @@
 """
 " Download this config
-" curl https://raw.githubusercontent.com/JonasGao/my-configs/master/vim/mvim/.vimrc -o .vimrc
+" curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/JonasGao/my-configs/master/vim/mvim/.vimrc -o .vimrc
 """
 
 " Vundle {{{
