@@ -3,6 +3,6 @@
 ########################
 ## just list paths
 ## install use 
-## curl 'https://raw.githubusercontent.com/JonasGao/my-configs/master/terminal/bin/lspath' -o lspath
+## curl 'https://raw.githubusercontent.com/JonasGao/my-configs/master/terminal/bin/lspath' -o lspath && chmod 700 lspath
 
 echo $PATH | tr ":" "\n" | nl
