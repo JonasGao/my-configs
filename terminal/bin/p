@@ -1,5 +1,11 @@
 #!/usr/bin/sh
 
+########################
+## set proxy helper
+## 'p on 8080'
+## install use 
+## curl 'https://raw.githubusercontent.com/JonasGao/my-configs/master/terminal/bin/p' -o p && chmod 700 p
+
 set -u
 
 HOST="127.0.0.1"
