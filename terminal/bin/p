@@ -13,7 +13,7 @@ if [ -n "$4" ]; then
   HOST=$4
 fi
 
-function show() {
+function show {
   echo "HTTP  = $HTTP_PROXY"
   echo "HTTPS = $HTTPS_PROXY"
   echo "ALL   = $ALL_PROXY"
