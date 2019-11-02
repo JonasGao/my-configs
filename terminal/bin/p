@@ -6,8 +6,6 @@
 ## install use 
 ## curl 'https://raw.githubusercontent.com/JonasGao/my-configs/master/terminal/bin/p' -o p && chmod 700 p
 
-set -u
-
 HOST="127.0.0.1"
 
 if [ -n "$4" ]; then
