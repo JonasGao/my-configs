@@ -12,6 +12,13 @@ if [ -n "$4" ]; then
   echo "Will use host: '$4'"
   HOST=$4
 fi
+
+function show() {
+  echo "HTTP  = $HTTP_PROXY"
+  echo "HTTPS = $HTTPS_PROXY"
+  echo "ALL   = $ALL_PROXY"
+}
+
 case "$1" in
 on)
   if [[ "$2" == "" ]]; then
@@ -21,7 +28,7 @@ on)
   export HTTP_PROXY="http://$HOST:$2"
   export HTTPS_PROXY="http://$HOST:$2"
   export ALL_PROXY="socks5://$HOST:$3"
-  proxy
+  show
   ;;
 off)
   unset HTTP_PROXY
@@ -30,8 +37,6 @@ off)
   echo "unset PROXY"
   ;;
 *)
-  echo "HTTP  = $HTTP_PROXY"
-  echo "HTTPS = $HTTPS_PROXY"
-  echo "ALL   = $ALL_PROXY"
+  show
   ;;
 esac
