@@ -1,0 +1,8 @@
+#!/usr/bin/sh
+
+########################
+## just list paths
+## install use 
+## curl 'https://raw.githubusercontent.com/JonasGao/my-configs/master/terminal/bin/lspath' -o lspath
+
+echo $PATH | tr ":" "\n" | nl
