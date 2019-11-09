@@ -41,29 +41,25 @@ main() {
         ;;
     esac
   done
-  
-  printf """
-  =====debug=====
-  DO_SET     = ${DO_SET}
-  DO_UNSET   = ${DO_UNSET}
-  HTTP_PORT  = ${HTTP_PORT}
-  HOST       = ${HOST}
-  SOCKS_PORT = ${SOCKS_PORT}
-  -----debug-----
  
-"""
-  
   if [ "${DO_SET}" = 1 ] && [ "${DO_UNSET}" = 1 ]; then
     echo "You can't set and cancel at the same time!"
     return 1
   fi
   
   if [ "${DO_SET}" = 1 ]; then
+    if [ "${HTTP_PORT}" != "" ] && [ "${SOCKS_PORT}" != "" ]; then
+      echo "Can only select one, 'http' or 'socks'"
+      return 2
+    fi
     if [ "${HTTP_PORT}" != "" ]; then
       export HTTP_PROXY="http://$HOST:${HTTP_PORT}"
       export HTTPS_PROXY="http://$HOST:${HTTP_PORT}"
+      export ALL_PROXY="http://$HOST:${HTTP_PORT}"
     fi
     if [ "${SOCKS_PORT}" != "" ]; then
+      export HTTP_PROXY="socks5://$HOST:${SOCKS_PORT}"
+      export HTTPS_PROXY="socks5://$HOST:${SOCKS_PORT}"
       export ALL_PROXY="socks5://$HOST:${SOCKS_PORT}"
     fi
     show
