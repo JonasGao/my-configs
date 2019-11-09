@@ -6,37 +6,76 @@
 ## install use 
 ## curl 'https://raw.githubusercontent.com/JonasGao/my-configs/master/terminal/bin/p' -o p && chmod 700 p
 
-HOST="127.0.0.1"
-
-if [ -n "$4" ]; then
-  echo "Will use host: '$4'"
-  HOST=$4
-fi
-
 show() {
   echo "HTTP  = $HTTP_PROXY"
   echo "HTTPS = $HTTPS_PROXY"
   echo "ALL   = $ALL_PROXY"
 }
 
-case "$1" in
-on)
-  if [[ "$2" == "" ]]; then
-    echo "Please give port, like 'p on 8080'"
+main() {
+  local HOST="127.0.0.1"
+  local DO_SET
+  local DO_UNSET
+  local HTTP_PORT
+  local SOCKS_PORT
+  
+  while getopts 'efh:s:t:' opt; do
+    case ${opt} in
+      e)
+        local DO_SET=1
+        ;;
+      f)
+        local DO_UNSET=1
+        ;;
+      t)
+        local HTTP_PORT=${OPTARG}
+        ;;
+      h)
+        local HOST=${OPTARG}
+        ;;
+      s)
+        local SOCKS_PORT=${OPTARG}
+        ;;
+      *)
+        show
+        ;;
+    esac
+  done
+  
+  printf """
+  =====debug=====
+  DO_SET     = ${DO_SET}
+  DO_UNSET   = ${DO_UNSET}
+  HTTP_PORT  = ${HTTP_PORT}
+  HOST       = ${HOST}
+  SOCKS_PORT = ${SOCKS_PORT}
+  -----debug-----
+ 
+"""
+  
+  if [ "${DO_SET}" = 1 ] && [ "${DO_UNSET}" = 1 ]; then
+    echo "You can't set and cancel at the same time!"
     return 1
   fi
-  export HTTP_PROXY="http://$HOST:$2"
-  export HTTPS_PROXY="http://$HOST:$2"
-  export ALL_PROXY="socks5://$HOST:$3"
-  show
-  ;;
-off)
-  unset HTTP_PROXY
-  unset HTTPS_PROXY
-  unset ALL_PROXY
-  echo "unset PROXY"
-  ;;
-*)
-  show
-  ;;
-esac
+  
+  if [ "${DO_SET}" = 1 ]; then
+    if [ "${HTTP_PORT}" != "" ]; then
+      export HTTP_PROXY="http://$HOST:${HTTP_PORT}"
+      export HTTPS_PROXY="http://$HOST:${HTTP_PORT}"
+    fi
+    if [ "${SOCKS_PORT}" != "" ]; then
+      export ALL_PROXY="socks5://$HOST:${SOCKS_PORT}"
+    fi
+    show
+  fi
+  
+  if [ "${DO_UNSET}" = 1 ]; then
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
+    unset ALL_PROXY
+    echo "unset PROXY"
+  fi
+}
+
+main $@
+
