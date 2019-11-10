@@ -36,9 +36,6 @@ main() {
       s)
         local SOCKS_PORT=${OPTARG}
         ;;
-      *)
-        show
-        ;;
     esac
   done
  
@@ -62,7 +59,6 @@ main() {
       export HTTPS_PROXY="socks5://$HOST:${SOCKS_PORT}"
       export ALL_PROXY="socks5://$HOST:${SOCKS_PORT}"
     fi
-    show
   fi
   
   if [ "${DO_UNSET}" = 1 ]; then
@@ -74,4 +70,4 @@ main() {
 }
 
 main $@
-
+show
