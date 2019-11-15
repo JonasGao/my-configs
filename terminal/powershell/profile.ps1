@@ -51,13 +51,18 @@ function Move-ItemUsingExplorer {
   $objFolder.MoveHere((Get-Item $Source).FullName, $MoveFlags.ToString('{0:x}'))
 }
 
+function Set-GoPathLocation {
+  Set-Location $env:GOPATH
+}
+
 New-Alias emv Move-ItemUsingExplorer
 New-Alias ecp Copy-ItemUsingExplorer
-New-Alias which Get-Command
-New-Alias grep findstr
 New-Alias p pnpm
 New-Alias y yarn
 New-Alias ll ls
+New-Alias which Get-Command
+New-Alias grep findstr
+New-Alias gopath Set-GoPathLocation
 
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 
