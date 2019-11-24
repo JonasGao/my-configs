@@ -11,6 +11,13 @@ function decode(url) {
     return buff.toString("ascii");
   };
 
+  const decodePassword = value => {
+    if (value) {
+      return decodeBase64(value)
+    }
+    return value
+  }
+
   const decodeMainPart = (url, opt) => {
     let main = url;
     if (url.indexOf("/?") >= 0) {
@@ -21,7 +28,7 @@ function decode(url) {
       host: values[0],
       port: values[1],
       cipher: values[3],
-      password: values[5],
+      password: decodePassword(values[5]),
       obfs: values[4],
       protocol: values[2]
     });
@@ -52,3 +59,5 @@ function decode(url) {
 const [, , input] = process.argv;
 
 console.log(decode(input));
+
+//Decode ssr url
