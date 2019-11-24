@@ -59,5 +59,3 @@ function decode(url) {
 const [, , input] = process.argv;
 
 console.log(decode(input));
-
-//Decode ssr url
