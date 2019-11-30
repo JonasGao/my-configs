@@ -12,6 +12,21 @@ show() {
   echo "ALL   = $ALL_PROXY"
 }
 
+show-help() {
+  printf """
+. p -ersnhot
+
+-e enable cli env
+-s enable system env
+-n unset sys
+-r unset cli
+-h host
+-o socks-port 
+-t http-port
+
+"""
+}
+
 main() {
   local HOST="127.0.0.1"
   local DO_SET
@@ -19,7 +34,7 @@ main() {
   local HTTP_PORT
   local SOCKS_PORT
   
-  while getopts 'erh:s:t:' opt; do
+  while getopts 'ers:n:h:o:t:' opt; do
     case ${opt} in
       e)
         local DO_SET=1
@@ -33,8 +48,14 @@ main() {
       h)
         local HOST=${OPTARG}
         ;;
-      s)
+      o)
         local SOCKS_PORT=${OPTARG}
+        ;;
+      s)
+        local DO_SYS=${OPTARG}
+        ;;
+      n)
+        local UNDO_SYS=${OPTARG}
         ;;
       *)
         local HELP=1
@@ -43,18 +64,11 @@ main() {
   done
 
   if [ "${HELP}" = 1 ]; then
-    printf """
-. p -erhst
-
--e enable
--r reset/unset
--h host
--s socks-port
--t http-port
-
-"""
+    show-help
     return 0
   fi
+
+  # ========== CLI ENV ==========
  
   if [ "${DO_SET}" = 1 ] && [ "${DO_UNSET}" = 1 ]; then
     echo "You can't set and cancel at the same time!"
@@ -83,6 +97,39 @@ main() {
     unset HTTPS_PROXY
     unset ALL_PROXY
     echo "unset PROXY"
+  fi
+
+  # ========== CLI ENV ==========
+
+  if [ "${DO_SYS}" != "" ]; then
+    # TODO check networksetup
+    if [ "${HTTP_PORT}" != "" ]; then
+      networksetup -setwebproxy ${DO_SYS} ${HOST} ${HTTP_PORT}
+      # networksetup -setwebproxystate ${DO_SYS} on
+      networksetup -setsecurewebproxy ${DO_SYS} ${HOST} ${HTTP_PORT} 
+      # networksetup -setsecurewebproxystate ${DO_SYS} on
+      echo "setup sys [${DO_SYS}] http(s) proxy"
+      echo "======================="
+      networksetup -getwebproxy ${DO_SYS}
+      echo "-----------------------"
+      networksetup -getsecurewebproxy ${DO_SYS}
+      echo "======================="
+    fi
+    if [ "${SOCKS_PORT}" != "" ]; then
+      networksetup -setsocksfirewallproxy ${DO_SYS} ${HOST} ${SOCKS_PORT}
+      # networksetup -setsocksfirewallproxystate ${DO_SYS} on
+      echo "setup sys [${DO_SYS}] socks proxy"
+      echo "======================="
+      networksetup -getsocksfirewallproxy ${DO_SYS}
+      echo "======================="
+    fi
+  fi
+  
+  if [ "${UNDO_SYS}" != "" ]; then
+    networksetup -setwebproxystate ${UNDO_SYS} off
+    networksetup -setsecurewebproxystate ${UNDO_SYS} off
+    networksetup -setsocksfirewallproxystate ${UNDO_SYS} off
+    echo "Off all sys proxy"
   fi
 }
 
