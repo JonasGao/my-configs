@@ -35,6 +35,9 @@ filetype plugin indent on    " required
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 set laststatus=2
+
+" YCM
+let g:ycm_key_invoke_completion = '<c-.>'
 " }}}
 
 " Startup {{{
