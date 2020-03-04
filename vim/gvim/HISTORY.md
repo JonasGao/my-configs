@@ -1,0 +1,387 @@
+GVim configuration history
+==========================
+
+## 1
+
+```
+set smarttab
+set expandtab
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+
+syn on
+set guifont=Fira_Code:h10
+set encoding=utf-8   
+set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
+set nowrap
+set nu
+set guioptions-=m
+set guioptions-=T
+
+nmap <C-v> "+gp
+imap <C-v> <Esc>"+gpa
+vmap <C-c> "+y
+nmap <C-a> ggvG$
+
+set nocompatible              " be iMproved, required
+set backspace=indent,eol,start
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/vimfiles/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+Plugin 'godlygeek/tabular'
+Plugin 'HerringtonDarkholme/yats.vim'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mattn/emmet-vim'
+Plugin 'drmingdrmer/xptemplate'
+Plugin 'terryma/vim-multiple-cursors'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'chr4/nginx.vim'
+Plugin 'valloric/youcompleteme'
+Plugin 'Chiel92/vim-autoformat'
+Plugin 'wincent/command-t'
+
+" Add plugins here
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+" Set airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+set laststatus=2
+```
+
+## 2
+
+```
+" Vundle {{{
+set nocompatible              " be iMproved, required
+filetype off                  " required
+" set the runtime path to include Vundle and initialize
+set rtp+=$HOME/vimfiles/bundle/Vundle.vim/
+call vundle#begin('$HOME/vimfiles/bundle/')
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mattn/emmet-vim'
+Plugin 'terryma/vim-multiple-cursors'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'chr4/nginx.vim'
+Plugin 'Chiel92/vim-autoformat'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+" Set airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+set laststatus=2
+" }}}
+
+" Startup {{{
+" instead by vundle section
+" filetype indent plugin on
+
+" vim 文件折叠方式为 marker
+augroup ft_vim
+    au!
+
+    au FileType vim setlocal foldmethod=marker
+augroup END
+" }}}
+
+" General {{{
+set nocompatible
+set nobackup
+set noswapfile
+set history=2048
+set autochdir
+set whichwrap=b,s,<,>,[,]
+set nobomb
+set backspace=indent,eol,start whichwrap+=<,>,[,]
+" Vim 的默认寄存器和系统剪贴板共享
+" set clipboard+=unnamed
+" 设置 alt 键不映射到菜单栏
+set winaltkeys=no
+" }}}
+
+" Lang & Encoding {{{
+set fileencodings=utf-8,gbk2312,gbk,gb18030,cp936
+set encoding=utf-8
+set langmenu=zh_CN
+let $LANG = 'en_US.UTF-8'
+"language messages zh_CN.UTF-8
+" }}}
+
+" GUI {{{
+colorscheme solarized8_dark
+
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+set cursorline
+set hlsearch
+set number
+set background=dark
+" 窗口大小
+set lines=35 columns=140
+" 分割出来的窗口位于当前窗口下边/右边
+set splitbelow
+set splitright
+"不显示工具/菜单栏
+set guioptions-=T
+set guioptions-=m
+set guioptions-=L
+set guioptions-=r
+set guioptions-=b
+" 使用内置 tab 样式而不是 gui
+set guioptions-=e
+set nolist
+" set listchars=tab:?\ ,eol:?,trail:·,extends:>,precedes:<
+set guifont=等距更纱黑体_SC:h10:cANSI:qCLEARTYPE
+" }}}
+
+" Format {{{
+set autoindent
+set smartindent
+set tabstop=2
+set expandtab
+set softtabstop=2
+set foldmethod=indent
+syntax on
+" }}}
+
+" Keymap {{{
+let mapleader=","
+
+nmap <leader>s :source $VIM/_vimrc<cr>
+nmap <leader>e0 :e $VIM/_vimrc<cr>
+nmap <leader>e1 :e $HOME/_vimrc<cr>
+
+map <leader>tn :tabnew<cr>
+map <leader>tc :tabclose<cr>
+map <leader>th :tabp<cr>
+map <leader>tl :tabn<cr>
+
+" 移动分割窗口
+nmap <C-j> <C-W>j
+nmap <C-k> <C-W>k
+nmap <C-h> <C-W>h
+nmap <C-l> <C-W>l
+
+" 正常模式下 alt+j,k,h,l 调整分割窗口大小
+nnoremap <M-j> :resize +5<cr>
+nnoremap <M-k> :resize -5<cr>
+nnoremap <M-h> :vertical resize -5<cr>
+nnoremap <M-l> :vertical resize +5<cr>
+
+" 插入模式移动光标 alt + 方向键
+inoremap <M-j> <Down>
+inoremap <M-k> <Up>
+inoremap <M-h> <left>
+inoremap <M-l> <Right>
+
+" IDE like delete
+inoremap <C-BS> <Esc>bdei
+
+nnoremap vv ^vg_
+" 转换当前行为大写
+inoremap <C-u> <esc>mzgUiw`za
+" 命令模式下的行首尾
+cnoremap <C-a> <home>
+cnoremap <C-e> <end>
+
+nnoremap <F2> :setlocal number!<cr>
+nnoremap <leader>w :set wrap!<cr>
+
+nmap <C-a> ggvG$
+imap <C-v> "+gP
+vmap <C-c> "+y
+vnoremap <BS> d
+vnoremap <C-C> "+y
+vnoremap <C-Insert> "+y
+imap <C-V> "+gP
+map <S-Insert> "+gP
+cmap <C-V> <C-R>+
+cmap <S-Insert> <C-R>+
+
+exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
+exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
+
+" 打开当前目录 windows
+map <leader>ex :!start explorer %:p:h<CR>
+
+" 打开当前目录CMD
+map <leader>cmd :!start<cr>
+" 打印当前时间
+map <F3> a<C-R>=strftime("%Y-%m-%d %a %I:%M %p")<CR><Esc>
+
+" 复制当前文件/路径到剪贴板
+nmap ,fn :let @*=substitute(expand("%"), "/", "\\", "g")<CR>
+nmap ,fp :let @*=substitute(expand("%:p"), "/", "\\", "g")<CR>
+
+" 设置切换Buffer快捷键"
+nnoremap <C-left> :bn<CR>
+nnoremap <C-right> :bp<CR>
+
+" }}}
+```
+
+# 3
+
+```
+" Vundle {{{
+set nocompatible              " be iMproved, required
+filetype off                  " required
+" set the runtime path to include Vundle and initialize
+set rtp+=$HOME/vimfiles/bundle/Vundle.vim/
+call vundle#begin('$HOME/vimfiles/bundle/')
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mattn/emmet-vim'
+Plugin 'terryma/vim-multiple-cursors'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'chr4/nginx.vim'
+Plugin 'Chiel92/vim-autoformat'
+Plugin 'godlygeek/tabular'
+Plugin 'HerringtonDarkholme/yats.vim'
+Plugin 'drmingdrmer/xptemplate'
+Plugin 'zxqfl/tabnine-vim'
+"Plugin 'valloric/youcompleteme'
+Plugin 'wincent/command-t'
+Plugin 'jeetsukumaran/vim-buffergator'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+" Set airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+set laststatus=2
+
+" YCM
+let g:ycm_key_invoke_completion = '<c-.>'
+" }}}
+
+" Startup {{{
+" instead by vundle section
+" filetype indent plugin on
+
+" vim 文件折叠方式为 marker
+augroup ft_vim
+    au!
+
+    au FileType vim setlocal foldmethod=marker
+augroup END
+" }}}
+
+" General {{{
+set nocompatible
+set nobackup
+set noswapfile
+set history=2048
+set autochdir
+set whichwrap=b,s,<,>,[,]
+set nobomb
+set nowrap
+set backspace=indent,eol,start whichwrap+=<,>,[,]
+" Vim 的默认寄存器和系统剪贴板共享
+" set clipboard+=unnamed
+" 设置 alt 键不映射到菜单栏
+set winaltkeys=no
+" }}}
+
+" Lang & Encoding {{{
+set fileencodings=utf-8,gbk2312,gbk,gb18030,cp936
+set encoding=utf-8
+set langmenu=zh_CN
+let $LANG = 'en_US.UTF-8'
+"language messages zh_CN.UTF-8
+" }}}
+
+" GUI {{{
+colorscheme solarized8
+
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+set cursorline
+set hlsearch
+set number
+set background=dark
+" 窗口大小
+set lines=35 columns=140
+" 分割出来的窗口位于当前窗口下边/右边
+set splitbelow
+set splitright
+"不显示工具/菜单栏
+set guioptions-=T
+set guioptions-=m
+set guioptions-=L
+set guioptions-=r
+set guioptions-=b
+" 使用内置 tab 样式而不是 gui
+set guioptions-=e
+set nolist
+" set listchars=tab:?\ ,eol:?,trail:·,extends:>,precedes:<
+set guifont=等距更纱黑体_SC:h10:cANSI:qCLEARTYPE
+set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
+" }}}
+
+" Format {{{
+set autoindent
+set smartindent
+set expandtab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set foldmethod=indent
+syntax on
+" }}}
+
+" Keymap {{{
+let mapleader=","
+
+nmap <leader>s :source $VIM/_vimrc<cr>
+nmap <leader>e0 :e $VIM/_vimrc<cr>
+nmap <leader>e1 :e $HOME/_vimrc<cr>
+
+nmap <C-v> "+gp
+imap <C-v> <Esc>"+gpa
+vmap <C-c> "+y
+nmap <C-a> ggvG$
+" }}}
+
+" airline {{{
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+set laststatus=2
+set noshowmode
+" }}}
+```
