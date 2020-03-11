@@ -1,0 +1,14 @@
+source ~/.zplug/init.zsh
+
+zplug romkatv/powerlevel10k, as:theme, depth:1
+
+if ! zplug check --verbose; then
+  printf "Install? [y/N]: "
+  if read -q; then
+    echo; zplug install
+  else
+    echo
+  fi
+fi
+
+zplug load
