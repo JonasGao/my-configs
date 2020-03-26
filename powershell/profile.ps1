@@ -91,3 +91,7 @@ Import-Module DockerCompletion
 # setting up theme
 #
 Set-Theme Agnoster
+
+$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+$VISUAL="'C:\Program Files (x86)\Vim\vim82\gvim.exe' -f -i NONE"
+$EDITOR="$VISUAL"
