@@ -1,44 +1,16 @@
-#! /bin/zsh
+#!/bin/bash
 
-next_br="$1"
-curr_br=$(git symbolic-ref --short HEAD)
+CURR_BR=$(git symbolic-ref --short HEAD)
+STAGING_FROM="master"
+STAGING_TO="staging"
+MERGING_FROM="merging-$STAGING_FROM"
+MERGING_TO="merging-$STAGING_TO"
 
-g() {
-  param="$@"
-  printf "\n> g $param \n\n"
-  git $@
-  if [ "$?" != 0 ]; then
-    exit 1
-  fi
-}
-
-# check branch ok
-g pull
-g push
-
-# keep master up to date
-g checkout master
-g pull
-
-# back to here, and lets rebase
-g checkout $curr_br
-g rebase master
-g checkout master
-g merge $curr_br
-g push
-
-# push to staging
-g checkout staging
-g merge master
-g push
-
-# back to start
-if [ -n "$next_br" ]; then
-  g br -D $curr_br
-  g checkout master
-  g push origin HEAD:$next_br
-  g checkout $next_br
-else
-  g checkout $curr_br
-fi
-
+git branch -D $MERGING_FROM $MERGING_TO
+git fetch
+git checkout -b $MERGING_FROM "origin/$STAGING_FROM"
+git checkout -b $MERGING_TO "origin/$STAGING_TO"
+git merge $MERGE_FROM -m "Merge branch '$STAGING_FROM' to '$STAGING_TO'"
+git push
+git checkout $CURR_BR
+git branch -D $MERGING_FROM $MERGING_TO
