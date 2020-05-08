@@ -1,3 +1,6 @@
+#!/bin/bash
+# git log --graph --pretty="%C(Yellow)%h %C(reset) %C(Green)%d%C(reset) (%cr) %C(Cyan)%an: %C(reset)%s"
+git log --graph --pretty=format:'%C(Yellow)%h%Creset -%C(red)%d%Creset %s %C(dim green)(%cr) %C(cyan)<%an>%Creset' --abbrev-commit
 # https://stackoverflow.com/questions/1441010/the-shortest-possible-output-from-git-log-containing-author-and-date
 # git log --pretty=format:"%h%x09%an%x09%ad%x09%s"
-git log --graph --pretty="%C(Yellow)%h  %C(reset)%ad (%C(Green)%cr%C(reset))%x09 %C(Cyan)%an: %C(reset)%s"
+# git log --graph --pretty="%C(Yellow)%h  %C(reset)%ad (%C(Green)%cr%C(reset))%x09 %C(Cyan)%an: %C(reset)%s"
