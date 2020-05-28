@@ -20,6 +20,7 @@ zplug "plugins/sudo", from:oh-my-zsh
 zplug "plugins/encode64", from:oh-my-zsh
 zplug 'plugins/extract', from:oh-my-zsh
 zplug "romkatv/powerlevel10k", as:theme, depth:1
+zplug "agkozak/zsh-z"
 
 if ! zplug check --verbose; then
   printf "Install? [y/N]: "
@@ -43,7 +44,8 @@ setopt inc_append_history
 setopt share_history
 setopt auto_cd autopushd pushdignoredups
 
-. "$HOME/.local/z.sh"
+# Instead By 'zplug "agkozak/zsh-z"'
+# . "$HOME/.local/z.sh"
 
 alias ll=k
 
