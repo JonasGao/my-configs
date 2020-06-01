@@ -1,0 +1,28 @@
+#!/bin/bash
+
+TARGET_BRANCH="$1"
+MERGE_TO_TARGET="master"
+
+if [ "$TARGET_BRANCH" == "" ]; then
+  echo "No target branch!"
+  exit 1
+fi
+
+if [ "$TARGET_BRANCH" == "$MERGE_TO_TARGET" ]; then
+  echo "Target can not same with '$MERGE_TO_TARGET'"
+  exit 2
+fi
+
+MERGE_FROM_CHECKOUT="origin/$TARGET_BRANCH"
+MERGE_FROM="merging-$TARGET_BRANCH"
+
+MERGE_TO_CHECKOUT="origin/$MERGE_TO_TARGET"
+MERGE_TO="merging-$MERGE_TO_TARGET"
+
+git branch -D $MERGE_FROM $MERGE_TO
+git fetch
+git checkout -b $MERGE_FROM $MERGE_FROM_CHECKOUT
+git checkout -b $MERGE_TO $MERGE_TO_CHECKOUT
+git merge $MERGE_FROM -m "Merge branch '$TARGET_BRANCH' into '$MERGE_TO_TARGET'"
+
+printf "$TARGET_BRANCH $MERGE_TO_TARGET $MERGE_FROM_CHECKOUT $MERGE_FROM $MERGE_TO_CHECKOUT $MERGE_TO" > .merging
