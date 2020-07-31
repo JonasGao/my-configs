@@ -1,0 +1,8 @@
+#!/bin/bash
+git checkout staging
+git pull -r
+git checkout production
+git pull -r
+git merge staging
+git push
+
