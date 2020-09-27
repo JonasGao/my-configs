@@ -7,6 +7,7 @@ STAGING_BR="staging"
 
 if [ "$TARGET_BRANCH" == "" ]; then
   TARGET_BRANCH="$CURR_BR"
+  printf "\nNo branch specified, use current branch ($TARGET_BRANCH)\n"
 fi
 
 if [ "$TARGET_BRANCH" == "$MASTER_BR" ]; then
@@ -19,6 +20,10 @@ if [ "$TARGET_BRANCH" == "$STAGING_BR" ]; then
   exit 2
 fi
 
+printf "\nBefore merging $TARGET_BRANCH\n====\n\n"
+
 git merging $TARGET_BRANCH &&
+  printf "\nAfter merge $TARGET_BRANCH\n====\n\n" &&
   git merged &&
+  printf "\nMerging master to staging\n====\n"
   git staging
