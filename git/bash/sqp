@@ -1,0 +1,13 @@
+#!/bin/bash
+qd
+git co master
+git pr
+qp
+git co develop
+git co master
+printf "\nWhat is the Tag: "
+echo ""
+read tag
+git tag -a "$tag"
+git pt
+git co develop
