@@ -1,0 +1,10 @@
+#!/bin/bash
+git branch -D rebasing-develop rebasing-master
+git fetch
+git checkout -b rebasing-master origin/master
+git checkout -b rebasing-develop origin/develop
+git rebase rebasing-master
+git checkout rebasing-master
+git merge rebasing-develop
+git branch -D rebasing-develop
+

@@ -1,0 +1,9 @@
+#!/bin/bash
+git checkout master
+git pull -r
+git checkout rebasing-master
+git rebase master
+git checkout master
+git merge rebasing-master
+git push
+git branch -D rebasing-master

@@ -1,0 +1,7 @@
+#!/bin/bash
+git branch -D merging-master merging-develop
+git fetch
+git checkout -b merging-develop origin/develop
+git checkout -b merging-master origin/master
+git merge merging-develop -m "Merge branch develop into 'master'"
+

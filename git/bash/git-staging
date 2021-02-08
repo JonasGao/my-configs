@@ -20,3 +20,4 @@ git checkout $CURR_BR
 printf "\nClear branches ($MERGING_FROM, $MERGING_TO)\n====\n\n"
 
 git branch -D $MERGING_FROM $MERGING_TO
+

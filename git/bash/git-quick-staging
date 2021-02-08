@@ -27,3 +27,4 @@ git merging $TARGET_BRANCH &&
   git merged &&
   printf "\nMerging master to staging\n====\n"
   git staging
+

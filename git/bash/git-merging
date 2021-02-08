@@ -4,8 +4,8 @@ TARGET_BRANCH="$1"
 MERGE_TO_TARGET="master"
 
 if [ "$TARGET_BRANCH" == "" ]; then
-  echo "No target branch!"
-  exit 1
+  CURR_BR=$(git symbolic-ref --short HEAD)
+  TARGET_BRANCH="$CURR_BR"
 fi
 
 if [ "$TARGET_BRANCH" == "$MERGE_TO_TARGET" ]; then
@@ -26,3 +26,4 @@ git checkout -b $MERGE_TO $MERGE_TO_CHECKOUT
 git merge $MERGE_FROM -m "Merge branch '$TARGET_BRANCH' into '$MERGE_TO_TARGET'"
 
 printf "$TARGET_BRANCH $MERGE_TO_TARGET $MERGE_FROM_CHECKOUT $MERGE_FROM $MERGE_TO_CHECKOUT $MERGE_TO" > .merging
+

@@ -1,13 +1,14 @@
 #!/bin/bash
+# develop -> master -> staging -> develop
 qd
-git co master
-git pr
+# -> staging -> production -> merge staging
 qp
 git co develop
 git co master
+git pr
 printf "\nWhat is the Tag: "
-echo ""
 read tag
+echo ""
 git tag -a "$tag"
 git pt
 git co develop

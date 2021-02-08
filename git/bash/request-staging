@@ -1,0 +1,13 @@
+#!/bin/bash
+T="/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_branch%5D=master&merge_request%5Btarget_branch%5D=staging"
+REPO_URL=`git config --get remote.origin.url`
+if [[ "$REPO_URL" =~ ^git ]]; then
+  REPO_URL=$(echo $REPO_URL | sed 's/:/\//g')
+  REPO_URL=$(echo $REPO_URL | sed 's/git@/http:\/\//')
+  MR_URL="$REPO_URL"
+fi
+REPO_URL=$(echo $REPO_URL | sed 's/\.git.*$//g')
+MR_URL="${REPO_URL}${T}"
+echo $MR_URL
+"/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe" $MR_URL
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+git push origin HEAD:master
+git checkout develop
+git branch -D merging-master merging-develop

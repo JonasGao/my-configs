@@ -5,4 +5,3 @@ git checkout production
 git pull -r
 git merge staging
 git push
-
