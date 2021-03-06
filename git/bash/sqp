@@ -4,11 +4,4 @@ qd
 # -> staging -> production -> merge staging
 qp
 git co develop
-git co master
-git pr
-printf "\nWhat is the Tag: "
-read tag
-echo ""
-git tag -a "$tag"
-git pt
-git co develop
+qt
