@@ -1,0 +1,12 @@
+#!/bin/bash
+REF=$1
+if [[ "$REF" == "" ]]; then
+    log "Please provide a commit hash"
+    exit 1
+fi
+CURR_BR=$(git symbolic-ref --short HEAD)
+git fetch
+git branch -D production
+git checkout -b production $REF
+git push origin HEAD:production --force --set-upstream
+git co $CURR_BR
