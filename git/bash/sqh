@@ -1,0 +1,10 @@
+#!/bin/bash
+CURR_BR=$(git symbolic-ref --short HEAD)
+git checkout -b rebasing-current
+git checkout production
+git pr
+git co rebasing-current
+git rebase production -i
+git push origin HEAD:production
+git co $CURR_BR
+git branch -D rebasing-current
