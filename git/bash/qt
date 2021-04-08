@@ -1,9 +1,11 @@
 #!/bin/bash
 
 CURR_BR=$(git symbolic-ref --short HEAD)
+TAG_PREF=`date +%Y.%-m`
 
-git co master
-git pr
+git checkout master
+git pull -r
+git tag -l | grep "$TAG_PREF"
 printf "\nWhat is the Tag: "
 read tag
 echo ""
