@@ -1,5 +1,4 @@
-#!/bin/bash
-CURR_BR=$(git symbolic-ref --short HEAD)
+$CURR_BR = git symbolic-ref --short HEAD
 git checkout staging
 git pull -r
 git checkout production
