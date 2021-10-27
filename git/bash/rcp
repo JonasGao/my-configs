@@ -1,10 +1,14 @@
 #!/bin/bash
+# 合并方向 current = rebasing-current -> production
+
 CURR_BR=$(git symbolic-ref --short HEAD)
 git checkout -b rebasing-current
 git checkout production
 git pr
 git co rebasing-current
 git rebase production -i
-git push origin HEAD:production
+git co production
+git merge rebasing-current
+git push
 git co $CURR_BR
 git branch -D rebasing-current

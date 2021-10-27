@@ -1,4 +1,5 @@
 #!/bin/bash
+# 合并方向 $current$ -> master -> staging
 
 CURR_BR=$(git symbolic-ref --short HEAD)
 TARGET_BRANCH="$1"
@@ -27,4 +28,3 @@ git merging $TARGET_BRANCH &&
   git merged &&
   printf "\nMerging master to staging\n====\n"
   git staging
-

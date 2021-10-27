@@ -3,5 +3,6 @@
 qd
 # -> staging -> production -> merge staging
 qp
-git co develop
-qt
+if [ "$1" != "" ]; then
+  jk b $1
+fi
