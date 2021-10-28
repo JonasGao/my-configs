@@ -1,0 +1,5 @@
+#!/bin/bash
+# 合并方向 $current$ -> master -> production
+
+qcm
+qmp
