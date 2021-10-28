@@ -1,0 +1,11 @@
+#!/bin/bash
+
+CURR_BR=$(git symbolic-ref --short HEAD)
+
+git checkout master
+git pull -r
+git checkout production
+git pull -r
+git merge master
+git push
+git checkout $CURR_BR
