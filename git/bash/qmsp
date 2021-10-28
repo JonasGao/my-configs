@@ -1,7 +1,7 @@
 #!/bin/bash
 # -> master -> staging -> master
-qs
+qms
 # -> staging -> production -> merge staging
-qp
+qsp
 git co master
 git pr
