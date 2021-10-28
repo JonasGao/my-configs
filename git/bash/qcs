@@ -2,21 +2,9 @@
 # 合并方向 $current$ -> staging
 
 CURR_BR=$(git symbolic-ref --short HEAD)
-FROM_BRANCH="$1"
-TO_BRANCH="staging"
 
-if [ "$FROM_BRANCH" == "" ]; then
-  FROM_BRANCH="$CURR_BR"
-  printf "\nNo branch specified, use current branch ($FROM_BRANCH)\n"
-fi
-
-if [ "$FROM_BRANCH" == "$TO_BRANCH" ]; then
-  echo "Target can not same with '$TO_BRANCH'"
-  exit 2
-fi
-
-printf "\n\nBefore merging $FROM_BRANCH\n====\n\n"
-
-git merging $FROM_BRANCH &&
-  printf "\n\nAfter merged $FROM_BRANCH\n====\n\n" &&
-  git merged
+git checkout staging
+git pull -r
+git merge $CURR_BR
+git push
+git checkuot $CURR_BR
