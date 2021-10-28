@@ -7,4 +7,4 @@ git checkout staging
 git pull -r
 git merge $CURR_BR
 git push
-git checkuot $CURR_BR
+git checkout $CURR_BR
