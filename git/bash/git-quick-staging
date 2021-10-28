@@ -21,10 +21,10 @@ if [ "$TARGET_BRANCH" == "$STAGING_BR" ]; then
   exit 2
 fi
 
-printf "\nBefore merging $TARGET_BRANCH\n====\n\n"
+printf "\n\nBefore merging $TARGET_BRANCH\n====\n\n"
 
 git merging $TARGET_BRANCH &&
-  printf "\nAfter merge $TARGET_BRANCH\n====\n\n" &&
+  printf "\n\nAfter merge $TARGET_BRANCH\n====\n\n" &&
   git merged &&
-  printf "\nMerging master to staging\n====\n"
+  printf "\n\nMerging master to staging\n====\n"
   git staging
