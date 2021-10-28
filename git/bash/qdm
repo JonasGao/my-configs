@@ -1,7 +1,0 @@
-#!/bin/bash
-git checkout develop
-git pr
-git checkout master
-git pr
-git merge develop
-
