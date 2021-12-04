@@ -1,5 +1,3 @@
-#这是一个最简单的版本。因为最简单，所以性能最强。打开并且处理大体积文件时，就需要这种
-#极简的情况。太多插件反而导致无法对大文件进行处理
 set nocompatible
 set nobackup
 set noswapfile
@@ -32,5 +30,7 @@ set softtabstop=2
 set shiftwidth=2
 set foldmethod=indent
 syntax on
-let mapleader="\"
+let mapleader="\\"
 noremap <Leader>y "*y
+nmap <Leader>x :set paste<CR>
+nmap <Leader>X :set nopaste<CR>
