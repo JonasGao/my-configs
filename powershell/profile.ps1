@@ -55,6 +55,18 @@ function Set-GoPathLocation {
   Set-Location $env:GOPATH
 }
 
+function Set-JavaHome {
+
+  param (
+    $Path
+  )
+  
+  Write-Output "Set JAVA_HOME = '$Path'"
+  $JAVA_HOME = $Path
+  $env:JAVA_HOME = $Path
+  $env:PATH = "$JAVA_HOME\bin;$env:PATH"
+}
+
 New-Alias emv Move-ItemUsingExplorer
 New-Alias ecp Copy-ItemUsingExplorer
 New-Alias p pnpm
