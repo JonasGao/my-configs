@@ -18,8 +18,8 @@ function Set-JavaHome ([string]$Path){
 function Set-HttpProxy ([string]$Url, [switch]$Reset) {
 
   if ($Reset) {
-    Remove-Item -Path Env:HTTP_PROXY
-    Remove-Item -Path Env:HTTPS_PROXY
+    if (Test-Path Env:HTTP_PROXY) { Remove-Item -Path Env:HTTP_PROXY }
+    if (Test-Path Env:HTTPS_PROXY) { Remove-Item -Path Env:HTTPS_PROXY }
     Write-Output "已清除代理配置"
     return
   }
