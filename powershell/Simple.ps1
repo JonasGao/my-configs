@@ -5,17 +5,13 @@ Import-Module ZLocation
 
 if (Test-Path "C:\Users\Administrator\.jabba\jabba.ps1") { . "C:\Users\Administrator\.jabba\jabba.ps1" }
 
-function Set-JavaHome {
+function Set-JavaHome ([string]$Path){
 
-  param (
-    $Path
-  )
-  
   $ABS_PATH = Resolve-Path $Path
-  echo "Set JAVA_HOME = '$ABS_PATH'"
+  Write-Output "Set JAVA_HOME = '$ABS_PATH'"
   $JAVA_HOME = $ABS_PATH
-  $env:JAVA_HOME = $JAVA_HOME
-  $env:PATH = "$JAVA_HOME\bin;$env:PATH"
+  $Env:JAVA_HOME = $JAVA_HOME
+  $Env:PATH = "$JAVA_HOME\bin;$env:PATH"
 
 }
 
