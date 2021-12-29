@@ -1,6 +1,6 @@
 winpos 885 412
 set lines=30
-set columns=100
+set columns=120
 set nocompatible
 set nobackup
 set noswapfile
