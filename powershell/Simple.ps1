@@ -19,14 +19,30 @@ function Set-JavaHome {
 
 }
 
-function Set-HttpProxy {
+function Set-HttpProxy ([string]$Url, [switch]$Reset) {
 
-  param (
-    $Url
-  )
+  if ($Reset) {
+    Remove-Item -Path Env:HTTP_PROXY
+    Remove-Item -Path Env:HTTPS_PROXY
+    Write-Output "已清除代理配置"
+    return
+  }
 
-  $env:HTTP_PROXY = $Url
-  $env:HTTPS_PROXY = $Url
+  if (!$Url) {
+    $CONF_FILE = "$HOME\.config\my-powershell\default-proxy"
+    if (Test-Path -Path $CONF_FILE) {
+      $Url = Get-Content $CONF_FILE
+    }
+  }
+
+  if (!$Url) {
+    Write-Output "没有指定 Url 参数，或者提供一个有效的 default-proxy 配置文件"
+    return
+  }
+
+  Write-Output "使用代理：$Url"
+  $Env:HTTP_PROXY = $Url
+  $Env:HTTPS_PROXY = $Url
 
 }
 
