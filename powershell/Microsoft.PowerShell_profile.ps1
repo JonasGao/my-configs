@@ -1,8 +1,8 @@
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
-Import-Module ZLocation
 Import-Module posh-git
 Import-Module Terminal-Icons
+Import-Module ZLocation
 
 if (Test-Path "C:\Users\Administrator\.jabba\jabba.ps1") { . "C:\Users\Administrator\.jabba\jabba.ps1" }
 
@@ -43,7 +43,7 @@ function Set-HttpProxy ([string]$Url, [switch]$Reset) {
 
 }
 
-function Prompt {
+function Prompt1 {
   $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
   $principal = [Security.Principal.WindowsPrincipal] $identity
   $adminRole = [Security.Principal.WindowsBuiltInRole]::Administrator
@@ -56,8 +56,11 @@ function Prompt {
 
   $PMT_PREFIX = if ($prefix.Count -eq 0) { '' } else { '[' + ($prefix -join '/') + ']: ' }
 
-  $PMT_PREFIX + 'PS ' + $(Get-Location) +
-    $(if ($NestedPromptLevel -ge 1) { '>>' }) + '> '
+  $prompt = Write-Prompt ($PMT_PREFIX + "PS ")
+  $prompt += & $GitPromptScriptBlock
+  if ($NestedPromptLevel -ge 1) { $prompt += Write-Prompt '>>' }
+
+  "$prompt"
 }
 
 $NVIM_HOME = "$HOME\Apps\nvim-win64\Neovim"
