@@ -43,7 +43,7 @@ function Set-HttpProxy ([string]$Url, [switch]$Reset) {
 
 }
 
-function Prompt1 {
+function Prompt {
   $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
   $principal = [Security.Principal.WindowsPrincipal] $identity
   $adminRole = [Security.Principal.WindowsBuiltInRole]::Administrator
