@@ -1,9 +1,9 @@
 #!/bin/bash
 
-APP_NAME="xxxxxxxxxxx"
+APP_NAME="xxxxxxxxxxm"
 
 # 应用启动的端口
-APP_PORT=9909
+APP_PORT=18083
 
 # JVM 配置参数
 JVM_OPTS="-ea -server"
@@ -24,17 +24,20 @@ APP_START_TIMEOUT=20
 HEALTH_CHECK_URL=http://127.0.0.1:${APP_PORT}
 
 # 应用启动的工作目录
-APP_HOME=/home/deployer/${APP_NAME}
+APP_HOME="/usr/local/${APP_NAME}"
 
 # JAR 包的绝对路径
 JAR_NAME=${APP_HOME}/${APP_NAME}.jar # jar包的名字
 
 # 应用的控制台输出
 # 例如 JAVA_OUT=${APP_HOME}/logs/start.log
-JAVA_OUT=/dev/null
+JAVA_OUT="${APP_HOME}/app.log"
 
 # 应用的日志输出路径
-APP_LOG_HOME=${APP_HOME}/logs
+APP_LOG_HOME=${APP_HOME}
+
+# 应用的日志文件
+APP_LOG=${JAVA_OUT}
 
 # 创建出相关目录
 mkdir -p ${APP_HOME}
@@ -65,7 +68,7 @@ health_check() {
 
             if [ $exptime -gt ${APP_START_TIMEOUT} ]; then
                 echo 'app start failed. try tail application log'
-                tail ${APP_LOG_HOME}/app.log
+                tail ${APP_LOG}
                exit 1
             fi
         done
