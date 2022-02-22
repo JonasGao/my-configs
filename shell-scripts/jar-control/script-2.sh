@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_NAME="enterprise-cooperation-declare-platform"
+APP_NAME="xxxxxxxxxxx"
 
 # 应用启动的端口
 APP_PORT=9909
