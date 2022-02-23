@@ -1,15 +1,15 @@
 #!/bin/bash
 
-APP_NAME="xxxxxxxxxxm"
+APP_NAME="xxxxxxxxxxxxxxx"
 
 # 应用启动的端口
-APP_PORT=18083
+APP_PORT=17083
 
 # JVM 配置参数
 JVM_OPTS="-ea -server"
 
 # JAR 包启动的时候传递的参数
-JAR_ARGS=""
+JAR_ARGS="--server.port=${APP_PORT}"
 
 # 当前脚本的名字
 PROG_NAME=$0
@@ -81,11 +81,15 @@ start_application() {
     echo "started java process"
 }
 
+query_java_pid() {
+   ps -ef | grep java | grep ${1} | grep -v grep | grep -v 'deploy.sh' | awk '{print$2}'
+}
+
 stop_application() {
-   checkjavapid=`ps -ef | grep java | grep ${APP_NAME} | grep -v grep |grep -v 'deploy.sh'| awk '{print$2}'`
+   checkjavapid=`query_java_pid ${APP_NAME}`
 
    if [[ ! $checkjavapid ]];then
-      echo -e "\rno java process"
+      echo "no java process"
       return
    fi
 
@@ -95,16 +99,15 @@ stop_application() {
    do
         sleep 1
         COSTTIME=$(($times - $e ))
-        checkjavapid=`ps -ef | grep java | grep ${APP_NAME} | grep -v grep |grep -v 'deploy.sh'| awk '{print$2}'`
+        checkjavapid=`query_java_pid ${APP_NAME}`
         if [[ $checkjavapid ]];then
             kill -9 $checkjavapid
-            echo -e "\r        -- stopping java lasts `expr $COSTTIME` seconds."
+            echo -e "        -- stopping java lasts `expr $COSTTIME` seconds."
         else
-            echo -e "\rjava process has exited"
+            echo -e "java process has exited"
             break;
         fi
    done
-   echo ""
 }
 
 start() {
