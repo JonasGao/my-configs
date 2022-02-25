@@ -32,6 +32,7 @@ set tabstop=2
 set softtabstop=2
 set shiftwidth=2
 set foldmethod=indent
+set wildmenu
 # 参考
 # https://vi.stackexchange.com/questions/23066/change-cursorline-style
 # https://stackoverflow.com/questions/8640276/how-do-i-change-my-vim-highlight-line-to-not-be-an-underline
