@@ -5,4 +5,4 @@
 $keyPath = $args[2]
 if (!$keyPath) { $keyPath = "$env:USERPROFILE\.ssh\id_rsa.pub" }
 Write-Output "Will copy '$keyPath'"
-Get-Content $keyPath | ssh $args[0] "mkdir -p .ssh; chmod 700 .ssh; cat >> .ssh/authorized_keys"
+Get-Content $keyPath | ssh $args[0] "mkdir -p .ssh; chmod 700 .ssh; cat >> .ssh/authorized_keys; chmod 600 .ssh/authorized_keys"
