@@ -46,3 +46,7 @@ nnoremap <Leader>p "*p
 vnoremap <Leader>p "*p
 nnoremap <Leader>x :set paste<CR>
 nnoremap <Leader>X :set nopaste<CR>
+nmap [n :set nu rnu<CR>
+nmap ]n :set nonu nornu<CR>
+nmap [w :set wrap<CR>
+nmap ]w :set nowrap<CR>
