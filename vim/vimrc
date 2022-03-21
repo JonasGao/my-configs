@@ -1,11 +1,12 @@
 set nocompatible
 set nobackup
 set noswapfile
-set history=2048
+set nobomb
 set autochdir
 set whichwrap=b,s,<,>,[,]
-set nobomb
+set history=2048
 set backspace=indent,eol,start whichwrap+=<,>,[,]
+set timeoutlen=3000
 " set clipboard+=unnamed
 set fileencodings=utf-8,gbk2312,gbk,gb18030,cp936
 set encoding=utf-8
