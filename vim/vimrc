@@ -46,6 +46,9 @@ nnoremap <Leader>p "*p
 vnoremap <Leader>p "*p
 nnoremap <Leader>x :set paste<CR>
 nnoremap <Leader>X :set nopaste<CR>
+noremap <Leader>r :bro ol
+noremap <Leader>ss :source ~/.vimrc
+noremap <Leader>se :e ~/.vimrc
 nmap [n :set nu rnu<CR>
 nmap ]n :set nonu nornu<CR>
 nmap [w :set wrap<CR>
