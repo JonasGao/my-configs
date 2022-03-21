@@ -1,43 +1,57 @@
-Plugin History or Record
+Plugins
 ========================
 
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'godlygeek/tabular'
-Plugin 'HerringtonDarkholme/yats.vim'
-Plugin 'leafgarland/typescript-vim'
-Plugin 'pangloss/vim-javascript'
-Plugin 'mattn/emmet-vim'
-Plugin 'drmingdrmer/xptemplate'
-Plugin 'terryma/vim-multiple-cursors'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'chr4/nginx.vim'
-Plugin 'valloric/youcompleteme'
-Plugin 'Chiel92/vim-autoformat'
-Plugin 'wincent/command-t'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'leafgarland/typescript-vim'
-Plugin 'pangloss/vim-javascript'
-Plugin 'mattn/emmet-vim'
-Plugin 'terryma/vim-multiple-cursors'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'chr4/nginx.vim'
-Plugin 'Chiel92/vim-autoformat'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'leafgarland/typescript-vim'
-Plugin 'pangloss/vim-javascript'
-Plugin 'mattn/emmet-vim'
-Plugin 'terryma/vim-multiple-cursors'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'chr4/nginx.vim'
-Plugin 'Chiel92/vim-autoformat'
-Plugin 'godlygeek/tabular'
-Plugin 'HerringtonDarkholme/yats.vim'
-Plugin 'drmingdrmer/xptemplate'
-Plugin 'zxqfl/tabnine-vim'
-Plugin 'valloric/youcompleteme'
-Plugin 'wincent/command-t'
-Plugin 'jeetsukumaran/vim-buffergator'
-Plugin 'lifepillar/vim-solarized8'
+vim-airline/vim-airline
+vim-airline/vim-airline-themes
+基本必备。无需多说。
+
+godlygeek/tabular
+HerringtonDarkholme/yats.vim
+leafgarland/typescript-vim
+pangloss/vim-javascript
+mattn/emmet-vim
+drmingdrmer/xptemplate
+terryma/vim-multiple-cursors
+plasticboy/vim-markdown
+chr4/nginx.vim
+valloric/youcompleteme
+Chiel92/vim-autoformat
+wincent/command-t
+vim-airline/vim-airline
+vim-airline/vim-airline-themes
+leafgarland/typescript-vim
+pangloss/vim-javascript
+mattn/emmet-vim
+terryma/vim-multiple-cursors
+plasticboy/vim-markdown
+chr4/nginx.vim
+Chiel92/vim-autoformat
+vim-airline/vim-airline
+vim-airline/vim-airline-themes
+leafgarland/typescript-vim
+pangloss/vim-javascript
+mattn/emmet-vim
+terryma/vim-multiple-cursors
+
+plasticboy/vim-markdown
+Markdown 语法高亮。VIM 自带的 MD 语法显示不全面，不如这个好用。
+
+chr4/nginx.vim
+Chiel92/vim-autoformat
+godlygeek/tabular
+HerringtonDarkholme/yats.vim
+drmingdrmer/xptemplate
+zxqfl/tabnine-vim
+valloric/youcompleteme
+wincent/command-t
+jeetsukumaran/vim-buffergator
+lifepillar/vim-solarized8
+
+vim-ctrlspace/vim-ctrlspace
+一键搞定 Tabs、Buffer、Files 切换。非常好用。
+
+mox-mox/vim-localsearch
+让搜索独立在 Window 中，而不是横跨所有。
+
+autozimu/LanguageClient-neovim
+语言服务接口貌似... 暂时还没用。
