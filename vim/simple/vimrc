@@ -17,7 +17,6 @@ source $VIMRUNTIME/menu.vim
 " set cursorcolumn
 set cursorline
 set hlsearch
-set nu rnu
 set guioptions-=T
 set guioptions-=m
 set guioptions-=L
@@ -52,3 +51,6 @@ nmap [n :set nu rnu<CR>
 nmap ]n :set nonu nornu<CR>
 nmap [w :set wrap<CR>
 nmap ]w :set nowrap<CR>
+
+" 最后加载一个本地自定义
+runtime vimrc
