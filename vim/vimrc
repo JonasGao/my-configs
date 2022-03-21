@@ -1,6 +1,3 @@
-winpos 885 412
-set lines=30
-set columns=120
 set nocompatible
 set nobackup
 set noswapfile
@@ -8,18 +5,18 @@ set history=2048
 set autochdir
 set whichwrap=b,s,<,>,[,]
 set nobomb
-set nowrap
 set backspace=indent,eol,start whichwrap+=<,>,[,]
+" set clipboard+=unnamed
 set fileencodings=utf-8,gbk2312,gbk,gb18030,cp936
-set guifont=Cascadia_Code:h9:i:cANSI:qDRAFT
 set encoding=utf-8
 set langmenu=zh_CN
 let $LANG = 'en_US.UTF-8'
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
-set cursorline cursorcolumn
+" set cursorcolumn
+set cursorline
 set hlsearch
-set number
+set nu rnu
 set guioptions-=T
 set guioptions-=m
 set guioptions-=L
@@ -31,7 +28,6 @@ set expandtab
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
-set foldmethod=indent
 set wildmenu
 # 参考
 # https://vi.stackexchange.com/questions/23066/change-cursorline-style
@@ -46,9 +42,11 @@ nnoremap <Leader>p "*p
 vnoremap <Leader>p "*p
 nnoremap <Leader>x :set paste<CR>
 nnoremap <Leader>X :set nopaste<CR>
-noremap <Leader>r :bro ol
-noremap <Leader>ss :source ~/.vimrc
-noremap <Leader>se :e ~/.vimrc
+noremap <Leader>r :bro ol<CR>
+noremap <Leader>ss :source ~/.vimrc<CR>
+noremap <Leader>se :e ~/.vimrc<CR>
+nnoremap <Leader>fms :set foldmethod=syntax<CR>
+nnoremap <Leader>fmi :set foldmethod=indent<CR>
 nmap [n :set nu rnu<CR>
 nmap ]n :set nonu nornu<CR>
 nmap [w :set wrap<CR>
