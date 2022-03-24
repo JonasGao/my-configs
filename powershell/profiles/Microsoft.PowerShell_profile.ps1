@@ -1,5 +1,6 @@
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
+Import-Module MyPsScripts
 Import-Module posh-git
 Import-Module Terminal-Icons
 Import-Module ZLocation
