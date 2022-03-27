@@ -47,6 +47,7 @@ setopt auto_cd autopushd pushdignoredups
 # Instead By 'zplug "agkozak/zsh-z"'
 # . "$HOME/.local/z.sh"
 
-alias ll=k
+alias ll='exa -l'
+alias ll='exa -l -a'
 
 export PATH="$HOME/.local/bin:$PATH"
