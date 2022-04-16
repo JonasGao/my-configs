@@ -2,7 +2,7 @@
 
 现在主要使用的是 Microsoft.PowerShell_profile.ps1。相对比较简单，只支持了自己最基础和必要的扩展。
 
-Profile.ps1 和 xxxxMicrosoft.PowerShell_profile.ps1 都是以前的历史存档。这两个都使用了 oh-my-posh。
+xProfile.ps1 和 xMicrosoft.PowerShell_profile.ps1 都是以前的历史存档。这两个都使用了 oh-my-posh。
 
 # Scripts
 
