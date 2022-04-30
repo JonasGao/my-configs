@@ -34,31 +34,6 @@ function Copy-Sshid {
 
 <#
  .Synopsis
-  Set current env 'JAVA_HOME' and setup PATH.
- 
- .Parameter Path
-  Path to java home.
-
- .Example
-  Set-JavaHome C:\xxx\java\jdk-1.8
-#>
-function Set-JavaHome {
-
-  param (
-    [parameter(Mandatory=$true)]
-    [ValidateNotNullOrEmpty()]
-    [string]
-    $Path
-  )
-  
-  Write-Output "Set JAVA_HOME = '$Path'"
-  $JAVA_HOME = $Path
-  $env:JAVA_HOME = $Path
-  $env:PATH = "$JAVA_HOME\bin;$env:PATH"
-}
-
-<#
- .Synopsis
   Setup SBT_HOMe
  
  .Parameter Path
@@ -132,8 +107,40 @@ function Set-HttpProxy ([string]$Url, [switch]$Reset) {
 
 }
 
+<#
+ .Synopsis
+  Help you get hash from string.
+
+ .Parameter Value
+  The string, you will get hash
+
+ .PARAMETER Algorithm
+  Which hash algorithm you will used
+#>
+function Get-StrHash() {
+  param (
+      [parameter(Mandatory = $true)]
+      [ValidateNotNullOrEmpty()]
+      [string]
+      $Value,
+      [parameter()]
+      [ValidateNotNullOrEmpty()]
+      $Algorithm
+  )
+  $stream = [System.IO.MemoryStream]::new()
+  $writer = [System.IO.StreamWriter]::new($stream)
+  $writer.Write($Value)
+  $writer.Flush()
+  $stream.Position = 0
+  if ($Algorithm) {
+      (Get-FileHash -InputStream $stream -Algorithm $Algorithm).Hash
+  } else {
+      (Get-FileHash -InputStream $stream).Hash
+  }
+}
+
 Export-ModuleMember -Function Copy-Sshid
-Export-ModuleMember -Function Set-JavaHome
 Export-ModuleMember -Function Set-SbtHome
 Export-ModuleMember -Function Set-HttpProxy
 Export-ModuleMember -Function Set-MvnHome
+Export-ModuleMember -Function Get-StrHash
