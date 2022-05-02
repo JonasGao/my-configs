@@ -1,0 +1,11 @@
+- default.vim
+
+是 IDEA 初始化的默认配置。
+
+- example.vim
+
+是 IDEA vim 插件仓的示例配置。参见：https://github.com/JetBrains/ideavim#files。
+
+- user.vim
+
+是当前自用配置。
