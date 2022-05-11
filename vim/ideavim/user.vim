@@ -34,8 +34,8 @@ map <leader>f <Action>(GotoFile)
 map <leader>c <Action>(GotoClass)
 map <leader>g <Action>(FindInPath)
 map <leader>b <Action>(Switcher)
-map <leader>Ss :source ~\\.ideavimrc<CR>
-map <leader>So :e ~\\.ideavimrc<CR>
+map <leader>Ss :source ~/.ideavimrc<CR>
+map <leader>So :e ~/.ideavimrc<CR>
 map <leader>1 <Action>(GoToTab1)
 map <leader>2 <Action>(GoToTab2)
 map <leader>3 <Action>(GoToTab3)
