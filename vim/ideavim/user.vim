@@ -28,8 +28,9 @@ let mapleader = "\\"
 vmap <leader>y "*y
 nmap <leader>p "*p
 vmap <leader>p "*p
-map <leader>r <Action>(ReformatCode)
-map <leader>R <Action>(RearrangeCode)
+map <leader>rf <Action>(ReformatCode)
+map <leader>rr <Action>(RearrangeCode)
+map <leader>re <Action>(RenameElement)
 map <leader>f <Action>(GotoFile)
 map <leader>c <Action>(GotoClass)
 map <leader>g <Action>(FindInPath)
@@ -44,6 +45,7 @@ map <leader>5 <Action>(GoToTab5)
 map <leader>mr <Action>(Maven.Reimport)
 map <leader>o <Action>(OverrideMethods)
 map <leader>q <Action>(QuickJavaDoc)
+map <leader>t <Action>(Vcs.UpdateProject)
 
 map <Space>b <Action>(GotoDeclaration)
 map <Space>k <Action>(Back)
