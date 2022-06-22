@@ -44,6 +44,12 @@ setopt inc_append_history
 setopt share_history
 setopt auto_cd autopushd pushdignoredups
 
+bindkey  "^[[H"   beginning-of-line
+bindkey  "^[[F"   end-of-line
+bindkey  "^[[3~"  delete-char
+bindkey  "^[[5~"  history-beginning-search-backward
+bindkey  "^[[6~"  history-beginning-search-forward
+
 # Instead By 'zplug "agkozak/zsh-z"'
 # . "$HOME/.local/z.sh"
 
