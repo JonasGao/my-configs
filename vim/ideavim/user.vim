@@ -3,9 +3,10 @@ set surround
 set multiple-cursors
 set commentary
 set argtextobj
-"set easymotion
+set easymotion
 set textobj-entire
 set ReplaceWithRegister
+set which-key
 
 """ Plugin settings -------------------
 let g:argtextobj_pairs="[:],(:),<:>"
@@ -15,7 +16,7 @@ set showmode
 set scrolloff=5
 set incsearch
 set nu rnu
-set timeoutlen=1200
+set timeoutlen=2000
 
 """ Idea specific settings ------------
 set ideajoin
