@@ -1,4 +1,5 @@
 """ Plugins ---------------------------
+set NERDTree
 set surround
 set multiple-cursors
 set commentary
@@ -61,4 +62,6 @@ map <Space>k <Action>(Back)
 map <Space>j <Action>(Forward)
 map <Space>e <Action>(RecentFiles)
 map <Space>B <Action>(GotoImplementation)
-
+map <Space>f <Action>(FileStructurePopup)
+map <Space>v <Action>(SelectInProjectView)
+map <Space>p :NERDTree<CR>
