@@ -1,0 +1,20 @@
+# This is Git's per-user configuration file.
+[includeIf "gitdir:/home/demo/codeup/"]
+  path = /home/demo/.config/git/codeup.ini
+[includeIf "gitdir:/home/demo/huashang/"]
+  path = /home/demo/.config/git/huashang.ini
+[includeIf "gitdir:/home/demo/github/"]
+  path = /home/demo/.config/git/github.ini
+[user]
+# Please adapt and uncomment the following lines:
+#	name = demo
+#	email = demo@fedora.(none)
+[core]
+	editor = vimx
+[alias]
+	st = status
+	pr = pull -r
+	c = commit
+	ca = commit -a -m
+[credential]
+	helper = store
