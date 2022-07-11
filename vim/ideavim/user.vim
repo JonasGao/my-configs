@@ -46,6 +46,7 @@ map <leader>t <Action>(Vcs.UpdateProject)
 map <leader>k <Action>(CheckinProject)
 map <leader>K <Action>(Vcs.Push)
 map <leader>a ggvG$
+map <leader>l <Action>(ParameterInfo)
 
 map <leader>Ss :source ~/.ideavimrc<CR>
 map <leader>So :e ~/.ideavimrc<CR>
