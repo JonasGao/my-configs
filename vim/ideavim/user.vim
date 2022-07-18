@@ -29,6 +29,7 @@ map Q gq
 
 let mapleader = "\\"
 vmap <leader>y "*y
+vmap <C-c> "*y
 nmap <leader>p "*p
 vmap <leader>p "*p
 map <leader>rf <Action>(ReformatCode)
