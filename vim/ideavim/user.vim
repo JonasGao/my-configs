@@ -36,18 +36,14 @@ map <leader>rf <Action>(ReformatCode)
 map <leader>rr <Action>(RearrangeCode)
 map <leader>re <Action>(RenameElement)
 map <leader>rt <Action>(SurroundWith)
-map <leader>N <Action>(GotoFile)
-map <leader>n <Action>(GotoClass)
 map <leader>g <Action>(FindInPath)
 map <leader>b <Action>(Switcher)
 map <leader>mr <Action>(Maven.Reimport)
 map <leader>o <Action>(OverrideMethods)
 map <leader>q <Action>(QuickJavaDoc)
-map <leader>t <Action>(Vcs.UpdateProject)
 map <leader>k <Action>(CheckinProject)
 map <leader>K <Action>(Vcs.Push)
-map <leader>a ggvG$
-map <leader>l <Action>(ParameterInfo)
+map <leader>t <Action>(Vcs.UpdateProject)
 
 map <leader>Ss :source ~/.ideavimrc<CR>
 map <leader>So :e ~/.ideavimrc<CR>
@@ -58,12 +54,18 @@ map <leader>3 <Action>(GoToTab3)
 map <leader>4 <Action>(GoToTab4)
 map <leader>5 <Action>(GoToTab5)
 
-
 map <Space>b <Action>(GotoDeclaration)
 map <Space>k <Action>(Back)
 map <Space>j <Action>(Forward)
+map <Space>h <Action>(PreviousTab)
+map <Space>l <Action>(NextTab)
 map <Space>e <Action>(RecentFiles)
 map <Space>B <Action>(GotoImplementation)
 map <Space>f <Action>(FileStructurePopup)
 map <Space>v <Action>(SelectInProjectView)
 map <Space>p :NERDTree<CR>
+map <Space>w <Action>(CloseContent)
+map <Space>N <Action>(GotoFile)
+map <Space>n <Action>(GotoClass)
+map <Space>q <Action>(ParameterInfo)
+map <Space>a ggvG$
