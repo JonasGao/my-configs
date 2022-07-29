@@ -1,6 +1,6 @@
 #!/bin/bash
 cp "$HOME/.ideavimrc" "$HOME/my_github/my-configs/vim/ideavim/user.vim"
-cp "$HOME/.local/bin/sync-ideavimrc" "$HOME/my_github/my-configs/vim/ideavim/sync.sh"
+cp "$HOME/.local/bin/sync-my-ideavimrc" "$HOME/my_github/my-configs/vim/ideavim/sync.sh"
 cd "$HOME/my_github/my-configs"
 git add vim
 git commit -m 'Sync ideavimrc'
