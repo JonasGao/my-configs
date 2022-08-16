@@ -13,10 +13,9 @@ git config --global alias.co checkout
 git config --global alias.br branch
 git config --global alias.ci commit
 git config --global alias.st status
-echo "Setup completion"
+git config --global alias.pt 'push --tags'
+git config --global alias.pr 'pull -r'
+echo "Alias setup completion"
 
-## editor settings
-# for mac or linux
-# git config --global core.editor vim
-# for windows
-# use 'C:\\WINDOWS\\gvim.bat' -f -i NONE
+echo "Setup default editor: vim"
+git config --global core.editor vim
