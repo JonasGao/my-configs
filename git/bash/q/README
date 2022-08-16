@@ -1,0 +1,13 @@
+Concepts
+
+q: Command prefix
+c: current
+s: staging
+m: master
+d: develop
+p: production
+t: tag
+
+Example
+
+qcmp: q is prefix, cmp is "Merge current branch to master to production"
