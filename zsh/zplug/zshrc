@@ -53,7 +53,13 @@ bindkey  "^[[6~"  history-beginning-search-forward
 # Instead By 'zplug "agkozak/zsh-z"'
 # . "$HOME/.local/z.sh"
 
-alias ll='exa -l'
-alias ll='exa -l -a'
+# Custom alias
+alias ll='exa --icons -l'
+alias ll='exa --icons -l -a'
+alias sdk='HTTPS_PROXY=http://127.0.0.1:7890 sdk'
+# Custom alias end
 
-export PATH="$HOME/.local/bin:$PATH"
+# For fedora vim
+alias vi='vimx'
+alias vim='vimx'
+# For fedora vim end
