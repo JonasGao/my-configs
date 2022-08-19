@@ -1,0 +1,2 @@
+#!/bin/bash
+echo -n $1 | sha256sum | awk '{print toupper($0)}' | tr -d '\n -' | md5sum | awk '{print toupper($0)}'
