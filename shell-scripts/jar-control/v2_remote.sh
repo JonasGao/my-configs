@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_NAME="eureka"
+JAR_NAME="eureka-server"
 
 # 应用启动的端口
 APP_PORT=8761
@@ -27,7 +27,7 @@ HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
 APP_HOME="/home/deployer/retail-cloud/eureka"
 
 # JAR 包的绝对路径
-JAR_PATH="${APP_HOME}/eureka-server.jar"
+JAR_PATH="${APP_HOME}/${JAR_NAME}.jar"
 
 # 应用的控制台输出
 # 例如 STD_OUT=${APP_HOME}/logs/start.log
@@ -117,7 +117,7 @@ query_java_pid() {
   fi
   if [ "$CURR_PID" = "" ]
   then
-    target=${APP_NAME}
+    target=${JAR_NAME}
     if [ "$PGREP" = "" ]
     then
       CURR_PID=$(ps -ef | grep java | grep "${target}" | grep -v grep | grep -v "$$" | awk '{print$2}')
