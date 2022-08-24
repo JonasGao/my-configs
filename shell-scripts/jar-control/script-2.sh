@@ -109,7 +109,7 @@ start_application() {
 query_java_pid() {
   if [ -f "$PID" ]; then
     pid=$(cat "$PID")
-    if ps -p $PID > /dev/null
+    if ps $PID > /dev/null
     then
       CURR_PID="$pid"
     fi
@@ -139,7 +139,7 @@ stop_application() {
   for e in $(seq $times); do
     sleep 1
     COST_TIME=$((times - e))
-    if ps -p $CURR_PID > /dev/null
+    if ps $CURR_PID > /dev/null
     then
       kill "$CURR_PID"
       echo -e "  -- stopping java lasts ${COST_TIME} seconds."
