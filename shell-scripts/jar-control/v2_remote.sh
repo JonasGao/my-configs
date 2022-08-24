@@ -47,9 +47,9 @@ mkdir -p ${APP_HOME}
 mkdir -p ${APP_LOG_HOME}
 
 # 准备相关工具
-JAVA=$(which java)
-NOHUP=$(which nohup)
-PGREP=$(which pgrep1 2>/dev/null)
+JAVA=$(which java 2>/dev/null)
+NOHUP=$(which nohup 2>/dev/null)
+PGREP=$(which pgrep 2>/dev/null)
 
 # 全局变量
 CURR_PID=
