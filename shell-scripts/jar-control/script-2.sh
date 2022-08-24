@@ -127,22 +127,22 @@ query_java_pid() {
 }
 
 stop_application() {
-  check_java_pid=$(query_java_pid)
+  query_java_pid
 
-  if [[ ! $check_java_pid ]]; then
+  if [[ ! $CURR_PID ]]; then
     echo "No java process!"
     return
   fi
 
   echo "Stopping java process"
   times=60
-  for e in $(seq 60); do
+  for e in $(seq $times); do
     sleep 1
     COST_TIME=$((times - e))
-    check_java_pid=$(query_java_pid)
-    if [[ $check_java_pid ]]; then
-      kill -9 "$check_java_pid"
-      echo -e "        -- stopping java lasts ${COST_TIME} seconds."
+    if ps -p $CURR_PID > /dev/null
+    then
+      kill "$CURR_PID"
+      echo -e "  -- stopping java lasts ${COST_TIME} seconds."
     else
       echo -e "Java process has exited"
       break
@@ -182,4 +182,5 @@ pid)
   exit 1
   ;;
 esac
+
 
