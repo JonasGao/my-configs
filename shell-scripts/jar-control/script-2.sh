@@ -152,7 +152,7 @@ stop_application() {
 
 start() {
   start_application
-  if [ ! $OTHER_RUNNING ]
+  if [ "$OTHER_RUNNING" = false ]
   then
     health_check
   fi
@@ -182,5 +182,4 @@ pid)
   exit 1
   ;;
 esac
-
 
