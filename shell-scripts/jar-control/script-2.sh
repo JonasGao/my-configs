@@ -3,13 +3,13 @@
 APP_NAME="eureka"
 
 # 应用启动的端口
-APP_PORT=7761
+APP_PORT=8761
 
 # JVM 配置参数
 JVM_OPTS="-server -Xmx512m"
 
 # JAR 包启动的时候传递的参数
-JAR_ARGS=""
+JAR_ARGS="--spring.config.location=file:conf/"
 
 # 当前脚本的名字
 PROG_NAME=$0
@@ -69,11 +69,11 @@ health_check() {
         break
       fi
     else
-      echo "Application not started"
+      printf "curl return $?. "
     fi
+
     sleep 1
     ((exp_time++))
-
     echo "Waiting to health check: $exp_time..."
 
     if [ "$exp_time" -gt ${APP_START_TIMEOUT} ]; then
@@ -107,9 +107,10 @@ start_application() {
 }
 
 query_java_pid() {
+  CURR_PID=
   if [ -f "$PID" ]; then
     pid=$(cat "$PID")
-    if ps $PID > /dev/null
+    if ps $pid > /dev/null
     then
       CURR_PID="$pid"
     fi
@@ -182,4 +183,5 @@ pid)
   exit 1
   ;;
 esac
+
 
