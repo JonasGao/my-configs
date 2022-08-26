@@ -122,7 +122,7 @@ query_java_pid() {
     then
       CURR_PID=$(ps -ef | grep java | grep "${target}" | grep -v grep | grep -v "$$" | awk '{print$2}')
     else
-      CURR_PID=$(${PGREP} -lf "${target}" | grep -v "$$")
+      CURR_PID=$(${PGREP} -f "${target}" | grep -v "$$")
     fi
   fi
 }
