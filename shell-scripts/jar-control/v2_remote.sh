@@ -56,7 +56,13 @@ CURR_PID=
 OTHER_RUNNING=false
 
 usage() {
-  echo "Usage: $PROG_NAME {start|stop|restart|pid}"
+  printf """Usage: $PROG_NAME <command>
+There are some commands:
+  s, start
+  t, stop
+  r, restart
+  p, pid
+"""
 }
 
 health_check() {
@@ -164,17 +170,17 @@ stop() {
 }
 
 case "$ACTION" in
-start)
+s|start)
   start
   ;;
-stop)
+t|stop)
   stop
   ;;
-restart)
+r|restart)
   stop
   start
   ;;
-pid)
+p|pid)
   query_java_pid
   echo "Current running in $CURR_PID"
   ;;
