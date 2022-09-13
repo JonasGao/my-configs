@@ -57,7 +57,10 @@ bindkey  "^[[6~"  history-beginning-search-forward
 alias ll='exa --icons -l'
 alias ll='exa --icons -l -a'
 alias sdk='HTTPS_PROXY=http://127.0.0.1:7890 sdk'
+test -f .alias && source .alias
 # Custom alias end
+
+test -f .env && source .env
 
 # For fedora vim
 alias vi='vimx'
