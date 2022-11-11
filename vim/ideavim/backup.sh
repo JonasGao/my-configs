@@ -1,7 +1,11 @@
 #!/bin/bash
-cp "$HOME/.ideavimrc" "$HOME/my_github/my-configs/vim/ideavim/user.vim"
-cp "$HOME/.local/bin/backup-my-ideavimrc" "$HOME/my_github/my-configs/vim/ideavim/backup.sh"
-cd "$HOME/my_github/my-configs"
+if [ -z "$MY_CONFIG_HOME" ]; then
+	echo "NO MY_CONFIG_HOME"
+	exit 1
+fi
+cp "$HOME/.ideavimrc" "$MY_CONFIG_HOME/vim/ideavim/user.vim"
+cp "$HOME/.local/bin/backup-my-ideavimrc" "$MY_CONFIG_HOME/vim/ideavim/backup.sh"
+cd "$MY_CONFIG_HOME"
 git add vim
 git commit -m 'Backup ideavimrc'
 git push
