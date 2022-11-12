@@ -8,14 +8,14 @@ set whichwrap=b,s,<,>,[,]
 set history=2048
 set backspace=indent,eol,start whichwrap+=<,>,[,]
 set timeoutlen=3000
-" set clipboard+=unnamed
+"set clipboard+=unnamed
 set fileencodings=utf-8,gbk2312,gbk,gb18030,cp936
 set encoding=utf-8
 set langmenu=zh_CN
 let $LANG = 'en_US.UTF-8'
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
-" set cursorcolumn
+"set cursorcolumn
 set cursorline
 set hlsearch
 set guioptions-=T
@@ -34,7 +34,7 @@ set wildmenu
 " https://vi.stackexchange.com/questions/23066/change-cursorline-style
 " https://stackoverflow.com/questions/8640276/how-do-i-change-my-vim-highlight-line-to-not-be-an-underline
 "
-" hi CursorColumn ctermbg=242
+"hi CursorColumn ctermbg=242
 "hi CursorLine cterm=NONE ctermbg=242
 syntax on
 let mapleader="\\"
