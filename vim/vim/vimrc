@@ -35,7 +35,7 @@ set wildmenu
 " https://stackoverflow.com/questions/8640276/how-do-i-change-my-vim-highlight-line-to-not-be-an-underline
 "
 " hi CursorColumn ctermbg=242
-" hi CursorLine cterm=NONE ctermbg=242
+hi CursorLine cterm=NONE ctermbg=242
 syntax on
 let mapleader="\\"
 noremap <Leader>y "*y
