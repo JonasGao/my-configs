@@ -25,33 +25,33 @@ set guioptions-=r
 set guioptions-=b
 set autoindent
 set smartindent
-set expandtab
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
+"set expandtab
+"set tabstop=2
+"set softtabstop=2
+"set shiftwidth=2
 set wildmenu
 " 参考
 " https://vi.stackexchange.com/questions/23066/change-cursorline-style
 " https://stackoverflow.com/questions/8640276/how-do-i-change-my-vim-highlight-line-to-not-be-an-underline
 "
 " hi CursorColumn ctermbg=242
-hi CursorLine cterm=NONE ctermbg=242
+"hi CursorLine cterm=NONE ctermbg=242
 syntax on
 let mapleader="\\"
-noremap <Leader>y "*y
-nnoremap <Leader>p "*p
-vnoremap <Leader>p "*p
-nnoremap <Leader>x :set paste<CR>
-nnoremap <Leader>X :set nopaste<CR>
-noremap <Leader>r :bro ol<CR>
-noremap <Leader>ss :source ~/.vimrc<CR>
-noremap <Leader>se :e ~/.vimrc<CR>
-nnoremap <Leader>fms :set foldmethod=syntax<CR>
-nnoremap <Leader>fmi :set foldmethod=indent<CR>
-nmap [n :set nu rnu<CR>
-nmap ]n :set nonu nornu<CR>
-nmap [w :set wrap<CR>
-nmap ]w :set nowrap<CR>
+noremap   <Leader>y    "*y
+nnoremap  <Leader>p    "*p
+vnoremap  <Leader>p    "*p
+nnoremap  <Leader>x    :set paste<CR>
+nnoremap  <Leader>X    :set nopaste<CR>
+noremap   <Leader>r    :bro ol<CR>
+noremap   <Leader>ss   :source ~/.vimrc<CR>
+noremap   <Leader>se   :e ~/.vimrc<CR>
+nnoremap  <Leader>fms  :set foldmethod=syntax<CR>
+nnoremap  <Leader>fmi  :set foldmethod=indent<CR>
+nmap      <Leader>n    :set nu rnu<CR>
+nmap      <Leader>N    :set nonu nornu<CR>
+nmap      <Leader>w    :set wrap<CR>
+nmap      <Leader>W    :set nowrap<CR>
 
 " 最后加载一个本地自定义
 runtime vimrc
