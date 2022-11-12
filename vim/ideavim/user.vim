@@ -23,6 +23,7 @@ set timeoutlen=3000
 set ideajoin
 set ideastatusicon=gray
 set idearefactormode=keep
+set visualbell
 
 """ Mappings --------------------------
 map Q gq
