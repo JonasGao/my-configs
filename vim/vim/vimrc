@@ -8,7 +8,7 @@ set whichwrap=b,s,<,>,[,]
 set history=2048
 set backspace=indent,eol,start whichwrap+=<,>,[,]
 set timeoutlen=3000
-set wildmenu
+set wildmenu wildmode=longest:full,full
 set clipboard+=unnamed
 set nu rnu
 set fileencodings=utf-8,gbk2312,gbk,gb18030,cp936
@@ -56,9 +56,10 @@ nmap      <Leader>N    :set nonu nornu<CR>
 nmap      <Leader>w    :set wrap<CR>
 nmap      <Leader>W    :set nowrap<CR>
 
-if $TERM !=? 'xterm-256color'
-	set termguicolors
-endif
+"if $TERM !=? 'xterm-256color'
+"	set termguicolors
+"endif
+set termguicolors
 
 " Italics
 let &t_ZH="\e[3m"
