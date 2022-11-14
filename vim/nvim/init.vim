@@ -9,7 +9,7 @@ set mouse=a
 set splitbelow splitright
 set title
 set ttimeoutlen=0
-set wildmenu
+set wildmenu wildmode=longest:full,full
 set nobackup
 set noswapfile
 set nobomb
