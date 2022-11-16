@@ -31,3 +31,8 @@ if echo && read -qs REPLY\?"Press [y] restore backup script: "; then
 	cp "$MY_CONFIG_HOME/vim/vim/backup.sh" "$HOME/.local/bin/backup-my-vimrc"
   	printf "\n\033[0;32mRestore vimrc backup script finished\033[0m\n"
 fi
+
+if echo && read -qs REPLY\?"Press [y] install easymotion: "; then
+	mkdir -p "$HOME/.vim/pack/plugins/start/"
+	git clone git@github.com:easymotion/vim-easymotion.git ~/.vim/pack/plugins/start/vim-easymotion
+fi
