@@ -23,7 +23,6 @@ set timeoutlen=3000
 set ideajoin
 set ideastatusicon=gray
 set idearefactormode=keep
-set visualbell
 
 """ Mappings --------------------------
 map Q gq
@@ -68,3 +67,8 @@ map      <Space>rf    <Action>(ReformatCode)
 map      <Space>rr    <Action>(RearrangeCode)
 map      <Space>re    <Action>(RenameElement)
 map      <Space>rt    <Action>(SurroundWith)
+map      <Space>t     <Action>(Replace)
+
+""" EasyMotion
+nmap     Ja             <Plug>(easymotion-f)
+nmap     Js             <Plug>(easymotion-F)

@@ -36,3 +36,8 @@ if echo && read -qs REPLY\?"Press [y] install easymotion: "; then
 	mkdir -p "$HOME/.vim/pack/plugins/start/"
 	git clone git@github.com:easymotion/vim-easymotion.git ~/.vim/pack/plugins/start/vim-easymotion
 fi
+
+if echo && read -qs REPLY\?"Press [y] install fzf: "; then
+	git clone https://github.com/junegunn/fzf.git ~/.vim/pack/packages/start/fzf
+	git clone https://github.com/junegunn/fzf.vim.git ~/.vim/pack/packages/start/fzf.vim
+fi
