@@ -12,3 +12,8 @@ if echo && read -qs REPLY\?"Press [y] install airline: "; then
 	mkdir -p "$HOME/.config/nvim/pack/dist/start/"
 	git clone git@github.com:vim-airline/vim-airline.git "$HOME/.config/nvim/pack/dist/start/vim-airline"
 fi
+
+if echo && read -qs REPLY\?"Press [y] install easymotion: "; then
+	mkdir -p "$HOME/.config/nvim/pack/dist/start/"
+	git clone git@github.com:easymotion/vim-easymotion.git "$HOME/.config/nvim/pack/dist/start/vim-easymotion"
+fi
