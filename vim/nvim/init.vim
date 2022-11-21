@@ -4,16 +4,15 @@ set clipboard=unnamedplus
 set completeopt=noinsert,menuone,noselect
 set cursorline
 set hidden
-set inccommand=split
 set mouse=a
 set splitbelow splitright
-set title
 set ttimeoutlen=0
 set wildmenu wildmode=longest:full,full
 set nobackup
 set noswapfile
 set nobomb
-set hidden
+"set title
+"set inccommand=split
 
 filetype plugin indent on
 syntax on
