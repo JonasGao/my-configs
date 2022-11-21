@@ -70,5 +70,5 @@ map      <Space>rt    <Action>(SurroundWith)
 map      <Space>t     <Action>(Replace)
 
 """ EasyMotion
-nmap     Ja             <Plug>(easymotion-f)
-nmap     Js             <Plug>(easymotion-F)
+nmap     Ma    <Plug>(easymotion-f)
+nmap     Ms    <Plug>(easymotion-F)
