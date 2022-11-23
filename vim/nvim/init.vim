@@ -47,7 +47,7 @@ let &t_ZR="\e[23m"
 """ EasyMotion
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
-nmap 	Ma 		<Plug>(easymotion-overwin-f)
-nmap 	Ms 		<Plug>(easymotion-overwin-f2)
-map 	<Leader>j 	<Plug>(easymotion-j)
-map 	<Leader>k 	<Plug>(easymotion-k)
+nnoremap 	Ma 		<Plug>(easymotion-overwin-f)
+nnoremap 	Ms 		<Plug>(easymotion-overwin-f2)
+nnoremap 	<Leader>j 	<Plug>(easymotion-j)
+nnoremap 	<Leader>k 	<Plug>(easymotion-k)
