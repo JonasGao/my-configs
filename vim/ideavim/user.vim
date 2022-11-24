@@ -29,47 +29,48 @@ set idearefactormode=keep
 map Q gq
 
 let mapleader = "\\"
-vmap     <leader>y   "*y
-vmap     <C-c>       "*y
-nmap     <leader>p   "*p
-vmap     <leader>p   "*p
-map      <leader>g    <Action>(FindInPath)
-map      <leader>b    <Action>(Switcher)
-map      <leader>mr   <Action>(Maven.Reimport)
-map      <leader>1    <Action>(GoToTab1)
-map      <leader>2    <Action>(GoToTab2)
-map      <leader>3    <Action>(GoToTab3)
-map      <leader>4    <Action>(GoToTab4)
-map      <leader>5    <Action>(GoToTab5)
+vnoremap      <leader>y   "*y
+vnoremap      <C-c>       "*y
+nnoremap      <leader>p   "*p
+vnoremap      <leader>p   "*p
+nnoremap      <leader>g    <Action>(FindInPath)
+nnoremap      <leader>b    <Action>(Switcher)
+nnoremap      <leader>mr   <Action>(Maven.Reimport)
+nnoremap      <leader>1    <Action>(GoToTab1)
+nnoremap      <leader>2    <Action>(GoToTab2)
+nnoremap      <leader>3    <Action>(GoToTab3)
+nnoremap      <leader>4    <Action>(GoToTab4)
+nnoremap      <leader>5    <Action>(GoToTab5)
 
-map      <Space>b     <Action>(GotoDeclaration)
-map      <Space>k     <Action>(Back)
-map      <Space>j     <Action>(Forward)
-map      <Space>h     <Action>(PreviousTab)
-map      <Space>l     <Action>(NextTab)
-map      <Space>e     <Action>(RecentFiles)
-map      <Space>B     <Action>(GotoImplementation)
-map      <Space>f     <Action>(FileStructurePopup)
-map      <Space>v     <Action>(SelectInProjectView)
-map      <Space>p     :NERDTree<CR>
-map      <Space>w     <Action>(CloseContent)
-map      <Space>N     <Action>(GotoFile)
-map      <Space>n     <Action>(GotoClass)
-map      <Space>q     <Action>(ParameterInfo)
-map      <Space>a     ggvG$
-map      <Space>o     <Action>(OverrideMethods)
-map      <Space>q     <Action>(QuickJavaDoc)
-map      <Space>gc    <Action>(CheckinProject)
-map      <Space>gp    <Action>(Vcs.Push)
-map      <Space>gf    <Action>(Vcs.UpdateProject)
-map      <Space>Ss    :source ~/.ideavimrc<CR>
-map      <Space>So    :e ~/.ideavimrc<CR>
-map      <Space>rf    <Action>(ReformatCode)
-map      <Space>rr    <Action>(RearrangeCode)
-map      <Space>re    <Action>(RenameElement)
-map      <Space>rt    <Action>(SurroundWith)
-map      <Space>t     <Action>(Replace)
+nnoremap      <Space>b     <Action>(GotoDeclaration)
+nnoremap      <Space>k     <Action>(Back)
+nnoremap      <Space>j     <Action>(Forward)
+nnoremap      <Space>h     <Action>(PreviousTab)
+nnoremap      <Space>l     <Action>(NextTab)
+nnoremap      <Space>e     <Action>(RecentFiles)
+nnoremap      <Space>B     <Action>(GotoImplementation)
+nnoremap      <Space>f     <Action>(FileStructurePopup)
+nnoremap      <Space>v     <Action>(SelectInProjectView)
+nnoremap      <Space>p     :NERDTree<CR>
+nnoremap      <Space>w     <Action>(CloseContent)
+nnoremap      <Space>N     <Action>(GotoFile)
+nnoremap      <Space>n     <Action>(GotoClass)
+nnoremap      <Space>q     <Action>(ParameterInfo)
+nnoremap      <Space>a     ggvG$
+nnoremap      <Space>o     <Action>(OverrideMethods)
+nnoremap      <Space>q     <Action>(QuickJavaDoc)
+nnoremap      <Space>gc    <Action>(CheckinProject)
+nnoremap      <Space>gp    <Action>(Vcs.Push)
+nnoremap      <Space>gf    <Action>(Vcs.UpdateProject)
+nnoremap      <Space>Ss    :source ~/.ideavimrc<CR>
+nnoremap      <Space>So    :e ~/.ideavimrc<CR>
+nnoremap      <Space>rf    <Action>(ReformatCode)
+nnoremap      <Space>rg    <Action>(RearrangeCode)
+nnoremap      <Space>re    <Action>(RenameElement)
+nnoremap      <Space>rt    <Action>(SurroundWith)
+nnoremap      <Space>rr    <Action>(Refactorings.QuickListPopupAction)
+nnoremap      <Space>t     <Action>(Replace)
 
 """ EasyMotion
-nmap     Ma    <Plug>(easymotion-f)
-nmap     Ms    <Plug>(easymotion-F)
+nnoremap      Ma           <Plug>(easymotion-f)
+nnoremap      Ms           <Plug>(easymotion-F)
