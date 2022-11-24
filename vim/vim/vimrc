@@ -41,9 +41,9 @@ set smartindent
 syntax on
 
 let mapleader="\\"
-noremap 	<Leader>y    "*y
-nnoremap	<Leader>p    "*p
-vnoremap	<Leader>p    "*p
+noremap 	<Leader>y    "+y
+nnoremap	<Leader>p    "+p
+vnoremap	<Leader>p    "+p
 nnoremap	<Leader>x    :set paste<CR>
 nnoremap	<Leader>X    :set nopaste<CR>
 noremap 	<Leader>r    :bro ol<CR>
