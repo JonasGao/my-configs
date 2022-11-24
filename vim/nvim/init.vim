@@ -20,18 +20,19 @@ filetype plugin indent on
 syntax on
 
 let mapleader="\\"
-nnoremap	<Leader>y    "*y
-nnoremap	<Leader>p    "*p
-vnoremap	<Leader>p    "*p
-nnoremap	<Leader>x    :set paste<CR>
-nnoremap	<Leader>X    :set nopaste<CR>
-nnoremap	<Leader>r    :bro ol<CR>
-nnoremap	<Leader>fms  :set foldmethod=syntax<CR>
-nnoremap	<Leader>fmi  :set foldmethod=indent<CR>
-nnoremap	<Leader>n    :set nu rnu<CR>
-nnoremap	<Leader>N    :set nonu nornu<CR>
-nnoremap	<Leader>w    :set wrap<CR>
-nnoremap	<Leader>W    :set nowrap<CR>
+nnoremap	<Leader>y	"*y
+nnoremap	<Leader>p	"*p
+vnoremap	<Leader>p	"*p
+nnoremap	<Leader>x	:set paste<CR>
+nnoremap	<Leader>X	:set nopaste<CR>
+nnoremap	<Leader>r	:bro ol<CR>
+nnoremap	<Leader>fms	:set foldmethod=syntax<CR>
+nnoremap	<Leader>fmi	:set foldmethod=indent<CR>
+nnoremap	<Leader>n	:set nu rnu<CR>
+nnoremap	<Leader>N	:set nonu nornu<CR>
+nnoremap	<Leader>w	:set wrap<CR>
+nnoremap	<Leader>W	:set nowrap<CR>
+nnoremap	<Leader>m	:set filetype=
 
 if $TERM !=? 'xterm-256color'
 	set termguicolors
