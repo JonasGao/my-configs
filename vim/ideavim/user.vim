@@ -29,48 +29,48 @@ set idearefactormode=keep
 map Q gq
 
 let mapleader = "\\"
-vnoremap      <leader>y   "*y
-vnoremap      <C-c>       "*y
-nnoremap      <leader>p   "*p
-vnoremap      <leader>p   "*p
-nnoremap      <leader>g    <Action>(FindInPath)
-nnoremap      <leader>b    <Action>(Switcher)
-nnoremap      <leader>mr   <Action>(Maven.Reimport)
-nnoremap      <leader>1    <Action>(GoToTab1)
-nnoremap      <leader>2    <Action>(GoToTab2)
-nnoremap      <leader>3    <Action>(GoToTab3)
-nnoremap      <leader>4    <Action>(GoToTab4)
-nnoremap      <leader>5    <Action>(GoToTab5)
+vnoremap     <leader>y   "*y
+vnoremap     <C-c>       "*y
+nnoremap     <leader>p   "*p
+vnoremap     <leader>p   "*p
+noremap      <leader>g    <Action>(FindInPath)
+noremap      <leader>b    <Action>(Switcher)
+noremap      <leader>mr   <Action>(Maven.Reimport)
+noremap      <leader>1    <Action>(GoToTab1)
+noremap      <leader>2    <Action>(GoToTab2)
+noremap      <leader>3    <Action>(GoToTab3)
+noremap      <leader>4    <Action>(GoToTab4)
+noremap      <leader>5    <Action>(GoToTab5)
 
-nnoremap      <Space>b     <Action>(GotoDeclaration)
-nnoremap      <Space>k     <Action>(Back)
-nnoremap      <Space>j     <Action>(Forward)
-nnoremap      <Space>h     <Action>(PreviousTab)
-nnoremap      <Space>l     <Action>(NextTab)
-nnoremap      <Space>e     <Action>(RecentFiles)
-nnoremap      <Space>B     <Action>(GotoImplementation)
-nnoremap      <Space>f     <Action>(FileStructurePopup)
-nnoremap      <Space>v     <Action>(SelectInProjectView)
-nnoremap      <Space>p     :NERDTree<CR>
-nnoremap      <Space>w     <Action>(CloseContent)
-nnoremap      <Space>N     <Action>(GotoFile)
-nnoremap      <Space>n     <Action>(GotoClass)
-nnoremap      <Space>q     <Action>(ParameterInfo)
-nnoremap      <Space>a     ggvG$
-nnoremap      <Space>o     <Action>(OverrideMethods)
-nnoremap      <Space>q     <Action>(QuickJavaDoc)
-nnoremap      <Space>gc    <Action>(CheckinProject)
-nnoremap      <Space>gp    <Action>(Vcs.Push)
-nnoremap      <Space>gf    <Action>(Vcs.UpdateProject)
-nnoremap      <Space>Ss    :source ~/.ideavimrc<CR>
-nnoremap      <Space>So    :e ~/.ideavimrc<CR>
-nnoremap      <Space>rf    <Action>(ReformatCode)
-nnoremap      <Space>rg    <Action>(RearrangeCode)
-nnoremap      <Space>re    <Action>(RenameElement)
-nnoremap      <Space>rt    <Action>(SurroundWith)
-nnoremap      <Space>rr    <Action>(Refactorings.QuickListPopupAction)
-nnoremap      <Space>t     <Action>(Replace)
+noremap      <Space>b     <Action>(GotoDeclaration)
+noremap      <Space>k     <Action>(Back)
+noremap      <Space>j     <Action>(Forward)
+noremap      <Space>h     <Action>(PreviousTab)
+noremap      <Space>l     <Action>(NextTab)
+noremap      <Space>e     <Action>(RecentFiles)
+noremap      <Space>B     <Action>(GotoImplementation)
+noremap      <Space>f     <Action>(FileStructurePopup)
+noremap      <Space>v     <Action>(SelectInProjectView)
+noremap      <Space>p     :NERDTree<CR>
+noremap      <Space>w     <Action>(CloseContent)
+noremap      <Space>N     <Action>(GotoFile)
+noremap      <Space>n     <Action>(GotoClass)
+noremap      <Space>q     <Action>(ParameterInfo)
+noremap      <Space>a     ggvG$
+noremap      <Space>o     <Action>(OverrideMethods)
+noremap      <Space>q     <Action>(QuickJavaDoc)
+noremap      <Space>gc    <Action>(CheckinProject)
+noremap      <Space>gp    <Action>(Vcs.Push)
+noremap      <Space>gf    <Action>(Vcs.UpdateProject)
+noremap      <Space>Ss    :source ~/.ideavimrc<CR>
+noremap      <Space>So    :e ~/.ideavimrc<CR>
+noremap      <Space>rf    <Action>(ReformatCode)
+noremap      <Space>rg    <Action>(RearrangeCode)
+noremap      <Space>re    <Action>(RenameElement)
+noremap      <Space>rt    <Action>(SurroundWith)
+noremap      <Space>rr    <Action>(Refactorings.QuickListPopupAction)
+noremap      <Space>t     <Action>(Replace)
 
 """ EasyMotion
-nnoremap      Ma           <Plug>(easymotion-f)
-nnoremap      Ms           <Plug>(easymotion-F)
+noremap      Ma           <Plug>(easymotion-f)
+noremap      Ms           <Plug>(easymotion-F)
