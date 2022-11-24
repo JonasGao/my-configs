@@ -18,6 +18,7 @@ set scrolloff=5
 set incsearch
 set nu rnu
 set timeoutlen=3000
+set clipboard+=unnamed
 
 """ Idea specific settings ------------
 set ideajoin
