@@ -59,8 +59,9 @@ alias sdk='HTTPS_PROXY=http://127.0.0.1:7890 sdk'
 alias vi='vimx'
 alias vim='vimx'
 
-test -f "$HOME/.alias" && source "$HOME/.alias"
 test -f "$HOME/.env" && source "$HOME/.env"
+test -f "$HOME/.alias" && source "$HOME/.alias"
+test -f "$HOME/.functions" && source "$HOME/.functions"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
