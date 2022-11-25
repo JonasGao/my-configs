@@ -27,10 +27,10 @@ set guioptions-=r
 set guioptions-=b
 set autoindent
 set smartindent
-"set expandtab
-"set tabstop=2
-"set softtabstop=2
-"set shiftwidth=2
+set expandtab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
 
 " 参考
 " https://vi.stackexchange.com/questions/23066/change-cursorline-style
@@ -41,20 +41,21 @@ set smartindent
 syntax on
 
 let mapleader="\\"
-noremap 	<Leader>y    "+y
+noremap	  <Leader>y    "+y
 nnoremap	<Leader>p    "+p
 vnoremap	<Leader>p    "+p
 nnoremap	<Leader>x    :set paste<CR>
 nnoremap	<Leader>X    :set nopaste<CR>
-noremap 	<Leader>r    :bro ol<CR>
-noremap 	<Leader>ss   :source ~/.vimrc<CR>
-noremap 	<Leader>se   :e ~/.vimrc<CR>
+noremap	  <Leader>r    :bro ol<CR>
+noremap	  <Leader>ss   :source ~/.vimrc<CR>
+noremap	  <Leader>se   :e ~/.vimrc<CR>
 nnoremap	<Leader>fms  :set foldmethod=syntax<CR>
 nnoremap	<Leader>fmi  :set foldmethod=indent<CR>
 nnoremap	<Leader>n    :set nu rnu<CR>
 nnoremap	<Leader>N    :set nonu nornu<CR>
 nnoremap	<Leader>w    :set wrap<CR>
 nnoremap	<Leader>W    :set nowrap<CR>
+nnoremap	<Leader>m    :set filetype=
 
 "if $TERM !=? 'xterm-256color'
 "	set termguicolors
