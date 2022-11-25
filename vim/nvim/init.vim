@@ -13,6 +13,13 @@ set splitbelow splitright
 set nobackup
 set noswapfile
 set nobomb
+set autoindent
+set smartindent
+set expandtab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+
 "set title
 "set inccommand=split
 
