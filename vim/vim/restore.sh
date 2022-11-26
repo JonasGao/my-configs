@@ -36,3 +36,8 @@ if echo && read -qs REPLY\?"Press [y] install fzf: "; then
 	git clone git@github.com:junegunn/fzf.git ~/.vim/pack/packages/start/fzf
 	git clone git@github.com:junegunn/fzf.vim.git ~/.vim/pack/packages/start/fzf.vim
 fi
+
+if echo && read -qs REPLY\?"Press [y] install vim-visual-multi: "; then
+	mkdir -p "$HOME/.vim/pack/plugins/start/"
+  git clone git@github.com:mg979/vim-visual-multi.git ~/.vim/pack/packages/start/vim-visual-multi
+fi
