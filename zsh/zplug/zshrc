@@ -22,6 +22,9 @@ zplug 'plugins/extract', from:oh-my-zsh
 zplug "romkatv/powerlevel10k", as:theme, depth:1
 zplug "agkozak/zsh-z"
 
+# Instead By 'zplug "agkozak/zsh-z"'
+# . "$HOME/.local/z.sh"
+
 if ! zplug check --verbose; then
   printf "Install? [y/N]: "
   if read -q; then
@@ -50,12 +53,13 @@ bindkey  "^[[3~"  delete-char
 bindkey  "^[[5~"  history-beginning-search-backward
 bindkey  "^[[6~"  history-beginning-search-forward
 
-# Instead By 'zplug "agkozak/zsh-z"'
-# . "$HOME/.local/z.sh"
-
 alias ll='exa --icons -l'
 alias ll='exa --icons -l -a'
 alias sdk='HTTPS_PROXY=http://127.0.0.1:7890 sdk'
+
+function re-source() {
+  source "$HOME/.zshrc"
+}
 
 test -f "$HOME/.env" && source "$HOME/.env"
 test -f "$HOME/.alias" && source "$HOME/.alias"
