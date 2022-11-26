@@ -8,6 +8,7 @@ cp "$HOME/.zshrc" "$MY_CONFIG_HOME/zsh/zplug/zshrc"
 cd "$MY_CONFIG_HOME"
 git diff
 if read -q REPLAY\?"Press [y] to add & commit & push: "; then
+	echo
 	git add zsh
 	git commit -m "$MSG"
 	git push
