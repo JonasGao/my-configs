@@ -56,8 +56,6 @@ bindkey  "^[[6~"  history-beginning-search-forward
 alias ll='exa --icons -l'
 alias ll='exa --icons -l -a'
 alias sdk='HTTPS_PROXY=http://127.0.0.1:7890 sdk'
-alias vi='vimx'
-alias vim='vimx'
 
 test -f "$HOME/.env" && source "$HOME/.env"
 test -f "$HOME/.alias" && source "$HOME/.alias"
