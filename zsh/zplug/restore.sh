@@ -17,9 +17,11 @@ if read -qs REPLY\?"Do you want install zplug first?:[y]"; then
 	curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 fi
 
-$xvim -d "$MY_CONFIG_HOME/zsh/zplug/zshrc" "$HOME/.zshrc"
+SRC="$MY_CONFIG_HOME/zsh/zplug/zshrc"
+DST="$HOME/.zshrc"
 
+$xvim -d $DST $SRC
 if echo && read -qs REPLY\?"Press [y] restore zshrc(zplug version)"; then
-  cp "$MY_CONFIG_HOME/zsh/zplug/zshrc" "$HOME/.zshrc"
+  cp $SRC $DST
   printf "\n\033[0;32mRestore zshrc(zplug version) finished\033[0m\n"
 fi
