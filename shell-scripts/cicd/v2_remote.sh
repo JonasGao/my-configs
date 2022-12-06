@@ -23,6 +23,9 @@ APP_START_TIMEOUT=20
 # 应用健康检查URL
 HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
 
+# 健康的HTTP代码
+HEALTH_HTTP_CODE=(200 404 403 405)
+
 # 应用启动的工作目录
 APP_HOME="/home/deployer/retail-cloud/eureka"
 
@@ -62,6 +65,7 @@ There are some commands:
   t, stop
   r, restart
   p, pid
+  c, check
 """
 }
 
@@ -71,9 +75,12 @@ health_check() {
   while true; do
     if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" ${HEALTH_CHECK_URL}); then
       echo "Status-code is $status_code"
-      if [ "$status_code" == "200" ] || [ "$status_code" == "404" ] || [ "$status_code" == "405" ]; then
-        break
-      fi
+      for code in ${HEALTH_HTTP_CODE[@]}
+      do
+        if [ "$status_code" == "$code" ]; then
+          break 2
+        fi
+      done
     else
       printf "curl return $?. "
     fi
@@ -184,10 +191,12 @@ p|pid)
   query_java_pid
   echo "Current running in $CURR_PID"
   ;;
+c|check)
+  health_check
+  ;;
 *)
   usage
   exit 1
   ;;
 esac
-
 
