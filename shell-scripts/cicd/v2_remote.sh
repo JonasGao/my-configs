@@ -1,9 +1,14 @@
 #!/bin/bash
 
-JAR_NAME="eureka-server"
+CWD=$(pwd)
+
+# 应用启动的工作目录
+APP_HOME="$CWD"
+
+JAR_NAME="app"
 
 # 应用启动的端口
-APP_PORT=8761
+APP_PORT=8080
 
 # JVM 配置参数
 JVM_OPTS="-server -Xmx512m"
@@ -26,9 +31,6 @@ HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
 # 健康的HTTP代码
 HEALTH_HTTP_CODE=(200 404 403 405)
 
-# 应用启动的工作目录
-APP_HOME="/home/deployer/retail-cloud/eureka"
-
 # JAR 包的绝对路径
 JAR_PATH="${APP_HOME}/${JAR_NAME}.jar"
 
@@ -45,14 +47,31 @@ APP_LOG=${STD_OUT}
 # PID 位置
 PID="${APP_HOME}/pid"
 
-# 创建出相关目录
-mkdir -p ${APP_HOME}
-mkdir -p ${APP_LOG_HOME}
-
 # 准备相关工具
 JAVA=$(which java 2>/dev/null)
 NOHUP=$(which nohup 2>/dev/null)
 PGREP=$(which pgrep 2>/dev/null)
+
+# 环境配置文件名
+SET_ENV_FILENAME="setenv.sh"
+
+# 如果有配置文件，以配置文件覆盖
+CWD_SET_ENV=$(readlink -f "./$SET_ENV_FILENAME")
+if [ -f "$CWD_SET_ENV" ]; then
+  echo "Overwrite with $CWD_SET_ENV"
+  source $CWD_SET_ENV
+fi
+APP_HOME_SET_ENV="$APP_HOME/$SET_ENV_FILENAME"
+if [ -f "$APP_HOME_SET_ENV" ]; then
+  if [ "$APP_HOME_SET_ENV" != "$CWD_SET_ENV" ]; then
+    echo "Overwrite with $APP_HOME_SET_ENV"
+    source $APP_HOME_SET_ENV
+  fi
+fi
+
+# 创建出相关目录
+mkdir -p ${APP_HOME}
+mkdir -p ${APP_LOG_HOME}
 
 # 全局变量
 CURR_PID=
