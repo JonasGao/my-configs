@@ -44,8 +44,7 @@ let mapleader="\\"
 noremap	  <Leader>y    "+y
 nnoremap	<Leader>p    "+p
 vnoremap	<Leader>p    "+p
-nnoremap	<Leader>x    :set paste<CR>
-nnoremap	<Leader>X    :set nopaste<CR>
+nnoremap	<Leader>x    :set paste!<CR>
 noremap	  <Leader>r    :bro ol<CR>
 noremap	  <Leader>ss   :source ~/.vimrc<CR>
 noremap	  <Leader>se   :e ~/.vimrc<CR>
