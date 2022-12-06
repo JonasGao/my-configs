@@ -40,6 +40,8 @@ nnoremap	<Leader>N	:set nonu nornu<CR>
 nnoremap	<Leader>w	:set wrap<CR>
 nnoremap	<Leader>W	:set nowrap<CR>
 nnoremap	<Leader>m	:set filetype=
+nnoremap	<Leader>h :bp<CR>
+nnoremap	<Leader>l :bn<CR>
 nnoremap  <Space>a  ggvG$
 
 if $TERM !=? 'xterm-256color'
