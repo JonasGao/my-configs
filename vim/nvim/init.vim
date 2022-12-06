@@ -30,8 +30,7 @@ let mapleader="\\"
 nnoremap	<Leader>y	"*y
 nnoremap	<Leader>p	"*p
 vnoremap	<Leader>p	"*p
-nnoremap	<Leader>x	:set paste<CR>
-nnoremap	<Leader>X	:set nopaste<CR>
+nnoremap	<Leader>x	:set paste!<CR>
 nnoremap	<Leader>r	:bro ol<CR>
 nnoremap	<Leader>fms	:set foldmethod=syntax<CR>
 nnoremap	<Leader>fmi	:set foldmethod=indent<CR>
