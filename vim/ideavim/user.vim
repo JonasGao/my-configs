@@ -69,6 +69,7 @@ noremap      <Space>re    :action RenameElement<CR>
 noremap      <Space>rt    :action SurroundWith<CR>
 noremap      <Space>rr    :action Refactorings.QuickListPopupAction<CR>
 noremap      <Space>t     :action Replace<CR>
+noremap      <Space>p     "0p
 
 noremap      Q            gq
 
