@@ -26,7 +26,6 @@ set ideastatusicon=gray
 set idearefactormode=keep
 
 """ Mappings --------------------------
-noremap      Q gq
 
 let mapleader = "\\"
 vnoremap     <leader>y   "*y
@@ -71,6 +70,16 @@ noremap      <Space>rt    :action SurroundWith<CR>
 noremap      <Space>rr    :action Refactorings.QuickListPopupAction<CR>
 noremap      <Space>t     :action Replace<CR>
 
+noremap      Q            gq
+
 """ EasyMotion
-noremap      Ma           <Plug>(easymotion-f)
-noremap      Ms           <Plug>(easymotion-F)
+nmap      Ma           <Plug>(easymotion-f)
+nmap      Ms           <Plug>(easymotion-F)
+
+""" AceJump Example
+" Press `f` to activate AceJump
+"map f <Action>(AceAction)
+" Press `F` to activate Target Mode
+"map F <Action>(AceTargetAction)
+" Press `g` to activate Line Mode
+"map g <Action>(AceLineAction)
