@@ -9,9 +9,7 @@ $Env:LESSCHARSET = 'utf-8'
 
 Set-Alias -Name vim -Value gvim
 
-
-
-if (Test-Path "C:\Users\Administrator\.jabba\jabba.ps1") { . "C:\Users\Administrator\.jabba\jabba.ps1" }
+if (Test-Path "$HOME/Set-Env.ps1") { . "$HOME/Set-Env.ps1" }
 
 function Prompt {
   $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -33,5 +31,6 @@ function Prompt {
   "$prompt"
 }
 
+if (Test-Path "C:\Users\Administrator\.jabba\jabba.ps1") { . "C:\Users\Administrator\.jabba\jabba.ps1" }
 $NVIM_HOME = "$HOME\Apps\nvim-win64\Neovim"
 $env:PATH = "$NVIM_HOME\bin;$env:PATH"
