@@ -1,11 +1,12 @@
-$PACK_HOME="$HOME/.config/nvim/pack"
+$NVIM_CONF_HOME="$HOME/AppData/Local/nvim"
+$PACK_HOME="$NVIM_CONF_HOME/pack"
 $PACK_START="$PACK_HOME/dist/start"
 
 if (-not(Test-Path Variable:\MY_CONFIG_HOME)) {
 	throw "There is no MY_CONFIG_HOME"
 }
-New-Item -Type Container -Force "$HOME/.config/nvim/"
-Copy-Item "$MY_CONFIG_HOME/vim/nvim/init.vim" "$HOME/.config/nvim/init.vim"
+New-Item -Type Container -Force "$NVIM_CONF_HOME"
+Copy-Item "$MY_CONFIG_HOME/vim/nvim/init.vim" "$NVIM_CONF_HOME/init.vim"
 Write-Host -ForegroundColor Green "Restore neovim config files finished."
 
 #if echo && read -qs REPLY\?"Press [y] install airline: "; then
