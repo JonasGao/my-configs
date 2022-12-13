@@ -1,0 +1,8 @@
+#!/bin/bash
+# develop -> master -> staging -> develop
+qd
+# -> staging -> production -> merge staging
+qp
+if [ "$1" != "" ]; then
+  jk b $1
+fi

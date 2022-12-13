@@ -1,6 +1,0 @@
-[core]
-	editor = 'C:\\WINDOWS\\gvim.bat' -f -i NONE
-[merge]
-    tool = vscode
-[mergetool "vscode"]
-    cmd = code --wait $MERGED

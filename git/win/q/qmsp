@@ -1,0 +1,7 @@
+#!/bin/bash
+# -> master -> staging -> master
+qms
+# -> staging -> production -> merge staging
+qsp
+git co master
+git pr
