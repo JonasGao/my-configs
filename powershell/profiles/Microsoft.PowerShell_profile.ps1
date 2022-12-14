@@ -24,10 +24,11 @@ function Get-PromptPrefix {
 
 $GitPromptSettings.DefaultPromptPrefix.Text = '$(Get-PromptPrefix)'
 $GitPromptSettings.DefaultPromptPath.BackgroundColor = 'Blue'
-$GitPromptSettings.DefaultPromptSuffix = " $ "
-$GitPromptSettings.BeforePath = '◀'
-$GitPromptSettings.AfterPath = '▶'
-$GitPromptSettings.BeforePath.ForegroundColor = 'Blue'
+$GitPromptSettings.DefaultPromptSuffix = " "
+#$GitPromptSettings.BeforePath = ' '
+#$GitPromptSettings.BeforePath.ForegroundColor = 'Black'
+#$GitPromptSettings.BeforePath.BackgroundColor = 'Blue'
+$GitPromptSettings.AfterPath = ''
 $GitPromptSettings.AfterPath.ForegroundColor = 'Blue'
 
 $Env:LESSCHARSET = 'utf-8'
