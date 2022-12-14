@@ -2,8 +2,11 @@ Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
 
 Import-Module posh-git
+Import-Module MyPsScripts
+Import-Module Terminal-Icons
+Import-Module ZLocation
 
-function Prompt {
+function Get-PromptPrefix {
   $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
   $principal = [Security.Principal.WindowsPrincipal] $identity
   $adminRole = [Security.Principal.WindowsBuiltInRole]::Administrator
@@ -16,16 +19,16 @@ function Prompt {
 
   $PMT_PREFIX = if ($prefix.Count -eq 0) { '' } else { '[' + ($prefix -join '/') + ']: ' }
 
-  $prompt = Write-Prompt ($PMT_PREFIX + "PS ")
-  $prompt += & $GitPromptScriptBlock
-  if ($NestedPromptLevel -ge 1) { $prompt += Write-Prompt '>>' }
-
-  "$prompt"
+  "$PMT_PREFIX"
 }
 
-Import-Module MyPsScripts
-Import-Module Terminal-Icons
-Import-Module ZLocation
+$GitPromptSettings.DefaultPromptPrefix.Text = '$(Get-PromptPrefix)'
+$GitPromptSettings.DefaultPromptPath.BackgroundColor = 'Blue'
+$GitPromptSettings.DefaultPromptSuffix = " $ "
+$GitPromptSettings.BeforePath = '◀'
+$GitPromptSettings.AfterPath = '▶'
+$GitPromptSettings.BeforePath.ForegroundColor = 'Blue'
+$GitPromptSettings.AfterPath.ForegroundColor = 'Blue'
 
 $Env:LESSCHARSET = 'utf-8'
 
