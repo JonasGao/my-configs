@@ -19,17 +19,20 @@ function Get-PromptPrefix {
 
   $PMT_PREFIX = if ($prefix.Count -eq 0) { '' } else { '[' + ($prefix -join '/') + ']: ' }
 
-  "$PMT_PREFIX"
+  "${PMT_PREFIX} PS "
 }
 
-$GitPromptSettings.DefaultPromptPrefix.Text = '$(Get-PromptPrefix)'
-$GitPromptSettings.DefaultPromptPath.BackgroundColor = 'Blue'
-$GitPromptSettings.DefaultPromptSuffix = " "
-#$GitPromptSettings.BeforePath = ' '
-#$GitPromptSettings.BeforePath.ForegroundColor = 'Black'
-#$GitPromptSettings.BeforePath.BackgroundColor = 'Blue'
+$GitPromptSettings.DefaultPromptPrefix.Text = $(Get-PromptPrefix)
+$GitPromptSettings.DefaultPromptPrefix.BackgroundColor = 'Blue'
+$GitPromptSettings.BeforePath = ''
+$GitPromptSettings.BeforePath.ForegroundColor = 'Blue'
+$GitPromptSettings.BeforePath.BackgroundColor = 'DarkBlue'
+$GitPromptSettings.DefaultPromptPath.Text = " " + $(Get-PromptPath) + " "
+$GitPromptSettings.DefaultPromptPath.BackgroundColor = 'DarkBlue'
 $GitPromptSettings.AfterPath = ''
-$GitPromptSettings.AfterPath.ForegroundColor = 'Blue'
+$GitPromptSettings.AfterPath.ForegroundColor = 'DarkBlue'
+$GitPromptSettings.DefaultPromptSuffix = " "
+
 
 $Env:LESSCHARSET = 'utf-8'
 
