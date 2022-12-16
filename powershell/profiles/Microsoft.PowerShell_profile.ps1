@@ -1,3 +1,16 @@
+$BgDarkBlue = "`e[48;2;0;0;139m"
+$BgDarkBlueOff = "`e[49m"
+$FgDarkBlue = "`e[38;2;0;0;139m"
+$FgDarkBlueOff = "`e[39m"
+$BgBlue = "`e[48;2;0;0;255m"
+$BgBlueOff = "`e[49m"
+$FgBlue = "`e[38;2;0;0;255m"
+$FgBlueOff = "`e[39m"
+$BgYel = "`e[48;2;193;156;0m"
+$BgYelOff = "`e[49m"
+$FgYel = "`e[38;2;193;156;0m"
+$FgYelOff = "`e[39m"
+
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
 
@@ -5,6 +18,14 @@ Import-Module posh-git
 Import-Module MyPsScripts
 Import-Module Terminal-Icons
 Import-Module ZLocation
+
+function Get-JavaVersion {
+  (Get-Command java).Version.ToString()
+}
+
+function Get-JavaSegment {
+  "${BgYel}$(Get-JavaVersion) ${BgYelOff}${BgDarkBlue}${FgYel}${FgYelOff} "
+}
 
 function Get-PromptPrefix {
   $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -19,16 +40,13 @@ function Get-PromptPrefix {
 
   $PMT_PREFIX = if ($prefix.Count -eq 0) { '' } else { '[' + ($prefix -join '/') + ']: ' }
 
-  "${PMT_PREFIX} PS "
+  "${PMT_PREFIX} PS ${FgBlue}${BgYel} ${FgBlueOff}${BgYelOff}$(Get-JavaSegment)"
 }
 
 $GitPromptSettings.DefaultPromptPrefix.Text = $(Get-PromptPrefix)
 $GitPromptSettings.DefaultPromptPrefix.BackgroundColor = 'Blue'
-$GitPromptSettings.BeforePath.Text = " "
-$GitPromptSettings.BeforePath.ForegroundColor = 'Blue'
-$GitPromptSettings.BeforePath.BackgroundColor = 'DarkBlue'
 $GitPromptSettings.DefaultPromptPath.BackgroundColor = 'DarkBlue'
-$GitPromptSettings.AfterPath.Text = "`e[48;2;0;0;139m `e[49m`e[38;2;0;0;139m`e[39m"
+$GitPromptSettings.AfterPath.Text = "$BgDarkBlue ${BgDarkBlueOff}${FgDarkBlue}${FgDarkBlueOff}"
 $GitPromptSettings.PathStatusSeparator.Text = ""
 $GitPromptSettings.DefaultPromptSuffix = " "
 
