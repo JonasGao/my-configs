@@ -17,6 +17,7 @@ if ($X -eq "y") {
 		New-Item $USER_MODULE_HOME -Force
 	}
 	Copy-Item -Recurse "module\MyPsScripts" $USER_MODULE_HOME
+	Copy-Item -Recurse "module\JdkSwitcher" $USER_MODULE_HOME
 	Install-Module -Name MyPsScripts -Scope CurrentUser
 	Install-Module -Name posh-git -Scope CurrentUser
 	Install-Module -Name Terminal-Icons -Scope CurrentUser
