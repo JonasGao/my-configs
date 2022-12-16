@@ -43,7 +43,7 @@ function Get-PromptPrefix {
   "${PMT_PREFIX} PS ${FgBlue}${BgYel} ${FgBlueOff}${BgYelOff}$(Get-JavaSegment)"
 }
 
-$GitPromptSettings.DefaultPromptPrefix.Text = $(Get-PromptPrefix)
+$GitPromptSettings.DefaultPromptPrefix.Text = Get-PromptPrefix
 $GitPromptSettings.DefaultPromptPrefix.BackgroundColor = 'Blue'
 $GitPromptSettings.DefaultPromptPath.BackgroundColor = 'DarkBlue'
 $GitPromptSettings.AfterPath.Text = "$BgDarkBlue ${BgDarkBlueOff}${FgDarkBlue}${FgDarkBlueOff}"
