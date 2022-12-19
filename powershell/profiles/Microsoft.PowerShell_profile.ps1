@@ -24,7 +24,7 @@ function Get-JavaVersion {
 }
 
 function Get-JavaSegment {
-  "${BgYel}$(Get-JavaVersion) ${BgYelOff}${BgDarkBlue}${FgYel}${FgYelOff} "
+  "${BgYel}  $(Get-JavaVersion)  ${BgYelOff}${BgDarkBlue}${FgYel}${FgYelOff} "
 }
 
 function Get-PromptPrefix {
@@ -40,15 +40,19 @@ function Get-PromptPrefix {
 
   $PMT_PREFIX = if ($prefix.Count -eq 0) { '' } else { '[' + ($prefix -join '/') + ']: ' }
 
-  "${PMT_PREFIX} PS ${FgBlue}${BgYel} ${FgBlueOff}${BgYelOff}$(Get-JavaSegment)"
+  "${PMT_PREFIX} PS ${FgBlue}${BgYel}${FgBlueOff}${BgYelOff}$(Get-JavaSegment)"
 }
 
-$GitPromptSettings.DefaultPromptPrefix.Text = Get-PromptPrefix
-$GitPromptSettings.DefaultPromptPrefix.BackgroundColor = 'Blue'
-$GitPromptSettings.DefaultPromptPath.BackgroundColor = 'DarkBlue'
-$GitPromptSettings.AfterPath.Text = "$BgDarkBlue ${BgDarkBlueOff}${FgDarkBlue}${FgDarkBlueOff}"
-$GitPromptSettings.PathStatusSeparator.Text = ""
-$GitPromptSettings.DefaultPromptSuffix = " "
+function Setup-GitPrompt {
+  $GitPromptSettings.DefaultPromptPrefix.Text = '$(Get-PromptPrefix)'
+  $GitPromptSettings.DefaultPromptPrefix.BackgroundColor = 'Blue'
+  $GitPromptSettings.DefaultPromptPath.BackgroundColor = 'DarkBlue'
+  $GitPromptSettings.AfterPath.Text = "$BgDarkBlue ${BgDarkBlueOff}${FgDarkBlue}${FgDarkBlueOff}"
+  $GitPromptSettings.PathStatusSeparator.Text = ""
+  $GitPromptSettings.DefaultPromptSuffix = " "
+}
+
+Setup-GitPrompt
 
 $Env:LESSCHARSET = 'utf-8'
 
