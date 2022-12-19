@@ -6,9 +6,9 @@ $BgBlue = "`e[48;2;0;0;255m"
 $BgBlueOff = "`e[49m"
 $FgBlue = "`e[38;2;0;0;255m"
 $FgBlueOff = "`e[39m"
-$BgYel = "`e[48;2;193;156;0m"
+$BgYel = "`e[48;2;153;124;0m"
 $BgYelOff = "`e[49m"
-$FgYel = "`e[38;2;193;156;0m"
+$FgYel = "`e[38;2;153;124;0m"
 $FgYelOff = "`e[39m"
 
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
@@ -24,7 +24,7 @@ function Get-JavaVersion {
 }
 
 function Get-JavaSegment {
-  "${BgYel}  $(Get-JavaVersion)  ${BgYelOff}${BgDarkBlue}${FgYel}${FgYelOff} "
+  "${BgYel}  $(Get-JavaVersion) ${BgYelOff}${BgDarkBlue}${FgYel}${FgYelOff} "
 }
 
 function Get-PromptPrefix {
