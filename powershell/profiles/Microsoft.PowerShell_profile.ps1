@@ -20,7 +20,7 @@ Import-Module Terminal-Icons
 Import-Module ZLocation
 
 function Get-JavaVersion {
-  (Get-Command java).Version.ToString()
+  (Get-Command java).Version.Major.ToString()
 }
 
 function Get-JavaSegment {
