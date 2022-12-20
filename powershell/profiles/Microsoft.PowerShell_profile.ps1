@@ -10,6 +10,11 @@ $BgYel = "`e[48;2;153;124;0m"
 $BgYelOff = "`e[49m"
 $FgYel = "`e[38;2;153;124;0m"
 $FgYelOff = "`e[39m"
+$BgGray = "`e[48;2;118;118;118m"
+$BgGrayOff = "`e[49m"
+$FgGray = "`e[38;2;118;118;118m"
+$FgGrayOff = "`e[39m"
+
 
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
@@ -40,12 +45,11 @@ function Get-PromptPrefix {
 
   $PMT_PREFIX = if ($prefix.Count -eq 0) { '' } else { '[' + ($prefix -join '/') + ']: ' }
 
-  "${PMT_PREFIX} PS ${FgBlue}${BgYel}${FgBlueOff}${BgYelOff}$(Get-JavaSegment)"
+  "${PMT_PREFIX}${BgGray} PS ${FgGray}${BgYel}${FgBlueOff}${BgYelOff}$(Get-JavaSegment)"
 }
 
 function Setup-GitPrompt {
   $GitPromptSettings.DefaultPromptPrefix.Text = '$(Get-PromptPrefix)'
-  $GitPromptSettings.DefaultPromptPrefix.BackgroundColor = 'Blue'
   $GitPromptSettings.DefaultPromptPath.BackgroundColor = 'DarkBlue'
   $GitPromptSettings.AfterPath.Text = "$BgDarkBlue ${BgDarkBlueOff}${FgDarkBlue}${FgDarkBlueOff}"
   $GitPromptSettings.PathStatusSeparator.Text = ""
