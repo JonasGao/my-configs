@@ -62,7 +62,7 @@ noremap      <Space>gc    :action CheckinProject<CR>
 noremap      <Space>gp    :action Vcs.Push<CR>
 noremap      <Space>gf    :action Vcs.UpdateProject<CR>
 noremap      <Space>So    :action VimActions<CR>
-noremap      <Space>Sa    :action IdeaVim.ReloadVimRc.reload<CR>
+noremap      <Space>Ss    :action IdeaVim.ReloadVimRc.reload<CR>
 noremap      <Space>rf    :action ReformatCode<CR>
 noremap      <Space>rg    :action RearrangeCode<CR>
 noremap      <Space>re    :action RenameElement<CR>
@@ -74,8 +74,8 @@ noremap      <Space>p     "0p
 noremap      Q            gq
 
 """ EasyMotion
-nmap      fa           <Plug>(easymotion-f)
-nmap      fs           <Plug>(easymotion-F)
+nmap      fj           <Plug>(easymotion-f)
+nmap      fk           <Plug>(easymotion-F)
 
 """ AceJump Example
 " Press `f` to activate AceJump
