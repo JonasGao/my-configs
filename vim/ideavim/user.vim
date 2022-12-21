@@ -61,8 +61,8 @@ noremap      <Space>q     :action QuickJavaDoc<CR>
 noremap      <Space>gc    :action CheckinProject<CR>
 noremap      <Space>gp    :action Vcs.Push<CR>
 noremap      <Space>gf    :action Vcs.UpdateProject<CR>
-noremap      <Space>Ss    :source ~/.ideavimrc<CR>
-noremap      <Space>So    :e ~/.ideavimrc<CR>
+noremap      <Space>So    :action VimActions<CR>
+noremap      <Space>Sa    :action IdeaVim.ReloadVimRc.reload<CR>
 noremap      <Space>rf    :action ReformatCode<CR>
 noremap      <Space>rg    :action RearrangeCode<CR>
 noremap      <Space>re    :action RenameElement<CR>
