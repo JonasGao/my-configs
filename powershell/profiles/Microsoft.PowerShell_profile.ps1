@@ -1,16 +1,14 @@
 $BgDarkBlue = "`e[48;2;0;0;139m"
-$BgDarkBlueOff = "`e[49m"
 $FgDarkBlue = "`e[38;2;0;0;139m"
 $BgBlue = "`e[48;2;0;0;255m"
-$BgBlueOff = "`e[49m"
 $FgBlue = "`e[38;2;0;0;255m"
 $BgYel = "`e[48;2;153;124;0m"
-$BgYelOff = "`e[49m"
 $FgYel = "`e[38;2;153;124;0m"
 $BgGray = "`e[48;2;118;118;118m"
-$BgGrayOff = "`e[49m"
 $FgGray = "`e[38;2;118;118;118m"
+$FgDark = "`e[38;2;0;0;0m"
 $FgOff = "`e[39m"
+$BgOff = "`e[49m"
 
 
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
@@ -26,7 +24,7 @@ function Get-JavaVersion {
 }
 
 function Get-JavaSegment {
-  "${BgYel}  $(Get-JavaVersion) ${BgYelOff}${BgDarkBlue}${FgYel}${FgOff} "
+  "${BgYel}  $(Get-JavaVersion) ${BgOff}${BgDarkBlue}${FgYel}${FgOff} "
 }
 
 function Get-PromptPrefix {
@@ -42,13 +40,13 @@ function Get-PromptPrefix {
 
   $PMT_PREFIX = if ($prefix.Count -eq 0) { '' } else { '[' + ($prefix -join '/') + ']: ' }
 
-  "${FgDarkBlue}${BgYel}${BgYelOff}${FgOff}$(Get-JavaSegment)"
+  "${FgDark}${BgYel}${BgOff}${FgOff}$(Get-JavaSegment)"
 }
 
 function Setup-GitPrompt {
   $GitPromptSettings.DefaultPromptPrefix.Text = '$(Get-PromptPrefix)'
   $GitPromptSettings.DefaultPromptPath.BackgroundColor = 'DarkBlue'
-  $GitPromptSettings.AfterPath.Text = "$BgDarkBlue ${BgDarkBlueOff}${FgDarkBlue}${FgOff}"
+  $GitPromptSettings.AfterPath.Text = "$BgDarkBlue ${BgOff}${FgDarkBlue}${FgOff}"
   $GitPromptSettings.PathStatusSeparator.Text = ""
   $GitPromptSettings.DefaultPromptSuffix = " "
 }
