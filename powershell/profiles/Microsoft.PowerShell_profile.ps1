@@ -24,7 +24,11 @@ function Get-JavaVersion {
 }
 
 function Get-JavaSegment {
-  "${BgYel}  $(Get-JavaVersion) ${BgOff}${BgDarkBlue}${FgYel}${FgOff} "
+  if (Test-Path "pom.xml") {
+    "${BgYel}  $(Get-JavaVersion) ${BgOff}${BgDarkBlue}${FgYel}${FgOff}"
+  } else {
+    "${BgDarkBlue}"
+  }
 }
 
 function Get-PromptPrefix {
@@ -40,7 +44,7 @@ function Get-PromptPrefix {
 
   $PMT_PREFIX = if ($prefix.Count -eq 0) { '' } else { '[' + ($prefix -join '/') + ']: ' }
 
-  "$(Get-JavaSegment)"
+  "$PMT_PREFIX$(Get-JavaSegment) "
 }
 
 function Setup-GitPrompt {
