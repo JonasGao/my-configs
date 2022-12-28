@@ -40,7 +40,7 @@ function Get-PromptPrefix {
 
   $PMT_PREFIX = if ($prefix.Count -eq 0) { '' } else { '[' + ($prefix -join '/') + ']: ' }
 
-  "${FgDark}${BgYel}${BgOff}${FgOff}$(Get-JavaSegment)"
+  "$(Get-JavaSegment)"
 }
 
 function Setup-GitPrompt {
