@@ -53,6 +53,7 @@ function Setup-GitPrompt {
   $GitPromptSettings.AfterPath.Text = "$BgDarkBlue ${BgOff}${FgDarkBlue}${FgOff}"
   $GitPromptSettings.PathStatusSeparator.Text = ""
   $GitPromptSettings.DefaultPromptSuffix = " "
+  $GitPromptSettings.DefaultPromptAbbreviateHomeDirectory = $true
 }
 
 Setup-GitPrompt
