@@ -41,6 +41,13 @@ set shiftwidth=2
 "hi CursorLine cterm=NONE ctermbg=242
 syntax on
 
+""" Basic mappings
+nnoremap  x  "_x
+nnoremap  dw  vb"_d
+nnoremap  <Space>a  ggvG$
+nnoremap  te  :tabedit<Return>
+
+""" Leaders mappings
 let mapleader="\\"
 noremap	  <Leader>y    "+y
 nnoremap	<Leader>p    "+p
@@ -56,7 +63,6 @@ nnoremap	<Leader>w    :set wrap!<CR>
 nnoremap	<Leader>m    :set filetype=
 nnoremap	<Leader>h    :bp<CR>
 nnoremap	<Leader>l    :bn<CR>
-nnoremap  <Space>a     ggvG$
 
 "if $TERM !=? 'xterm-256color'
 "	set termguicolors
