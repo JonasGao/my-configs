@@ -43,7 +43,7 @@
           "powerline_symbol": "\uE0B0",
           "foreground": "#ffffff",
           "background": "#4063D8",
-          "template": " \uE738 {{ .Major }} "
+          "template": " \uE738 {{ .Major }}.{{ .Minor }} "
         },
         {
           "type": "git",
