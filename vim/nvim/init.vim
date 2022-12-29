@@ -21,6 +21,7 @@ set tabstop=2
 set softtabstop=2
 set shiftwidth=2
 
+""" Unknown command
 "set title
 "set inccommand=split
 
@@ -68,3 +69,6 @@ nnoremap 	Ma 		<Plug>(easymotion-overwin-f)
 nnoremap 	Ms 		<Plug>(easymotion-overwin-f2)
 nnoremap 	<Leader>j 	<Plug>(easymotion-j)
 nnoremap 	<Leader>k 	<Plug>(easymotion-k)
+
+""" Load Packer
+lua require('plugins')
