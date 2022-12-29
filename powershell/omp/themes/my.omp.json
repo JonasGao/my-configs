@@ -33,7 +33,8 @@
           "background": "p:orange",
           "template": " \uf74a {{ path .Path .Location }} ",
           "properties": {
-            "style": "folder"
+            "style": "agnoster_short",
+            "max_depth": 3
           }
         },
         {
