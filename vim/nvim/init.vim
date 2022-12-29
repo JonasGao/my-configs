@@ -27,6 +27,13 @@ set shiftwidth=2
 filetype plugin indent on
 syntax on
 
+""" Basic mapping
+nnoremap  x  "_x
+nnoremap  dw  vb"_d
+nnoremap  <Space>a  ggvG$
+nnoremap  te  :tabedit
+
+""" Leaders mapping
 let mapleader="\\"
 nnoremap	<Leader>y	"*y
 nnoremap	<Leader>p	"*p
@@ -40,7 +47,8 @@ nnoremap	<Leader>w	:set wrap!<CR>
 nnoremap	<Leader>m	:set filetype=
 nnoremap	<Leader>h :bp<CR>
 nnoremap	<Leader>l :bn<CR>
-nnoremap  <Space>a  ggvG$
+nnoremap  <Leader>ss  :split<Return><C-w>w
+nnoremap  <Leader>sv  :vsplit<Return><C-w>w
 
 if $TERM !=? 'xterm-256color'
 	set termguicolors
