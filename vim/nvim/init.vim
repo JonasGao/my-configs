@@ -31,7 +31,7 @@ syntax on
 nnoremap  x  "_x
 nnoremap  dw  vb"_d
 nnoremap  <Space>a  ggvG$
-nnoremap  te  :tabedit
+nnoremap  te  :tabedit<Return>
 
 """ Leaders mapping
 let mapleader="\\"
