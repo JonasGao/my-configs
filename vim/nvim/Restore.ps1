@@ -29,10 +29,18 @@ function Install-Plugin {
   } 
 }
 
+function Install-Packer {
+  $D = "$env:LOCALAPPDATA\nvim-data\site\pack\packer\start\packer.nvim"
+  if (Test-Path $D) {
+    return
+  }
+  git clone https://github.com/wbthomason/packer.nvim $D
+}
+
 Restore-InitVim
 Install-Plugin -Name airline -Repo vim-airline/vim-airline
 Install-Plugin -Name easymotion -Repo easymotion/vim-easymotion
 Install-Plugin -Name fzf -Repo junegunn/fzf
 Install-Plugin -Name fzf.vim -Repo junegunn/fzf.vim
 Install-Plugin -Name vim-visual-multi -Repo mg979/vim-visual-multi
-
+Install-Packer
