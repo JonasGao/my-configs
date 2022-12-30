@@ -29,7 +29,6 @@ filetype plugin indent on
 syntax on
 
 """ Basic mapping
-nnoremap  x  "_x
 nnoremap  dw  vb"_d
 nnoremap  <Space>a  ggvG$
 nnoremap  te  :tabedit<Return>

@@ -42,7 +42,6 @@ set shiftwidth=2
 syntax on
 
 """ Basic mappings
-nnoremap  x  "_x
 nnoremap  dw  vb"_d
 nnoremap  <Space>a  ggvG$
 nnoremap  te  :tabedit<Return>
