@@ -64,10 +64,10 @@ let &t_ZR="\e[23m"
 """ EasyMotion
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
-nnoremap 	Ma 		<Plug>(easymotion-overwin-f)
-nnoremap 	Ms 		<Plug>(easymotion-overwin-f2)
-nnoremap 	<Leader>j 	<Plug>(easymotion-j)
-nnoremap 	<Leader>k 	<Plug>(easymotion-k)
+nnoremap 	ma  <Plug>(easymotion-overwin-f)
+nnoremap 	ms 	<Plug>(easymotion-overwin-f2)
+nnoremap 	mj 	<Plug>(easymotion-j)
+nnoremap 	mk 	<Plug>(easymotion-k)
 
 """ Load Packer
 lua require('plugins')
