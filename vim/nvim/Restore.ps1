@@ -5,9 +5,17 @@ $PACK_START="$PACK_HOME/dist/start"
 if (-not(Test-Path Variable:\MY_CONFIG_HOME)) {
 	throw "There is no MY_CONFIG_HOME"
 }
-New-Item -Type Container -Force "$NVIM_CONF_HOME"
-Copy-Item "$MY_CONFIG_HOME/vim/nvim/init.vim" "$NVIM_CONF_HOME/init.vim"
-Write-Host -ForegroundColor Green "Restore neovim config files finished."
+
+# Prepare parent folder
+New-Item -Type Container -Force "$NVIM_CONF_HOME" > $null
+
+function Restore-InitVim {
+  $SOURCE = "$MY_CONFIG_HOME/vim/nvim/init.vim"
+  $TARGET = "$NVIM_CONF_HOME/init.vim"
+  nvim -d $TARGET $SOURCE
+  Copy-Item $SOURCE $TARGET -Confirm
+  Write-Host -ForegroundColor Green "Restore neovim config files finished."
+}
 
 function Install-Plugin {
   param(
@@ -21,6 +29,7 @@ function Install-Plugin {
   } 
 }
 
+Restore-InitVim
 Install-Plugin -Name airline -Repo vim-airline/vim-airline
 Install-Plugin -Name easymotion -Repo easymotion/vim-easymotion
 Install-Plugin -Name fzf -Repo junegunn/fzf

@@ -6,11 +6,11 @@ if (-not(Test-Path Variable:\MY_CONFIG_HOME)) {
   throw "Can not found MY_CONFIG_HOME"
 }
 
-nvim -d "$MY_CONFIG_HOME/vim/vim/vimrc" "$HOME/.vimrc"
-
-$REPLY = Read-Host -Prompt "Press [y] restore vimrc"
-if ($REPLY -eq "y") {
-  Copy-Item -Force "$MY_CONFIG_HOME/vim/vim/vimrc" "$HOME/.vimrc"
+function Restore-RcFile {
+  $S = "$MY_CONFIG_HOME/vim/vim/vimrc"
+  $D = "$HOME/.vimrc"
+  nvim -d $D $S
+  Copy-Item $S $D -Confirm
   Write-Host -ForegroundColor Green "Restore vimrc finished."
 }
 
@@ -26,6 +26,7 @@ function Install-Plugin {
   } 
 }
 
+Restore-RcFile
 Install-Plugin -Name airline -Repo vim-airline/vim-airline
 Install-Plugin -Name easymotion -Repo easymotion/vim-easymotion
 Install-Plugin -Name fzf -Repo junegunn/fzf
