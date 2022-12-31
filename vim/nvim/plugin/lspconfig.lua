@@ -25,8 +25,10 @@ lspconfig.sumneko_lua.setup {
   },
 }
 
+local pses_path = vim.fn.expand('$HOME/PowerShellEditorServices')
+
 lspconfig.powershell_es.setup {
-  bundle_path='c:/User/gaopi/Apps/PowerShellEditorServices'
+  bundle_path=pses_path
 }
 
 vim.diagnostic.config({
