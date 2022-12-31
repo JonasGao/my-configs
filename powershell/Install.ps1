@@ -39,6 +39,11 @@ function Install-Simple {
 	}
 }
 
+function Install-OMP {
+	$S = "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1"
+	Copy-Item $S $PROFILE -Confirm
+}
+
 if (-not(Test-Path Variable:\MY_CONFIG_HOME)) {
 	throw "There is no MY_CONFIG_HOME"
 }
@@ -53,7 +58,7 @@ Switch ($Reply) {
 	}
 	2 {
 		# Oh my posh
-		Write-Output "Not implemented."
+		Install-OMP
 	}
 	default {
 		Write-Output "Non matched. Finish install."
