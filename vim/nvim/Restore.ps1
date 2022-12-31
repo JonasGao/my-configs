@@ -24,7 +24,7 @@ function Install-Plugin {
   )
   $REPLY = Read-Host -Prompt "Press [y] install `"$Name`""
   if ($REPLY -eq "y") {
-  	New-Item -Force -Type Container "$PACK_START/"
+  	New-Item -Force -Type Container "$PACK_START/" > $null
   	git clone "git@github.com:$Repo.git" "$PACK_START/$Name"
   } 
 }
