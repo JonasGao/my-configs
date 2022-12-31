@@ -114,6 +114,10 @@ function Set-Proxy {
   [net.webrequest]::DefaultWebProxy = New-Object net.webproxy $Proxy
 }
 
+function Get-Proxy {
+  [net.webrequest]::DefaultWebProxy
+}
+
 <#
  .Synopsis
   Help you get hash from string.
@@ -150,5 +154,6 @@ Export-ModuleMember -Function Copy-Sshid
 Export-ModuleMember -Function Set-SbtHome
 Export-ModuleMember -Function Set-HttpProxy
 Export-ModuleMember -Function Set-Proxy
+Export-ModuleMember -Function Get-Proxy
 Export-ModuleMember -Function Set-MvnHome
 Export-ModuleMember -Function Get-StrHash
