@@ -1,6 +1,7 @@
 local ok, n = pcall(require, 'neosolarized')
 if not ok then 
   print('Not load neosolarized')
+  return
 end
 
 n.setup({
