@@ -3,6 +3,7 @@ set background=dark
 set signcolumn=yes
 set ttimeoutlen=0
 set wildmenu wildmode=longest:full,full
+set completeopt=noinsert,noselect
 set clipboard=unnamedplus
 set backspace=indent,eol,start
 set cursorline
@@ -21,7 +22,6 @@ set softtabstop=2
 set shiftwidth=2
 
 """ Unknown command
-"set completeopt=noinsert,menuone,noselect
 "set title
 "set inccommand=split
 
