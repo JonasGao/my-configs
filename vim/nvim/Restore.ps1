@@ -46,7 +46,8 @@ function Restore-Config {
 }
 
 Restore-InitVim
-Install-Plugin -Name airline -Repo vim-airline/vim-airline
+# Replaced by lualine
+# Install-Plugin -Name airline -Repo vim-airline/vim-airline
 Install-Plugin -Name easymotion -Repo easymotion/vim-easymotion
 Install-Plugin -Name fzf -Repo junegunn/fzf
 Install-Plugin -Name fzf.vim -Repo junegunn/fzf.vim
