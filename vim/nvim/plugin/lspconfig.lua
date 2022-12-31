@@ -25,6 +25,10 @@ lspconfig.sumneko_lua.setup {
   },
 }
 
+lspconfig.powershell_es.setup {
+  bundle_path='c:/User/gaopi/Apps/PowerShellEditorServices'
+}
+
 vim.diagnostic.config({
   update_in_insert = true,
   float = {
