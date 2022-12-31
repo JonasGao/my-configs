@@ -38,11 +38,11 @@ function Install-Packer {
 }
 
 function Restore-Config {
-  $P = "$MY_CONFIG_HOME/vim/nvim"
-  $L = "$P/lua"
-  $FT = "$P/ftplugin"
+  $N = "$MY_CONFIG_HOME/vim/nvim"
+  $L = "$N/lua"
+  $P = "$N/plugin"
   Copy-Item $L "$NVIM_CONF_HOME/" -Recurse -Confirm
-  Copy-Item $FT "$NVIM_CONF_HOME/" -Recurse -Confirm
+  Copy-Item $P "$NVIM_CONF_HOME/" -Recurse -Confirm
 }
 
 Restore-InitVim
