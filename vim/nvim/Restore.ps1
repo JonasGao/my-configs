@@ -1,3 +1,10 @@
+param(
+  [switch]$Init,
+  [switch]$Plugin,
+  [switch]$Packer,
+  [switch]$Config
+)
+
 $NVIM_CONF_HOME="$HOME/AppData/Local/nvim"
 $PACK_HOME="$NVIM_CONF_HOME/pack"
 $PACK_START="$PACK_HOME/dist/start"
@@ -47,12 +54,24 @@ function Restore-Config {
   Copy-Item $F "$NVIM_CONF_HOME/" -Recurse -Confirm
 }
 
-Restore-InitVim
-# Replaced by lualine
-# Install-Plugin -Name airline -Repo vim-airline/vim-airline
-Install-Plugin -Name easymotion -Repo easymotion/vim-easymotion
-Install-Plugin -Name fzf -Repo junegunn/fzf
-Install-Plugin -Name fzf.vim -Repo junegunn/fzf.vim
-Install-Plugin -Name vim-visual-multi -Repo mg979/vim-visual-multi
-Install-Packer
-Restore-Config
+if ($Init) {
+  Restore-InitVim
+}
+
+if ($Plugin) {
+  # Replaced by lualine
+  # Install-Plugin -Name airline -Repo vim-airline/vim-airline
+  Install-Plugin -Name easymotion -Repo easymotion/vim-easymotion
+  Install-Plugin -Name fzf -Repo junegunn/fzf
+  Install-Plugin -Name fzf.vim -Repo junegunn/fzf.vim
+  Install-Plugin -Name vim-visual-multi -Repo mg979/vim-visual-multi
+}
+
+if ($Packer) {
+  Install-Packer
+}
+
+if ($Config) {
+  Restore-Config
+}
+
