@@ -41,8 +41,10 @@ function Restore-Config {
   $N = "$MY_CONFIG_HOME/vim/nvim"
   $L = "$N/lua"
   $P = "$N/plugin"
+  $F = "$N/after"
   Copy-Item $L "$NVIM_CONF_HOME/" -Recurse -Confirm
   Copy-Item $P "$NVIM_CONF_HOME/" -Recurse -Confirm
+  Copy-Item $F "$NVIM_CONF_HOME/" -Recurse -Confirm
 }
 
 Restore-InitVim
