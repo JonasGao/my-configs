@@ -37,6 +37,14 @@ function Install-Packer {
   git clone https://github.com/wbthomason/packer.nvim $D
 }
 
+function Restore-Config {
+  $P = "$MY_CONFIG_HOME/vim/nvim"
+  $L = "$P/lua"
+  $FT = "$P/ftplugin"
+  Copy-Item $L "$NVIM_CONF_HOME/" -Recurse -Confirm
+  Copy-Item $FT "$NVIM_CONF_HOME/" -Recurse -Confirm
+}
+
 Restore-InitVim
 Install-Plugin -Name airline -Repo vim-airline/vim-airline
 Install-Plugin -Name easymotion -Repo easymotion/vim-easymotion
@@ -44,3 +52,4 @@ Install-Plugin -Name fzf -Repo junegunn/fzf
 Install-Plugin -Name fzf.vim -Repo junegunn/fzf.vim
 Install-Plugin -Name vim-visual-multi -Repo mg979/vim-visual-multi
 Install-Packer
+Restore-Config
