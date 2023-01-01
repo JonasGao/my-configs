@@ -62,12 +62,20 @@ function Restore-Config
   Copy-Item $F "$NVIM_CONF_HOME/" -Recurse -Confirm
 }
 
-if ($All -or $Init)
+if ($All)
+{
+  $Init = $true
+  $Plugin = $true
+  $Packer = $true
+  $Config = $true
+}
+
+if ($Init)
 {
   Restore-InitVim
 }
 
-if ($All -or $Plugin)
+if ($Plugin)
 {
   # Replaced by lualine
   # Install-Plugin -Name airline -Repo vim-airline/vim-airline
@@ -77,12 +85,12 @@ if ($All -or $Plugin)
   Install-Plugin -Name vim-visual-multi -Repo mg979/vim-visual-multi
 }
 
-if ($All -or $Packer)
+if ($Packer)
 {
   Install-Packer
 }
 
-if ($All -or $Config)
+if ($Config)
 {
   Restore-Config
 }
