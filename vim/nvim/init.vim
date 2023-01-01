@@ -3,8 +3,8 @@ set background=dark
 set signcolumn=yes
 set ttimeoutlen=0
 set wildmenu wildmode=longest:full,full
-set completeopt=noinsert,noselect
-set clipboard=unnamedplus
+set completeopt=noinsert,menuone,noselect
+set clipboard+=unnamedplus
 set backspace=indent,eol,start
 set cursorline
 set hidden
