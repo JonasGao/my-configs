@@ -1,4 +1,5 @@
 set nu rnu
+set title
 set background=dark
 set signcolumn=yes
 set ttimeoutlen=0
@@ -13,6 +14,7 @@ set splitbelow splitright
 set nobackup
 set noswapfile
 set nobomb
+
 set autoindent
 set smartindent
 set expandtab
@@ -22,7 +24,6 @@ set softtabstop=2
 set shiftwidth=2
 
 """ Unknown command
-"set title
 "set inccommand=split
 
 filetype plugin indent on
