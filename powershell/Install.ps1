@@ -1,3 +1,7 @@
+param(
+  $Scoop,
+)
+
 $USER_MODULE_HOME = $env:PSModulePath.Split(";")[0]
 
 function Use-Module {
@@ -42,6 +46,15 @@ function Install-Simple {
 function Install-OMP {
 	$S = "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1"
 	Copy-Item $S $PROFILE -Confirm
+}
+
+function Install-Scoop {
+  irm get.scoop.sh | iex
+}
+
+if ($Scoop) {
+  Install-Scoop
+
 }
 
 if (-not(Test-Path Variable:\MY_CONFIG_HOME)) {
