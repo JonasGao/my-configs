@@ -1,9 +1,9 @@
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
 
-Import-Module Terminal-Icons
-Import-Module ZLocation
 Import-Module posh-git
+Import-Module Terminal-Icons
+Import-Module z
 
 Set-Alias -Name vim -Value gvim
 Set-Alias -Name ll -Value Get-ChildItem
