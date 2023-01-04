@@ -38,7 +38,8 @@ function Install-Simple {
 		Use-Module -Name MyPsScripts
 		Use-Module -Name posh-git
 		Use-Module -Name Terminal-Icons
-		Use-Module -Name ZLocation
+		#Use-Module -Name ZLocation
+		Use-Module -Name z
 		Write-Host "Success install profile." -ForegroundColor Green
 	}
 }
