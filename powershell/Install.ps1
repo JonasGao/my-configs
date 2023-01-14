@@ -1,7 +1,3 @@
-param(
-  $Scoop,
-)
-
 $USER_MODULE_HOME = $env:PSModulePath.Split(";")[0]
 
 function Use-Module
@@ -60,12 +56,7 @@ function Install-OMP
 
 function Install-Scoop
 {
-  irm get.scoop.sh | iex
-}
-
-if ($Scoop)
-{
-  Install-Scoop
+  Invoke-RestMethod get.scoop.sh | Invoke-Expression
 }
 
 if (-not(Test-Path Variable:\MY_CONFIG_HOME))
@@ -75,7 +66,9 @@ if (-not(Test-Path Variable:\MY_CONFIG_HOME))
 Write-Output "Which you want install?"
 Write-Output "1: simple"
 Write-Output "2: oh-my-posh"
-$Reply = Read-Host -Prompt "[1/2]: "
+Write-Output "3: Scoop"
+Write-Output "4: JdkSwitcher"
+$Reply = Read-Host -Prompt "[1/2/3/4]: "
 Switch ($Reply)
 {
   1
@@ -87,6 +80,14 @@ Switch ($Reply)
   {
     # Oh my posh
     Install-OMP
+  }
+  3
+  {
+    Install-Scoop
+  }
+  4
+  {
+    Use-Module -Path "module\JdkSwitcher"
   }
   default
   {
