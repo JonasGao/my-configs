@@ -13,7 +13,7 @@ function Use-Module
   } elseif ($Path)
   {
     Write-Output "Install local module `"$Path`""
-    Copy-Item -Recurse $Path $USER_MODULE_HOME
+    Copy-Item -Force -Recurse $Path $USER_MODULE_HOME
   }
 }
 
@@ -68,7 +68,7 @@ Write-Output "1: simple"
 Write-Output "2: oh-my-posh"
 Write-Output "3: Scoop"
 Write-Output "4: JdkSwitcher"
-$Reply = Read-Host -Prompt "[1/2/3/4]: "
+$Reply = Read-Host -Prompt "[1/2/3/4]"
 Switch ($Reply)
 {
   1
