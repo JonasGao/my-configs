@@ -1,29 +1,28 @@
 $JAVA_HOME_LIST_FILE = "$HOME\.jdks\list"
 
-function ensure-dbfile()
+function Read-Jdks()
 {
   if (-not (Test-Path -Path $JAVA_HOME_LIST_FILE -PathType Leaf))
   {
     New-Item $JAVA_HOME_LIST_FILE > $null
   }
-}
-
-
-function Get-AllJavaHomeTable()
-{
-  ensure-dbfile
+  $csv = Import-Csv $JAVA_HOME_LIST_FILE
   $table = @{}
-  Get-Content -Path $JAVA_HOME_LIST_FILE | ForEach-Object {
-    if ($_)
-    {
-      $pair = $_.Split(": ")
-      $table.Add($pair[0], $pair[1])
-    }
+  $csv | ForEach-Object {
+    $table[$_.Key] = $_.Value
   }
   $table
 }
 
-function Add-JavaHome()
+function Save-Jdks()
+{
+  param (
+    $Table
+  )
+  $Table.GetEnumerator() | Select-Object -Property Key,Value | Export-Csv -NoTypeInformation -Path $JAVA_HOME_LIST_FILE
+}
+
+function Set-JavaHome()
 {
   param (
     [parameter(Mandatory = $true)]
@@ -37,15 +36,15 @@ function Add-JavaHome()
     [string]
     $Path
   )
-  ensure-dbfile
+  $jdks = Read-Jdks
   $fullName = (Get-Item $Path).FullName
-  Add-Content -Path $JAVA_HOME_LIST_FILE -Value ($Key + ": $fullName")
+  $jdks[$Key] = $fullName
+  Save-Jdks $jdks
 }
 
 function Get-JavaHome()
 {
-  ensure-dbfile
-  Get-Content -Path $JAVA_HOME_LIST_FILE
+  Read-Jdks
 }
 
 function Search-JavaHome()
@@ -93,9 +92,9 @@ Set current env 'JAVA_HOME' and setup PATH.
 Path to java home.
 
 .Example
-Set-JavaHome C:\xxx\java\jdk-1.8
+Use-JavaHome C:\xxx\java\jdk-1.8
 #>
-function Set-JavaHome
+function Use-JavaHome
 {
   param (
     [string]
@@ -105,20 +104,28 @@ function Set-JavaHome
   )
   if ($Key)
   {
-    $jhome = (Get-AllJavaHomeTable)[$Key]
-    setupenv $jhome
+    $jdks = Read-Jdks
+    $jhome = $jdks[$Key]
+    if ($jhome -and (Test-Path -Path $jhome -PathType container))
+    {
+      setupenv $jhome
+    } else
+    {
+      throw "Not valid java home path"
+    }
     return
   }
 
   if ($Path)
   {
     setupenv $Path
+    return
   }
 
   throw "Please provider a key or a path!"
 }
 
-Export-ModuleMember -Function Add-JavaHome
-Export-ModuleMember -Function Get-JavaHome
 Export-ModuleMember -Function Set-JavaHome
+Export-ModuleMember -Function Get-JavaHome
+Export-ModuleMember -Function Use-JavaHome
 Export-ModuleMember -Function Search-JavaHome
