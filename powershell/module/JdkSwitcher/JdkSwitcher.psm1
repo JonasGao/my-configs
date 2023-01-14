@@ -1,7 +1,17 @@
 $JAVA_HOME_LIST_FILE = "$HOME\.jdks\list"
 
+function ensure-dbfile()
+{
+  if (-not (Test-Path -Path $JAVA_HOME_LIST_FILE -PathType Leaf))
+  {
+    New-Item $JAVA_HOME_LIST_FILE > $null
+  }
+}
+
+
 function Get-AllJavaHomeTable()
 {
+  ensure-dbfile
   $table = @{}
   Get-Content -Path $JAVA_HOME_LIST_FILE | ForEach-Object {
     if ($_)
@@ -27,16 +37,14 @@ function Add-JavaHome()
     [string]
     $Path
   )
-  if (-not (Test-Path -Path $JAVA_HOME_LIST_FILE -PathType Leaf))
-  {
-    New-Item $JAVA_HOME_LIST_FILE > $null
-  }
+  ensure-dbfile
   $fullName = (Get-Item $Path).FullName
   Add-Content -Path $JAVA_HOME_LIST_FILE -Value ($Key + ": $fullName")
 }
 
 function Get-JavaHome()
 {
+  ensure-dbfile
   Get-Content -Path $JAVA_HOME_LIST_FILE
 }
 
