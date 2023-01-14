@@ -1,9 +1,11 @@
 $JAVA_HOME_LIST_FILE = "$HOME\.jdks\list"
 
-function Get-AllJavaHomeTable() {
+function Get-AllJavaHomeTable()
+{
   $table = @{}
   Get-Content -Path $JAVA_HOME_LIST_FILE | ForEach-Object {
-    if ($_) {
+    if ($_)
+    {
       $pair = $_.Split(": ")
       $table.Add($pair[0], $pair[1])
     }
@@ -11,7 +13,8 @@ function Get-AllJavaHomeTable() {
   $table
 }
 
-function Add-JavaHome() {
+function Add-JavaHome()
+{
   param (
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
@@ -24,19 +27,21 @@ function Add-JavaHome() {
     [string]
     $Path
   )
-  if (-not (Test-Path -Path $JAVA_HOME_LIST_FILE -PathType Leaf)) {
+  if (-not (Test-Path -Path $JAVA_HOME_LIST_FILE -PathType Leaf))
+  {
     New-Item $JAVA_HOME_LIST_FILE > $null
   }
-  $table = Get-AllJavaHomeTable
   $fullName = (Get-Item $Path).FullName
   Add-Content -Path $JAVA_HOME_LIST_FILE -Value ($Key + ": $fullName")
 }
 
-function Get-AllJavaHome() {
+function Get-JavaHome()
+{
   Get-Content -Path $JAVA_HOME_LIST_FILE
 }
 
-function Search-JavaHome() {
+function Search-JavaHome()
+{
   param (
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
@@ -55,18 +60,21 @@ function Search-JavaHome() {
   }
 }
 
-function setupenv () {
+function setupenv ()
+{
   $target_path = $args[0]
-    $latest_path = $env:JAVA_HOME
-    Write-Output "Set JAVA_HOME = '$target_path'"
-    $JAVA_HOME = $target_path
-    $env:JAVA_HOME = $target_path
-    if ($latest_path) {
-      $new_path = $env:PATH.Replace(($latest_path + "\bin;"), "")
-        $env:PATH = "$JAVA_HOME\bin;$new_path"
-    } else {
-      $env:PATH = "$JAVA_HOME\bin;$env:PATH"
-    }
+  $latest_path = $env:JAVA_HOME
+  Write-Output "Set JAVA_HOME = '$target_path'"
+  $JAVA_HOME = $target_path
+  $env:JAVA_HOME = $target_path
+  if ($latest_path)
+  {
+    $new_path = $env:PATH.Replace(($latest_path + "\bin;"), "")
+    $env:PATH = "$JAVA_HOME\bin;$new_path"
+  } else
+  {
+    $env:PATH = "$JAVA_HOME\bin;$env:PATH"
+  }
 }
 
 <#
@@ -79,20 +87,23 @@ Path to java home.
 .Example
 Set-JavaHome C:\xxx\java\jdk-1.8
 #>
-function Set-JavaHome {
+function Set-JavaHome
+{
   param (
     [string]
     $Path,
     [string]
     $Key
   )
-  if ($Key) {
+  if ($Key)
+  {
     $jhome = (Get-AllJavaHomeTable)[$Key]
     setupenv $jhome
     return
   }
 
-  if ($Path) {
+  if ($Path)
+  {
     setupenv $Path
   }
 
@@ -100,6 +111,6 @@ function Set-JavaHome {
 }
 
 Export-ModuleMember -Function Add-JavaHome
-Export-ModuleMember -Function Get-AllJavaHome
+Export-ModuleMember -Function Get-JavaHome
 Export-ModuleMember -Function Set-JavaHome
 Export-ModuleMember -Function Search-JavaHome
