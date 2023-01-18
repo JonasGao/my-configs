@@ -57,6 +57,8 @@ function Install-OMP
 function Install-Scoop
 {
   Invoke-RestMethod get.scoop.sh | Invoke-Expression
+  scoop install delta
+  scoop install lua-language-server
 }
 
 if (-not(Test-Path Variable:\MY_CONFIG_HOME))
