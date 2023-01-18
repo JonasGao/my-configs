@@ -74,8 +74,9 @@ noremap      <Space>p     "0p
 noremap      Q            gq
 
 """ EasyMotion
-nmap      fj           <Plug>(easymotion-f)
-nmap      fk           <Plug>(easymotion-F)
+nmap  ms  <Plug>(easymotion-s)
+nmap  mf  <Plug>(easymotion-f)
+nmap  mF  <Plug>(easymotion-F)
 
 """ AceJump Example
 " Press `f` to activate AceJump
