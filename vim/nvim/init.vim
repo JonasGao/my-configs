@@ -49,7 +49,7 @@ nnoremap	<Leader>l :bn<CR>
 nnoremap  <Leader>ss  :split<Return><C-w>w
 nnoremap  <Leader>sv  :vsplit<Return><C-w>w
 
-if $TERM !=? 'xterm-256color'
+if $TERM ==? 'xterm-256color'
 	set termguicolors
 endif
 
