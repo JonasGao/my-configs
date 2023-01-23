@@ -12,14 +12,21 @@ install_plug() {
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 }
 
-while getopts "i" OPT
+restore_conf() {
+  cp "$CONF_SRC/.vimrc" "$HOME/.vimrc"
+}
+
+while getopts "ic" OPT
 do
   case "$OPT" in
     i)
       install_plug
       ;;
+    c)
+      restore_conf
+      ;;
     ?)
-      echo "-i" >&2
+      echo "Flags: -ic" >&2
       ;;
   esac
 done
