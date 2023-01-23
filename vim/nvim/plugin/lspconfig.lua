@@ -1,4 +1,4 @@
-local lspconfig = require'lspconfig'
+local lspconfig = require 'lspconfig'
 
 require('vim.lsp.protocol')
 
@@ -24,7 +24,7 @@ lspconfig.sumneko_lua.setup {
       },
       diagnostics = {
         -- Get the language server to recognize the `vim` global
-        globals = {'vim'},
+        globals = { 'vim' },
       },
       workspace = {
         -- Make the server aware of Neovim runtime files
@@ -42,7 +42,7 @@ local pses_path = vim.fn.expand('$HOME/PowerShellEditorServices')
 
 lspconfig.powershell_es.setup {
   on_attach = on_attach,
-  bundle_path=pses_path,
+  bundle_path = pses_path,
 }
 
 vim.diagnostic.config({
@@ -51,3 +51,5 @@ vim.diagnostic.config({
     source = "always"
   }
 })
+
+lspconfig.bashls.setup {}
