@@ -10,10 +10,14 @@ CONF_SRC="$MY_CONFIG_HOME/vim/vim/plug"
 install_plug() {
   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  echo -e "\e[32mSuccess install to ~/.vim/autoload/plug.vim\e[0m"
 }
 
 restore_conf() {
-  cp "$CONF_SRC/.vimrc" "$HOME/.vimrc"
+  SRC="$CONF_SRC/.vimrc"
+  DST="$HOME/.vimrc"
+  cp "$SRC" "$DST"
+  printf "\e[32mAlready overwrite %s by %s\e[0m\n" "$SRC" "$DST"
 }
 
 while getopts "ic" OPT

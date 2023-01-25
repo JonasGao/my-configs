@@ -4,6 +4,7 @@ set nobackup
 set noswapfile
 set nobomb
 set autochdir
+set signcolumn=yes
 set whichwrap=b,s,<,>,[,]
 set history=2048
 set backspace=indent,eol,start whichwrap+=<,>,[,]
@@ -80,6 +81,7 @@ Plug 'mg979/vim-visual-multi'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
 call plug#end()
 
 """ 最后加载一个本地自定义
