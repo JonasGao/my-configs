@@ -8,7 +8,7 @@ return require('packer').startup(function(use)
   use {
     'folke/trouble.nvim',
     requires = "kyazdani42/nvim-web-devicons",
-    config = function ()
+    config = function()
       require("trouble").setup {}
     end
   }
@@ -27,4 +27,17 @@ return require('packer').startup(function(use)
       opt = true
     }
   }
+
+  -- Easy motion
+  use 'easymotion/vim-easymotion'
+
+  -- fzf
+  use {
+    'junegunn/fzf',
+    run = ":call fzf#install()"
+  }
+  use 'junegunn/fzf.vim'
+
+  -- Visual Multi
+  use 'mg979/vim-visual-multi'
 end)

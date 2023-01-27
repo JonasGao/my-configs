@@ -1,14 +1,11 @@
 param(
   [switch]$All,
   [switch]$Init,
-  [switch]$Plugin,
   [switch]$Packer,
   [switch]$Config
 )
 
 $NVIM_CONF_HOME="$HOME/AppData/Local/nvim"
-$PACK_HOME="$NVIM_CONF_HOME/pack"
-$PACK_START="$PACK_HOME/dist/start"
 
 if (-not(Test-Path Variable:\MY_CONFIG_HOME))
 {
@@ -25,20 +22,6 @@ function Restore-InitVim
   nvim -d $TARGET $SOURCE
   Copy-Item $SOURCE $TARGET -Confirm
   Write-Host -ForegroundColor Green "Restore neovim config files finished."
-}
-
-function Install-Plugin
-{
-  param(
-    $Name,
-    $Repo
-  )
-  $REPLY = Read-Host -Prompt "Press [y] install `"$Name`""
-  if ($REPLY -eq "y")
-  {
-    New-Item -Force -Type Container "$PACK_START/" > $null
-    git clone "git@github.com:$Repo.git" "$PACK_START/$Name"
-  } 
 }
 
 function Install-Packer
@@ -65,7 +48,6 @@ function Restore-Config
 if ($All)
 {
   $Init = $true
-  $Plugin = $true
   $Packer = $true
   $Config = $true
 }
@@ -73,16 +55,6 @@ if ($All)
 if ($Init)
 {
   Restore-InitVim
-}
-
-if ($Plugin)
-{
-  # Replaced by lualine
-  # Install-Plugin -Name airline -Repo vim-airline/vim-airline
-  Install-Plugin -Name easymotion -Repo easymotion/vim-easymotion
-  Install-Plugin -Name fzf -Repo junegunn/fzf
-  Install-Plugin -Name fzf.vim -Repo junegunn/fzf.vim
-  Install-Plugin -Name vim-visual-multi -Repo mg979/vim-visual-multi
 }
 
 if ($Packer)

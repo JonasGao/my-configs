@@ -39,16 +39,23 @@ nnoremap	<Leader>p	"*p
 vnoremap	<Leader>p	"*p
 nnoremap	<Leader>x	:set paste!<CR>
 nnoremap	<Leader>r	:bro ol<CR>
-nnoremap	<Leader>fms	:set foldmethod=syntax<CR>
-nnoremap	<Leader>fmi	:set foldmethod=indent<CR>
 nnoremap	<Leader>n	:set nu! rnu!<CR>
 nnoremap	<Leader>w	:set wrap!<CR>
 nnoremap	<Leader>m	:set filetype=
+" Switch buffer
 nnoremap	<Leader>h :bp<CR>
 nnoremap	<Leader>l :bn<CR>
+" Split
 nnoremap  <Leader>ss  :split<Return><C-w>w
 nnoremap  <Leader>sv  :vsplit<Return><C-w>w
+" Resize
+nnoremap  <Leader>W,  <C-w><
+nnoremap  <Leader>W.  <C-w>>
+" Switch foldmethod
+nnoremap	<Leader>fms	:set foldmethod=syntax<CR>
+nnoremap	<Leader>fmi	:set foldmethod=indent<CR>
 
+""" Setup color
 if $TERM ==? 'xterm-256color'
 	set termguicolors
 endif
