@@ -12,6 +12,12 @@ return require('packer').startup(function(use)
       require("trouble").setup {}
     end
   }
+  use {
+    'glepnir/lspsaga.nvim',
+    -- Documentation origin use nvim-tree ... but there has already use another ...
+    -- requires = 'nvim-tree/nvim-web-devicons',
+    requires = 'kyazdani42/nvim-web-devicons',
+  }
 
   -- Colorschema
   use {
