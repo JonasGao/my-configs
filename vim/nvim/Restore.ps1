@@ -40,9 +40,9 @@ function Restore-Config
   $L = "$N/lua"
   $P = "$N/plugin"
   $F = "$N/after"
-  Copy-Item $L "$NVIM_CONF_HOME/" -Recurse -Confirm
-  Copy-Item $P "$NVIM_CONF_HOME/" -Recurse -Confirm
-  Copy-Item $F "$NVIM_CONF_HOME/" -Recurse -Confirm
+  Copy-Item $L "$NVIM_CONF_HOME/" -Recurse -Force
+  Copy-Item $P "$NVIM_CONF_HOME/" -Recurse -Force
+  Copy-Item $F "$NVIM_CONF_HOME/" -Recurse -Force
 }
 
 if ($All)
