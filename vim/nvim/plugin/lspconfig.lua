@@ -52,9 +52,13 @@ local lsp_flags = {
   debounce_text_changes = 150,
 }
 
+-- Add additional capabilities supported by nvim-cmp
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
 lspconfig.sumneko_lua.setup {
   on_attach = on_attach,
   flags = lsp_flags,
+  capabilities = capabilities,
   settings = {
     Lua = {
       runtime = {
@@ -68,6 +72,7 @@ lspconfig.sumneko_lua.setup {
       workspace = {
         -- Make the server aware of Neovim runtime files
         library = vim.api.nvim_get_runtime_file("", true),
+        checkThirdParty = false
       },
       -- Do not send telemetry data containing a randomized but unique identifier
       telemetry = {
@@ -83,8 +88,10 @@ lspconfig.powershell_es.setup {
   on_attach = on_attach,
   bundle_path = pses_path,
   flags = lsp_flags,
+  capabilities = capabilities,
 }
 
 lspconfig.bashls.setup {
   flags = lsp_flags,
+  capabilities = capabilities,
 }
