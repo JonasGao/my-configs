@@ -56,7 +56,9 @@ nnoremap	<Leader>fms	:set foldmethod=syntax<CR>
 nnoremap	<Leader>fmi	:set foldmethod=indent<CR>
 
 """ Setup color
-if $TERM ==? 'xterm-256color'
+if has('win32')
+	set termguicolors
+elseif $TERM ==? 'xterm-256color'
 	set termguicolors
 endif
 
