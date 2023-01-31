@@ -2,7 +2,11 @@ local opts = { noremap = true, silent = true }
 if (vim.fn.has('win32'))
 then
   -- telescope
-  vim.keymap.set('n', '<leader>ff', ':Files<CR>', opts)
+  local builtin = require('telescope.builtin')
+  vim.keymap.set('n', '<leader>ff', builtin.find_files, opts)
+  vim.keymap.set('n', '<leader>fg', builtin.live_grep, opts)
+  vim.keymap.set('n', '<leader>fb', builtin.buffers, opts)
+  vim.keymap.set('n', '<leader>fh', builtin.help_tags, opts)
 else
   -- fzf
   vim.keymap.set('n', '<leader>ff', ':Files<CR>', opts)
