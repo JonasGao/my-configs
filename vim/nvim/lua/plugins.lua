@@ -37,13 +37,6 @@ return require('packer').startup(function(use)
   -- Easy motion
   use 'easymotion/vim-easymotion'
 
-  -- fzf
-  use {
-    'junegunn/fzf',
-    run = ":call fzf#install()"
-  }
-  use 'junegunn/fzf.vim'
-
   -- Visual Multi
   use 'mg979/vim-visual-multi'
 
@@ -60,4 +53,25 @@ return require('packer').startup(function(use)
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate',
   }
+
+  if (vim.fn.has('win32'))
+  then
+    -- fzf preview not working for windows, it depend on git-bash or bash.
+    -- so we use telescope
+    use {
+      'nvim-telescope/telescope.nvim',
+      tag = '0.1.1',
+      requires = {
+        'nvim-lua/plenary.nvim'
+      }
+    }
+  else
+    -- fzf
+    use {
+      'junegunn/fzf',
+      run = ":call fzf#install()"
+    }
+    use 'junegunn/fzf.vim'
+  end
+
 end)
