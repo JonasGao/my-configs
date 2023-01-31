@@ -17,6 +17,9 @@ ts.setup {
     "yaml",
     "css",
     "html",
+    "ini",
+    "rust",
+    "go",
   },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
