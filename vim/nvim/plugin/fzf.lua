@@ -1,6 +1,20 @@
 local opts = { noremap = true, silent = true }
 if (vim.fn.has('win32'))
 then
+  local telescope = require('telescope')
+  telescope.setup({
+    defaults = {
+      mappings = {
+        i = {
+          ["<C-h>"] = "which_key"
+        }
+      }
+    },
+    pickers = {
+    },
+    extensions = {
+    }
+  })
   -- telescope
   local builtin = require('telescope.builtin')
   vim.keymap.set('n', '<leader>ff', builtin.find_files, opts)
