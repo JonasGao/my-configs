@@ -1,8 +1,9 @@
 param(
-  [switch]$All,
+  [switch]$Install,
   [switch]$Init,
   [switch]$Packer,
-  [switch]$Config
+  [switch]$Config,
+  [switch]$Dependency
 )
 
 $NVIM_CONF_HOME="$HOME/AppData/Local/nvim"
@@ -45,11 +46,27 @@ function Restore-Config
   Copy-Item $F "$NVIM_CONF_HOME/" -Recurse -Force
 }
 
-if ($All)
+function Install-Dependency
 {
-  $Init = $true
-  $Packer = $true
-  $Config = $true
+  scoop install cmake
+  scoop install bat
+  scoop install gcc
+  scoop install lua-language-server
+
+  Build-TelescopeFzfNative
+}
+
+function Build-TelescopeFzfNative
+{
+  Set-Location "$env:LOCALAPPDATA\nvim-data\site\pack\packer\start\telescope-fzf-native.nvim\"
+  cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build
+}
+
+function Get-Nvim
+{
+  $NvimMsi = "$HOME\Downloads\nvim-win64.msi"
+  Invoke-RestMethod -Uri "https://github.com/neovim/neovim/releases/download/nightly/nvim-win64.msi" -OutFile $NvimMsi
+  Start-Process $NvimMsi
 }
 
 if ($Init)
@@ -67,3 +84,12 @@ if ($Config)
   Restore-Config
 }
 
+if ($Dependency)
+{
+  Install-Dependency
+}
+
+if ($Instal)
+{
+  Get-Nvim
+}
