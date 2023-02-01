@@ -10,6 +10,7 @@ set clipboard+=unnamedplus
 set backspace=indent,eol,start
 "set list
 "set listchars=eol:⏎,tab:␉·,trail:␠,nbsp:⎵
+set list listchars=tab:»-,trail:·,extends:»,precedes:«
 set cursorline
 set hidden
 set mouse=a
