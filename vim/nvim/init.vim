@@ -8,6 +8,8 @@ set completeopt=noinsert,menuone,noselect
 set inccommand=split
 set clipboard+=unnamedplus
 set backspace=indent,eol,start
+"set list
+"set listchars=eol:⏎,tab:␉·,trail:␠,nbsp:⎵
 set cursorline
 set hidden
 set mouse=a
