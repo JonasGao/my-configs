@@ -93,7 +93,7 @@ if ($Dependency)
   Install-Dependency
 }
 
-if ($Instal)
+if ($Install)
 {
   Get-Nvim
 }
