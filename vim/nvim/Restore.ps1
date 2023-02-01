@@ -48,10 +48,14 @@ function Restore-Config
 
 function Install-Dependency
 {
+  # For telescope-fzf-native
   scoop install cmake
-  scoop install bat
+  # For treesitter
   scoop install gcc
+  # For lsp
   scoop install lua-language-server
+  # Maybe for telescope preview
+  scoop install bat
 
   Build-TelescopeFzfNative
 }
