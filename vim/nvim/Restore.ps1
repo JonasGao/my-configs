@@ -71,7 +71,7 @@ function Get-Nvim
 {
   $NvimMsi = "$HOME\Downloads\nvim-win64.msi"
   Write-Output "Downloading msi"
-  Invoke-RestMethod -Uri "https://github.com/neovim/neovim/releases/download/nightly/nvim-win64.msi" -OutFile $NvimMsi -Proxy $Proxy
+  Invoke-RestMethod -Uri "https://github.com/neovim/neovim/releases/download/stable/nvim-win64.msi" -OutFile $NvimMsi -Proxy $Proxy
   Write-Output "Downloaded"
   Start-Process $NvimMsi
 }

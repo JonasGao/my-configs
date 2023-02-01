@@ -11,6 +11,9 @@ then
       }
     },
     pickers = {
+      colorscheme = {
+        enable_preview = true
+      }
     },
     extensions = {
       file_browser = {
@@ -48,6 +51,7 @@ then
   vim.keymap.set('n', '<leader>fc', builtin.commands, opts)
   vim.keymap.set('n', '<leader>fH', builtin.command_history, opts)
   vim.keymap.set('n', '<leader>fr', builtin.registers, opts)
+  vim.keymap.set('n', '<leader>fC', builtin.colorscheme, opts)
 else
   -- fzf
   vim.keymap.set('n', '<leader>ff', ':Files<CR>', opts)
