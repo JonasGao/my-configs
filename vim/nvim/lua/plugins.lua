@@ -55,7 +55,7 @@ return require('packer').startup(function(use)
   }
 
   -- Show indent line
-  use 'lukas-reineke/indent-blankline.nvim'
+  -- use 'lukas-reineke/indent-blankline.nvim'
 
   -- Fuzzy finder
   if (vim.fn.has('win32'))
