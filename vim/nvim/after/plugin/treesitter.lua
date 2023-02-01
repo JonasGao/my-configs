@@ -20,6 +20,7 @@ ts.setup {
     "ini",
     "rust",
     "go",
+    "bash",
   },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
