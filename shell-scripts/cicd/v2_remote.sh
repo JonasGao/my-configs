@@ -89,6 +89,10 @@ There are some commands:
 }
 
 health_check() {
+  if [ "$HEALTH_CHECK" -eq 0 ]; then
+    echo "Health check disabled"
+    return
+  fi
   exp_time=0
   echo "Checking ${HEALTH_CHECK_URL}"
   while true; do
@@ -121,6 +125,10 @@ start_application() {
   query_java_pid
   if [ "$CURR_PID" = "" ]
   then
+    if [ ! -f "$JAR_PATH" ]; then
+      echo "There is no file \"$JAR_PATH\"" >&2
+      exit 404
+    fi
     echo "Run (${JAR_PATH})"
     ${NOHUP} ${JAVA} ${JVM_OPTS} -jar ${JAR_PATH} ${JAR_ARGS} >${STD_OUT} 2>&1 &
     pid=$!
