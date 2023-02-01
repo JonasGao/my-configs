@@ -54,6 +54,10 @@ return require('packer').startup(function(use)
     run = ':TSUpdate',
   }
 
+  -- Show indent line
+  use 'lukas-reineke/indent-blankline.nvim'
+
+  -- Fuzzy finder
   if (vim.fn.has('win32'))
   then
     -- fzf preview not working for windows, it depend on git-bash or bash.
