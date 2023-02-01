@@ -3,7 +3,8 @@ param(
   [switch]$Init,
   [switch]$Packer,
   [switch]$Config,
-  [switch]$Dependency
+  [switch]$Dependency,
+  $Proxy
 )
 
 $NVIM_CONF_HOME="$HOME/AppData/Local/nvim"
@@ -69,7 +70,9 @@ function Build-TelescopeFzfNative
 function Get-Nvim
 {
   $NvimMsi = "$HOME\Downloads\nvim-win64.msi"
-  Invoke-RestMethod -Uri "https://github.com/neovim/neovim/releases/download/nightly/nvim-win64.msi" -OutFile $NvimMsi
+  Write-Output "Downloading msi"
+  Invoke-RestMethod -Uri "https://github.com/neovim/neovim/releases/download/nightly/nvim-win64.msi" -OutFile $NvimMsi -Proxy $Proxy
+  Write-Output "Downloaded"
   Start-Process $NvimMsi
 }
 
