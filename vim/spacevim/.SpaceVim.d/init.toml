@@ -24,14 +24,49 @@
     enable_tabline_filetype_icon = true
     enable_statusline_mode = false
     guifont = "Hack_NFM:h11:cANSI:qCLEARTYPE"
+    enable_vimfiler_welcome = false
+    timeoutlen = 3000
+    columns = 130
+    lines = 50
+
 
 # Enable autocomplete layer
 [[layers]]
-name = 'autocomplete'
-auto_completion_return_key_behavior = "complete"
-auto_completion_tab_key_behavior = "smart"
+    name = 'autocomplete'
+    auto_completion_return_key_behavior = "complete"
+    auto_completion_tab_key_behavior = "smart"
 
 [[layers]]
-name = 'shell'
-default_position = 'top'
-default_height = 30
+    name = 'shell'
+    default_position = 'top'
+    default_height = 30
+
+[[layers]]
+    name = 'colorscheme'
+
+[[layers]]
+    name = 'lang#dockerfile'
+
+[[layers]]
+    name = 'lang#lua'
+
+[[layers]]
+    name = 'lang#powershell'
+
+[[layers]]
+    name = 'lang#sh'
+
+[[layers]]
+    name = 'lang#vim'
+
+[[layers]]
+    name = 'lang#toml'
+
+[[layers]]
+    name = 'lang#xml'
+
+[[layers]]
+    name = 'lang#go'
+
+[[layers]]
+    name = 'lang#html'
