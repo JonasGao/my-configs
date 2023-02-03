@@ -70,3 +70,6 @@
 
 [[layers]]
     name = 'lang#html'
+
+[[layers]]
+    name = 'lsp'
