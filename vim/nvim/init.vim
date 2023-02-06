@@ -57,6 +57,9 @@ nnoremap  <Leader>W.  <C-w>>
 " Switch foldmethod
 nnoremap	<Leader>fms	:set foldmethod=syntax<CR>
 nnoremap	<Leader>fmi	:set foldmethod=indent<CR>
+" Insert current date
+nnoremap  <Leader>id  :r!date<CR>
+inoremap  <C-p>d      <C-r>=system('date')<CR>
 
 """ Setup color
 if has('win32')
