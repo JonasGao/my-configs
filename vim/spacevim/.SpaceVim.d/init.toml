@@ -23,7 +23,8 @@
     buffer_index_type = 4
     enable_tabline_filetype_icon = true
     enable_statusline_mode = false
-    guifont = "Hack_NFM:h11:cANSI:qCLEARTYPE"
+    # guifont = "Hack_NFM:h11:cANSI:qCLEARTYPE"
+    guifont = "agave NF:h11:cANSI:qCLEARTYPE"
     enable_vimfiler_welcome = false
     timeoutlen = 3000
     columns = 130
