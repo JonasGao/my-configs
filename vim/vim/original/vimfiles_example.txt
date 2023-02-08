@@ -1,0 +1,16 @@
+drwxr-xr-x 16 root root 4096 Jan  9 20:51 after
+drwxr-xr-x  2 root root 4096 Dec 16  2020 autoload
+drwxr-xr-x  2 root root 4096 Dec 16  2020 colors
+drwxr-xr-x  2 root root 4096 Dec 16  2020 compiler
+drwxr-xr-x  2 root root 4096 Dec 16  2020 doc
+drwxr-xr-x  2 root root 4096 Dec 16  2020 ftdetect
+drwxr-xr-x  2 root root 4096 Dec 16  2020 ftplugin
+drwxr-xr-x  2 root root 4096 Dec 16  2020 indent
+drwxr-xr-x  2 root root 4096 Dec 16  2020 keymap
+drwxr-xr-x  2 root root 4096 Dec 16  2020 lang
+drwxr-xr-x  2 root root 4096 Dec 16  2020 plugin
+drwxr-xr-x  2 root root 4096 Dec 16  2020 print
+drwxr-xr-x  2 root root 4096 Dec 16  2020 spell
+drwxr-xr-x  2 root root 4096 Dec 16  2020 syntax
+-rw-r--r--  1 root root  258 Dec 16  2020 template.spec
+drwxr-xr-x  2 root root 4096 Dec 16  2020 tutor
