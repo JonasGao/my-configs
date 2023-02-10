@@ -14,7 +14,8 @@
  .Example
   Copy-Sshid some_one@10.0.0.2 .ssh\id_rsa_other.pub
 #>
-function Copy-Sshid {
+function Copy-Sshid
+{
   param(
     [parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
@@ -23,13 +24,20 @@ function Copy-Sshid {
     [string]
     $KeyFile = ""
   )
-  if (!$KeyFile) { $KeyFile = "$env:USERPROFILE\.ssh\id_rsa.pub" }
-  if (!$KeyFile.endsWith(".pub")) { $KeyFile = "$KeyFile.pub" }
-  if (!(Test-Path -Path $KeyFile -PathType Leaf)) {
+  if (!$KeyFile)
+  { 
+    $KeyFile = "$env:USERPROFILE\.ssh\id_rsa.pub" 
+  }
+  if (!$KeyFile.endsWith(".pub"))
+  { 
+    $KeyFile = "$KeyFile.pub" 
+  }
+  if (!(Test-Path -Path $KeyFile -PathType Leaf))
+  {
     throw "'$KeyFile' file is not exists!"
   }
   Write-Output "Will copy '$KeyFile' to '$Target'"
-  Get-Content $keyFile | ssh $Target "mkdir -p .ssh; chmod 700 .ssh; cat >> .ssh/authorized_keys"
+  Get-Content $keyFile | ssh $Target "mkdir -p .ssh; chmod 700 .ssh; [ -f .ssh/authorized_keys ] && chmod 600 .ssh/authorized_keys; cat >> .ssh/authorized_keys"
 }
 
 <#
@@ -39,7 +47,8 @@ function Copy-Sshid {
  .Parameter Path
   Path to sbt home.
 #>
-function Set-SbtHome {
+function Set-SbtHome
+{
 
   param (
     [parameter(Mandatory=$true)]
@@ -61,7 +70,8 @@ function Set-SbtHome {
  .Parameter Path
   Path to maven home.
 #>
-function Set-MvnHome {
+function Set-MvnHome
+{
 
   param (
     [parameter(Mandatory=$true)]
@@ -80,23 +90,34 @@ function Set-MvnHome {
  .Synopsis
   Setup http proxy env
 #>
-function Set-HttpProxy ([string]$Url, [switch]$Reset) {
+function Set-HttpProxy ([string]$Url, [switch]$Reset)
+{
 
-  if ($Reset) {
-    if (Test-Path Env:HTTP_PROXY) { Remove-Item -Path Env:HTTP_PROXY }
-    if (Test-Path Env:HTTPS_PROXY) { Remove-Item -Path Env:HTTPS_PROXY }
+  if ($Reset)
+  {
+    if (Test-Path Env:HTTP_PROXY)
+    { 
+      Remove-Item -Path Env:HTTP_PROXY 
+    }
+    if (Test-Path Env:HTTPS_PROXY)
+    { 
+      Remove-Item -Path Env:HTTPS_PROXY 
+    }
     Write-Output "已清除代理配置"
     return
   }
 
-  if (!$Url) {
+  if (!$Url)
+  {
     $CONF_FILE = "$HOME\.config\my-powershell\default-proxy"
-    if (Test-Path -Path $CONF_FILE) {
+    if (Test-Path -Path $CONF_FILE)
+    {
       $Url = Get-Content $CONF_FILE
     }
   }
 
-  if (!$Url) {
+  if (!$Url)
+  {
     Write-Output "没有指定 Url 参数，或者提供一个有效的 default-proxy 配置文件"
     return
   }
@@ -107,14 +128,16 @@ function Set-HttpProxy ([string]$Url, [switch]$Reset) {
 
 }
 
-function Set-Proxy {
+function Set-Proxy
+{
   param (
     $Proxy
   )
   [net.webrequest]::DefaultWebProxy = New-Object net.webproxy $Proxy
 }
 
-function Get-Proxy {
+function Get-Proxy
+{
   [net.webrequest]::DefaultWebProxy
 }
 
@@ -128,24 +151,27 @@ function Get-Proxy {
  .PARAMETER Algorithm
   Which hash algorithm you will used
 #>
-function Get-StrHash() {
+function Get-StrHash()
+{
   param (
-      [parameter(Mandatory = $true)]
-      [ValidateNotNullOrEmpty()]
-      [string]
-      $Value,
-      [parameter()]
-      [ValidateNotNullOrEmpty()]
-      $Algorithm
+    [parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $Value,
+    [parameter()]
+    [ValidateNotNullOrEmpty()]
+    $Algorithm
   )
   $stream = [System.IO.MemoryStream]::new()
   $writer = [System.IO.StreamWriter]::new($stream)
   $writer.Write($Value)
   $writer.Flush()
   $stream.Position = 0
-  if ($Algorithm) {
+  if ($Algorithm)
+  {
       (Get-FileHash -InputStream $stream -Algorithm $Algorithm).Hash
-  } else {
+  } else
+  {
       (Get-FileHash -InputStream $stream).Hash
   }
 }

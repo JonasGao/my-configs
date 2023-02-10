@@ -70,7 +70,8 @@ Write-Output "1: simple"
 Write-Output "2: oh-my-posh"
 Write-Output "3: Scoop"
 Write-Output "4: JdkSwitcher"
-$Reply = Read-Host -Prompt "[1/2/3/4]"
+Write-Output "5: MyPsScripts"
+$Reply = Read-Host -Prompt "[1/2/3/4/5]"
 Switch ($Reply)
 {
   1
@@ -90,6 +91,10 @@ Switch ($Reply)
   4
   {
     Use-Module -Path "module\JdkSwitcher"
+  }
+  5
+  {
+    Use-Module -Path "module\MyPsScripts"
   }
   default
   {
