@@ -43,7 +43,11 @@ function! ModeCurrent() abort
     " thus, ^V fails -> returns 0 -> replaced with 'V Block'
     let l:modelist = toupper(get(g:currentmode, l:modecurrent, 'V·Block '))
     let l:current_status_mode = l:modelist
-    return l:current_status_mode
+    if &paste
+      return l:current_status_mode . '(PASTE)'
+    else
+      return l:current_status_mode
+    endif
 endfunction
 
 set noshowmode
