@@ -41,6 +41,7 @@ nnoremap  te        :tabedit<Return>
 """ Leaders mappings
 let mapleader="\\"
 nnoremap  <Leader>x    :set paste!<CR>
+nnoremap  <Leader>x    :set paste<CR>i
 noremap   <Leader>r    :bro ol<CR>
 nnoremap  <Leader>fms  :set foldmethod=syntax<CR>
 nnoremap  <Leader>fmi  :set foldmethod=indent<CR>
