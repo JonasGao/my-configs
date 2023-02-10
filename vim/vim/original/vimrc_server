@@ -1,17 +1,51 @@
-set expandtab
-set smarttab
-syntax enable
-set background=dark
-set nu rnu
-set cursorline
+""" User custom
+set nocompatible
+set hidden
 set nobackup
 set noswapfile
 set nobomb
-set wildmenu
+set autochdir
+set whichwrap=b,s,<,>,[,]
+set history=2048
+set backspace=indent,eol,start whichwrap+=<,>,[,]
+set timeoutlen=3000
+set wildmenu wildmode=longest:full,full
+set clipboard+=unnamed
+set nu rnu
+set fileencodings=utf-8
+set encoding=utf-8
+let $LANG = 'en_US.UTF-8'
+set cursorline
+set hlsearch
+set autoindent
+set smartindent
+set expandtab
+set smarttab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set list listchars=tab:»-,trail:·,extends:»,precedes:«
+"set termguicolors
+set bg=dark
+set laststatus=2
 
-nmap [n :set nu rnu<CR>
-nmap ]n :set nonu nornu<CR>
-nmap [w :set wrap<CR>
-nmap ]w :set nowrap<CR>
+"hi CursorColumn ctermbg=242
+"hi CursorLine cterm=NONE ctermbg=242
+syntax on
 
-hi CursorLine cterm=NONE ctermbg=233
+""" Basic mappings
+nnoremap  dw        vb"_d
+nnoremap  <Space>a  ggvG$
+nnoremap  te        :tabedit<Return>
+
+""" Leaders mappings
+let mapleader="\\"
+nnoremap  <Leader>x    :set paste!<CR>
+noremap   <Leader>r    :bro ol<CR>
+nnoremap  <Leader>fms  :set foldmethod=syntax<CR>
+nnoremap  <Leader>fmi  :set foldmethod=indent<CR>
+nnoremap  <Leader>n    :set nu! rnu!<CR>
+nnoremap  <Leader>w    :set wrap!<CR>
+nnoremap  <Leader>m    :set filetype=
+nnoremap  <Leader>h    :bp<CR>
+nnoremap  <Leader>l    :bn<CR>
