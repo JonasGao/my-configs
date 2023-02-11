@@ -1,5 +1,5 @@
 local opts = { noremap = true, silent = true }
-if (vim.fn.has('win32'))
+if vim.fn.has('win32') == 1
 then
   local telescope = require('telescope')
   telescope.setup({

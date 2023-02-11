@@ -58,7 +58,7 @@ return require('packer').startup(function(use)
   -- use 'lukas-reineke/indent-blankline.nvim'
 
   -- Fuzzy finder
-  if (vim.fn.has('win32'))
+  if vim.fn.has('win32') == 1
   then
     -- fzf preview not working for windows, it depend on git-bash or bash.
     -- so we use telescope
