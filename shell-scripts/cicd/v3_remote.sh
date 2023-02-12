@@ -95,7 +95,7 @@ There are some commands:
 }
 
 health_check() {
-  if [ "$HEALTH_CHECK" -eq 0 ]; then
+  if [ "$HEALTH_CHECK" = "0" ]; then
     echo "Health check disabled"
     return
   fi
@@ -163,11 +163,13 @@ query_java_pid() {
   fi
   if [ "$CURR_PID" = "" ]
   then
-    target=${JAR_NAME}
+    target=${JAR_PATH}
     if [ "$PGREP" = "" ]
     then
+      echo "Query by ps"
       CURR_PID=$(ps -ef | grep java | grep "${target}" | grep -v grep | grep -v "$$" | awk '{print$2}')
     else
+      echo "Query by ${PGREP} -f \"${target}\" | grep -v \"\$\$\""
       CURR_PID=$(${PGREP} -f "${target}" | grep -v "$$")
     fi
   fi
@@ -181,7 +183,7 @@ stop_application() {
     return
   fi
 
-  echo "Stopping java process"
+  echo "Stopping java process ($CURR_PID)."
   times=60
   for e in $(seq $times); do
     sleep 1
@@ -212,7 +214,7 @@ stop() {
 case "$ACTION" in
 d|deploy)
   stop
-  mv "$APP_HOME/app.jar" "$JAR_PATH"
+  cp "$APP_HOME/app.jar" "$JAR_PATH"
   sleep 1
   start
   ;;
@@ -238,4 +240,3 @@ c|check)
   exit 1
   ;;
 esac
-
