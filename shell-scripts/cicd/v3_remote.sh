@@ -15,7 +15,7 @@ APP_PORT=8080
 JVM_OPTS="-server -Xmx512m"
 
 # JAR 包启动的时候传递的参数
-JAR_ARGS=""
+JAR_ARGS="--server.port=${APP_PORT}"
 
 # 当前脚本的名字
 PROG_NAME=$0
@@ -24,7 +24,7 @@ PROG_NAME=$0
 ACTION=$1
 
 # 等待应用启动的时间
-APP_START_TIMEOUT=20
+APP_START_TIMEOUT=30
 
 # 应用健康检查URL
 HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
@@ -83,7 +83,7 @@ CURR_PID=
 OTHER_RUNNING=false
 
 usage() {
-  printf """Usage: $PROG_NAME <command>
+  printf """Usage: $PROG_NAME <command> <service|dir name>
 There are some commands:
   d, deploy
   s, start
@@ -236,7 +236,11 @@ t|stop)
   stop
   ;;
 r|restart)
+  echo "Do restart. Stop first."
   stop
+  echo "Wait 1 second."
+  sleep 1
+  echo "Startup..."
   start
   ;;
 p|pid)
