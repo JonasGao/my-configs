@@ -45,7 +45,7 @@ APP_LOG_HOME=${APP_HOME}
 APP_LOG=${STD_OUT}
 
 # PID 位置
-PID="${APP_HOME}/conf/pid"
+PID_PATH="${APP_HOME}/conf/pid"
 
 # 需要初始化的目录
 INIT_DIRS=($APP_HOME $APP_LOG_HOME "$APP_HOME/lib" "$APP_HOME/conf" "$APP_HOME/logs")
@@ -141,7 +141,7 @@ start_application() {
     rc=$?
     if [ "$rc" = "0" ]; then
       echo "Run jar succeed ($pid)"
-      echo "$pid" > $PID
+      echo "$pid" > $PID_PATH
     else
       echo "Run jar failed with ($rc)"
       exit 3
@@ -154,11 +154,14 @@ start_application() {
 
 query_java_pid() {
   CURR_PID=
-  if [ -f "$PID" ]; then
-    pid=$(cat "$PID")
+  if [ -f "$PID_PATH" ]; then
+    local pid=$(cat "$PID_PATH")
     if ps $pid > /dev/null
     then
       CURR_PID="$pid"
+      echo "Got pid ($pid) from \"$PID_PATH\""
+    else
+      echo "PID ($pid) from \"$PID_PATH\" can not found by ps. Will search by pgrep or ps."
     fi
   fi
   if [ "$CURR_PID" = "" ]
@@ -166,10 +169,10 @@ query_java_pid() {
     target=${JAR_PATH}
     if [ "$PGREP" = "" ]
     then
-      echo "Query by ps"
+      echo "Query process by ps"
       CURR_PID=$(ps -ef | grep java | grep "${target}" | grep -v grep | grep -v "$$" | awk '{print$2}')
     else
-      echo "Query by ${PGREP} -f \"${target}\" | grep -v \"\$\$\""
+      echo "Query process by ${PGREP} -f \"${target}\" | grep -v \"\$\$\""
       CURR_PID=$(${PGREP} -f "${target}" | grep -v "$$")
     fi
   fi
@@ -193,7 +196,8 @@ stop_application() {
       kill "$CURR_PID"
       echo -e "  -- stopping java lasts ${COST_TIME} seconds."
     else
-      echo -e "Java process has exited"
+      echo -e "Java process has exited. Remove PID \"$PID_PATH\""
+      rm "$PID_PATH" > /dev/null
       break
     fi
   done
@@ -213,9 +217,13 @@ stop() {
 
 case "$ACTION" in
 d|deploy)
+  echo "Do deploy. Stop first."
   stop
+  echo "Replace $JAR_PATH with $APP_HOME/app.jar"
   cp "$APP_HOME/app.jar" "$JAR_PATH"
+  echo "Wait 1 second."
   sleep 1
+  echo "Startup..."
   start
   ;;
 s|start)
@@ -240,3 +248,4 @@ c|check)
   exit 1
   ;;
 esac
+
