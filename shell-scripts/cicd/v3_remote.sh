@@ -56,7 +56,7 @@ NOHUP=$(which nohup 2>/dev/null)
 PGREP=$(which pgrep 2>/dev/null)
 
 # 环境配置文件名
-SET_ENV_FILENAME="conf/setenv.sh"
+SET_ENV_FILENAME="setenv.sh"
 
 # 如果有配置文件，以配置文件覆盖
 CWD_SET_ENV=$(readlink -f "./$SET_ENV_FILENAME")
@@ -64,7 +64,7 @@ if [ -f "$CWD_SET_ENV" ]; then
   echo "Overwrite with $CWD_SET_ENV"
   source $CWD_SET_ENV
 fi
-APP_HOME_SET_ENV="$APP_HOME/$SET_ENV_FILENAME"
+APP_HOME_SET_ENV="$APP_HOME/conf/$SET_ENV_FILENAME"
 if [ -f "$APP_HOME_SET_ENV" ]; then
   if [ "$APP_HOME_SET_ENV" != "$CWD_SET_ENV" ]; then
     echo "Overwrite with $APP_HOME_SET_ENV"
@@ -135,7 +135,10 @@ start_application() {
       echo "There is no file \"$JAR_PATH\"" >&2
       exit 404
     fi
-    echo "Run (${JAR_PATH})"
+    echo "Using:"
+    echo "  java:  $JAVA"
+    echo "  nohup: $NOHUP"
+    echo "  jar:   ${JAR_PATH}"
     ${NOHUP} ${JAVA} ${JVM_OPTS} -jar ${JAR_PATH} ${JAR_ARGS} >${STD_OUT} 2>&1 &
     pid=$!
     rc=$?
@@ -248,4 +251,3 @@ c|check)
   exit 1
   ;;
 esac
-
