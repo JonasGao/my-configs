@@ -5,25 +5,8 @@ if [ -z "$MY_CONFIG_HOME" ]; then
 	exit 1
 fi
 
-SCRIPT_NAME="$0"
 REPO_CONF_FILE="$MY_CONFIG_HOME/vim/ideavim/.ideavimrc"
 USER_CONF_FILE="$HOME/.ideavimrc"
-
-usage() {
-  echo "Usage $SCRIPT_NAME: [-i|-b]" >&2
-  exit 2
-}
-
-set_variable() {
-  varname=$1
-  shift
-  if [ -z "${!varname}" ]; then
-    eval "$varname=\"$@\""
-  else
-    echo "Error: $varname already exists."
-    exit 3
-  fi
-}
 
 resolve_diff() {
   if [ -z "$diff_tool" ]; then
@@ -44,36 +27,21 @@ do_diff() {
   eval "$diff_tool $1 $2"
 }
 
-install_rcfile() {
-  do_diff "$REPO_CONF_FILE" "$USER_CONF_FILE"
-  read -re -p "Press [y] continues" -n 1 r
+if [ -f "$USER_CONF_FILE" ]; then
+  echo "Found exists .ideavimrc"
+  read -re -n 1 -p "Do you want to diff it first? [y]" r
   if [ "$r" = "y" ]; then
-    cp "$REPO_CONF_FILE" "$USER_CONF_FILE"
-    printf "\033[0;32mRestore ideavimrc finished\033[0m\n"
+    do_diff "$REPO_CONF_FILE" "$USER_CONF_FILE"
   fi
-}
-
-backup_rcfile() {
-  do_diff "$USER_CONF_FILE" "$REPO_CONF_FILE"
-  read -re -p "Press [y] continues" -n 1 r
-  if [ "$r" = "y" ]; then
-    cp "$USER_CONF_FILE" "$REPO_CONF_FILE"
-    printf "\033[0;32mBackup ideavimrc finished\033[0m\n"
+  read -re -n 1 -p "Do you want to continues? [y]" r
+  if [ "$r" != "y" ]; then
+    exit 0
   fi
-}
+  rm "$USER_CONF_FILE"
+elif [ -L "$USER_CONF_FILE" ]; then
+  printf "\033[0;33mAlready linked.\033[0m\n"
+  exit 0
+fi
 
-while getopts "ib?h" OPT
-do
-  case "$OPT" in
-    i) set_variable ACTION INSTALL;;
-    b) set_variable ACTION BACKUP;;
-    h|?) usage;;
-  esac
-done
-
-[ -z "$ACTION" ] && usage
-
-case "$ACTION" in
-  INSTALL) install_rcfile;;
-  BACKUP)  backup_rcfile;;
-esac
+ln -s "$REPO_CONF_FILE" "$USER_CONF_FILE"
+printf "\033[0;32mRestore ideavimrc finished\033[0m\n"
