@@ -8,6 +8,7 @@ endfunction
 " status bar colors
 au InsertEnter * hi statusline guifg=black guibg=#d7afff ctermbg=black ctermfg=magenta
 au InsertLeave * call NormalStatusLine()
+hi statusline term=bold cterm=bold ctermfg=black ctermbg=cyan
 call NormalStatusLine()
 
 " Status line
