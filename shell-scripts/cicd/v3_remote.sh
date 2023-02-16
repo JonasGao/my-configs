@@ -139,6 +139,7 @@ start_application() {
     echo "  java:  $JAVA"
     echo "  nohup: $NOHUP"
     echo "  jar:   ${JAR_PATH}"
+    echo "  args:  ${JAR_ARGS}"
     ${NOHUP} ${JAVA} ${JVM_OPTS} -jar ${JAR_PATH} ${JAR_ARGS} >${STD_OUT} 2>&1 &
     pid=$!
     rc=$?
