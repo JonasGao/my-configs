@@ -74,6 +74,7 @@ noremap      <Space>p     "0p
 noremap      Q            gq
 noremap      qd           dd
 noremap      qf           :action ReformatCode<CR>
+noremap      qc           :action CheckinProject<CR>
 "-----------|------------|----------------------------
 
 """ EasyMotion
