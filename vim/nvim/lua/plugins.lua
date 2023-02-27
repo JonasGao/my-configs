@@ -3,6 +3,11 @@ vim.cmd [[packadd packer.nvim]]
 return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
 
+  -- Which key
+  use {
+    "folke/which-key.nvim"
+  }
+
   -- LSP and Diagnostic
   use 'neovim/nvim-lspconfig'
   use {

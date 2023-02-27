@@ -82,6 +82,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
+Plug 'liuchengxu/vim-which-key'
 call plug#end()
 
 """ 最后加载一个本地自定义
