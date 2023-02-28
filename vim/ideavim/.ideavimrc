@@ -47,8 +47,8 @@ noremap      <Space>k     :action Back<CR>
 noremap      <Space>j     :action Forward<CR>
 noremap      <Space>h     :action PreviousTab<CR>
 noremap      <Space>l     :action NextTab<CR>
-noremap      <Space>ee    :action RecentFiles<CR>
-noremap      <Space>ep    :action $LRU<CR>
+noremap      <Space>e     :action RecentFiles<CR>
+noremap      <Space>E     :action $LRU<CR>
 noremap      <Space>f     :action FileStructurePopup<CR>
 noremap      <Space>v     :action SelectInProjectView<CR>
 noremap      <Space>p     :NERDTree<CR>
