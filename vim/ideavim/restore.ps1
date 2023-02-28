@@ -19,7 +19,14 @@ if ($Backup)
 }
 delta $DST $SRC
 $REPLY = Read-Host -Prompt "Press [y] continue..."
-if ($REPLY -eq "y") {
+if ($REPLY -eq "y")
+{
   Copy-Item "$SRC" "$DST"
   Write-Host -ForegroundColor Green "Finished."
+  if ($Backup)
+  {
+    git add .
+    git commit -m "Backup ideavimrc"
+  }
 }
+

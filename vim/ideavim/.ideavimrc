@@ -55,6 +55,7 @@ noremap      <Space>p     :NERDTree<CR>
 noremap      <Space>w     :action CloseContent<CR>
 noremap      <Space>N     :action GotoFile<CR>
 noremap      <Space>n     :action GotoClass<CR>
+noremap      <Space>/     :action StructuralSearchPlugin.StructuralSearchAction<CR>
 noremap      <Space>q     :action ParameterInfo<CR>
 noremap      <Space>a     ggvG$
 noremap      <Space>o     :action OverrideMethods<CR>
