@@ -12,12 +12,6 @@ set timeoutlen=3000
 set wildmenu wildmode=longest:full,full
 set clipboard+=unnamed
 set nu rnu
-set fileencodings=utf-8,gbk2312,gbk,gb18030,cp936
-set encoding=utf-8
-set langmenu=zh_CN
-let $LANG = 'en_US.UTF-8'
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
 "set cursorcolumn
 set cursorline
 set hlsearch
@@ -33,6 +27,14 @@ set smarttab
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
+set guifont=等距更纱黑体_SC:h11:cGB2312:qCLEARTYPE
+set fileencodings=utf-8,gbk2312,gbk,gb18030,cp936
+set encoding=utf-8
+set langmenu=zh_CN
+let $LANG = 'en_US.UTF-8'
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+
 
 " 参考
 " https://vi.stackexchange.com/questions/23066/change-cursorline-style
