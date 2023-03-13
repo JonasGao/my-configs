@@ -32,10 +32,18 @@ Resolve-Dir $PackStart
 
 function InstallPlug
 {
+  Write-Output "Installing plug-vim"
   Resolve-Dir $AutoloadHome
   try
   {
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -OutFile "$AutoloadHome/plug.vim" -Proxy $Proxy
+    $OutFile = "$AutoloadHome/plug.vim"
+    if (Test-Path -Path $OutFile)
+    {
+      Write-Output "$OutFile already exists!"
+      return 1
+    }
+    Write-Output "Downloading to $OutFile"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -OutFile $OutFile -Proxy $Proxy
     Write-Host "`e[32mSuccess install to $AutoloadHome/plug.vim`e[0m"
   } catch
   {
@@ -61,13 +69,16 @@ if ($Conf)
   RestoreConf
 }
 
-if ($Cleanup)
+if ($Clean)
 {
+  Write-Output "Do Cleanup..."
   if (Test-Path -Path $VimConfHome -PathType Container)
   {
+    Write-Output "Force remove $VimConfHome"
     Remove-Item -Force -Recurse "$VimConfHome"
   } else
   {
+    Write-Output "Force remove $VimConfHome"
     Remove-Item -Force "$VimConfHome"
   }
 }
