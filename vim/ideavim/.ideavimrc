@@ -34,7 +34,6 @@ nnoremap     <leader>p   "*p
 vnoremap     <leader>p   "*p
 noremap      <leader>g    :action FindInPath<CR>
 noremap      <leader>b    :action Switcher<CR>
-noremap      <leader>mr   :action Maven.Reimport<CR>
 noremap      <leader>1    :action GoToTab1<CR>
 noremap      <leader>2    :action GoToTab2<CR>
 noremap      <leader>3    :action GoToTab3<CR>
@@ -70,8 +69,11 @@ noremap      <Space>rg    :action RearrangeCode<CR>
 noremap      <Space>re    :action RenameElement<CR>
 noremap      <Space>rt    :action SurroundWith<CR>
 noremap      <Space>rr    :action Refactorings.QuickListPopupAction<CR>
+noremap      <Space>mr    :action Maven.Reimport<CR>
 noremap      <Space>t     :action Replace<CR>
 noremap      <Space>p     "0p
+noremap      <Space>if    :action NewElement<CR>
+noremap      <Space>ie    :action Generate<CR>
 "-----------|------------|------------
 noremap      Q            gq
 noremap      qd           dd
