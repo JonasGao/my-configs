@@ -89,7 +89,7 @@ There are some commands:
 }
 
 health_check() {
-  if [ "$HEALTH_CHECK" -eq 0 ]; then
+  if [ "$HEALTH_CHECK" = "1" ]; then
     echo "Health check disabled"
     return
   fi
