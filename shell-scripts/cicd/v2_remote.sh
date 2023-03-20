@@ -8,7 +8,7 @@ APP_HOME="$CWD"
 JAR_NAME="app"
 
 # 应用启动的端口
-APP_PORT=8080
+APP_PORT=8090
 
 # JVM 配置参数
 JVM_OPTS="-server -Xmx512m"
@@ -89,7 +89,7 @@ There are some commands:
 }
 
 health_check() {
-  if [ "$HEALTH_CHECK" = "1" ]; then
+  if [ "$HEALTH_CHECK" -eq 0 ]; then
     echo "Health check disabled"
     return
   fi
@@ -146,10 +146,15 @@ start_application() {
   fi
 }
 
+debug() {
+  [ "$DEBUG" = "1" ] && echo $1
+}
+
 query_java_pid() {
   CURR_PID=
   if [ -f "$PID" ]; then
     pid=$(cat "$PID")
+    debug "Using ${PID}. Got ${pid}"
     if ps $pid > /dev/null
     then
       CURR_PID="$pid"
@@ -157,11 +162,13 @@ query_java_pid() {
   fi
   if [ "$CURR_PID" = "" ]
   then
-    target=${JAR_NAME}
+    target=${JAR_PATH}
     if [ "$PGREP" = "" ]
     then
+      debug "Using ps"
       CURR_PID=$(ps -ef | grep java | grep "${target}" | grep -v grep | grep -v "$$" | awk '{print$2}')
     else
+      debug "Using ${PGREP} -f '${target}' | grep -v '$$'"
       CURR_PID=$(${PGREP} -f "${target}" | grep -v "$$")
     fi
   fi
@@ -226,4 +233,3 @@ c|check)
   exit 1
   ;;
 esac
-
