@@ -72,12 +72,6 @@ if [ -f "$APP_HOME_SET_ENV" ]; then
   fi
 fi
 
-# 创建出相关目录
-for d in ${INIT_DIRS[@]}
-do
-  mkdir -p "$d"
-done
-
 # 全局变量
 CURR_PID=
 OTHER_RUNNING=false
@@ -219,6 +213,24 @@ stop() {
   stop_application
 }
 
+# 检查参数
+if [ "$1" = "" ] || [ "$2" = "" ]; then
+  usage
+  exit 0
+fi
+
+# 检查基本目录是否存在
+if [ ! -d "$APP_HOME" ]; then
+  echo "App Home not exists: $APP_HOME"
+  exit 9
+fi
+
+# 创建出相关目录
+for d in ${INIT_DIRS[@]}
+do
+  mkdir -p "$d"
+done
+
 case "$ACTION" in
 d|deploy)
   echo "Do deploy. Stop first."
@@ -256,3 +268,4 @@ c|check)
   exit 1
   ;;
 esac
+
