@@ -236,6 +236,10 @@ done
 
 case "$ACTION" in
 d|deploy)
+  if [ ! -f "$APP_HOME/app.jar" ]; then
+    echo "There is no deploy target \"$APP_HOME/app.jar\""
+    exit 10
+  fi
   echo "Do deploy. Stop first."
   stop
   echo "Replace $JAR_PATH with $APP_HOME/app.jar"
