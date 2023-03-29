@@ -237,8 +237,12 @@ d|deploy)
   echo "Do deploy. Stop first."
   stop
   echo "Replace $JAR_PATH with $APP_HOME/app.jar"
+  cp "$JAR_PATH" "${JAR_PATH}.bak"
+  echo "Backup to ${JAR_PATH}.bak"
   cp "$APP_HOME/app.jar" "$JAR_PATH"
   echo "Wait 1 second."
+  rm "$APP_HOME/app.jar"
+  echo "Removed $APP_HOME/app.jar"
   sleep 1
   echo "Startup..."
   start
