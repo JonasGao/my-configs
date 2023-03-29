@@ -129,6 +129,7 @@ start_application() {
       echo "There is no file \"$JAR_PATH\"" >&2
       exit 404
     fi
+    echo "Working Directory: $(pwd)"
     echo "Using:"
     echo "  nohup: $NOHUP"
     echo "  java:  $JAVA"
