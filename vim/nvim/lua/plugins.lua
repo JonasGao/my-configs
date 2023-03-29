@@ -62,6 +62,9 @@ return require('packer').startup(function(use)
   -- Show indent line
   -- use 'lukas-reineke/indent-blankline.nvim'
 
+  -- Github Copilot
+  use 'github/copilot.vim'
+
   -- Fuzzy finder
   if vim.fn.has('win32') == 1
   then
