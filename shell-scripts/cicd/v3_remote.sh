@@ -72,6 +72,11 @@ if [ -f "$APP_HOME_SET_ENV" ]; then
   fi
 fi
 
+# 执行后置函数
+if [ "$POST_FUNC" != "" ]; then
+  $POST_FUNC
+fi
+
 # 全局变量
 CURR_PID=
 OTHER_RUNNING=false
