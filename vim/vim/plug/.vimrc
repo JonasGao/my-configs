@@ -89,7 +89,7 @@ Plug 'morhetz/gruvbox'
 call plug#end()
 
 set bg=dark
-colorschema gruvbox
+colorscheme gruvbox
 
 """ 最后加载一个本地自定义
 runtime local.vim
