@@ -50,8 +50,8 @@ function Install-Simple
 
 function Install-OMP
 {
-  $S = "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1"
-  Copy-Item $S $PROFILE -Confirm
+  Copy-Item "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE -Confirm
+  Copy-Item "$MY_CONFIG_HOME\powershell\profiles\Set-Env.ps1" "$HOME\Set-Env.ps1" -Confirm
 }
 
 function Install-Scoop
