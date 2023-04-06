@@ -52,6 +52,24 @@ return require('packer').startup(function(use)
   use 'hrsh7th/cmp-buffer'
   use 'saadparwaiz1/cmp_luasnip' -- Snippets source for nvim-cmp
   use 'L3MON4D3/LuaSnip' -- Snippets plugin
+  -- Github Copilot
+  -- use 'github/copilot.vim'
+  use {
+    'zbirenbaum/copilot.lua',
+    config = function()
+      require('copilot').setup({
+        suggestion = { enabled = false },
+        panel = { enabled = false }
+      })
+    end
+  }
+  use {
+    'zbirenbaum/copilot-cmp',
+    after = { 'copilot.lua' },
+    config = function()
+      require('copilot_cmp').setup()
+    end
+  }
 
   -- Treesitter more highlight
   use {
@@ -61,9 +79,6 @@ return require('packer').startup(function(use)
 
   -- Show indent line
   -- use 'lukas-reineke/indent-blankline.nvim'
-
-  -- Github Copilot
-  use 'github/copilot.vim'
 
   -- Fuzzy finder
   if vim.fn.has('win32') == 1
