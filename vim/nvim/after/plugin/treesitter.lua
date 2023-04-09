@@ -85,3 +85,5 @@ vim.api.nvim_create_user_command('TSFold', function()
 end, {
   desc = 'Enable fold based on tree-sitter'
 })
+
+vim.keymap.set('n', '<leader>z', ':TSFold<CR>', { noremap = true })
