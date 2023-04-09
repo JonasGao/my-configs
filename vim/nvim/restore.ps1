@@ -57,6 +57,9 @@ function Install-Dependency
   scoop install lua-language-server
   # Maybe for telescope preview
   scoop install bat
+  # For fuzzy finder (like telescope and fzf ...)
+  scoop install ripgrep
+  scoop install fd
 
   Build-TelescopeFzfNative
 }
