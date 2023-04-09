@@ -65,8 +65,11 @@ nnoremap  <Leader>sv  :vsplit<Return><C-w>w
 nnoremap  <Leader>W,  <C-w><
 nnoremap  <Leader>W.  <C-w>>
 " Switch foldmethod
-nnoremap	<Leader>fms	:set foldmethod=syntax<CR>
-nnoremap	<Leader>fmi	:set foldmethod=indent<CR>
+nnoremap	<Leader>zs	:set foldmethod=syntax<CR>
+nnoremap	<Leader>zi	:set foldmethod=indent<CR>
+nnoremap	<Leader>zm	:set foldmethod=manual<CR>
+nnoremap	<Leader>zk	:set foldmethod=marker<CR>
+nnoremap	<Leader>Z	  :set nofoldenable<CR>
 " Insert current date
 nnoremap  <Leader>id  :r!date<CR>
 inoremap  <C-p>d      <C-r>=system('date')<CR>
