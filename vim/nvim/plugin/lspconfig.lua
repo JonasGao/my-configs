@@ -85,7 +85,6 @@ lspconfig.sumneko_lua.setup {
 }
 
 local pses_path = vim.fn.expand('$HOME/PowerShellEditorServices')
-
 lspconfig.powershell_es.setup {
   on_attach = on_attach,
   bundle_path = pses_path,
@@ -96,4 +95,18 @@ lspconfig.powershell_es.setup {
 lspconfig.bashls.setup {
   flags = lsp_flags,
   capabilities = capabilities,
+}
+
+local vimls_path = vim.fn.expand('$LOCALAPPDATA/vim-lsp-settings/servers/vim-language-server/vim-language-server.cmd')
+lspconfig.vimls.setup {
+  -- The lspconfig server_configuration.md provider:
+  --   1. runtimepath
+  --   2. vimruntime
+  -- But, all they are not work.
+  -- From nvim-lspconfig sourcecode, i found cmd_cwd option. And it works.
+  -- See here https://github.com/neovim/nvim-lspconfig/blob/master/lua/lspconfig/util.lua#297
+  -- like "cmd_cwd = vimls_path"
+  -- But, we dont know if there are any side effects
+  -- Or we can set "cmd" directly
+  cmd = { 'cmd.exe', '/C', vimls_path, '--stdio' }
 }
