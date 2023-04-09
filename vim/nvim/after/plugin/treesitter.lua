@@ -63,6 +63,12 @@ ts.setup {
   },
 }
 
+-- Current has bug when open file with telescope
+-- See here: https://github.com/nvim-telescope/telescope.nvim/issues/699
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldenable = false
+-- vim.api.nvim_create_autocmd({ "BufEnter" }, {
+--     pattern = { "*" },
+--     command = "normal zx zR",
+-- })
