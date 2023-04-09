@@ -53,10 +53,9 @@ function InstallPlug
 
 function RestoreConf
 {
-  $src = "$ConfSrc/.vimrc"
-  $dst = "$HOME/.vimrc"
-  Copy-Item "$SRC" "$DST"
-  Write-Host "`e[32mAlready overwrite $dst by $src`e[0m"
+  Copy-Item "$ConfSrc/.vimrc" "$HOME/.vimrc"
+  Copy-Item "$ConfSrc/vimfiles/plugin" "$HOME/vimfiles/plugin" -Recurse
+  Write-Host "`e[32mAlready overwrite.`e[0m"
 }
 
 if ($Plug)
