@@ -65,10 +65,23 @@ ts.setup {
 
 -- Current has bug when open file with telescope
 -- See here: https://github.com/nvim-telescope/telescope.nvim/issues/699
-vim.opt.foldmethod = "expr"
-vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-vim.opt.foldenable = false
+-- The issue provider some workaround
+--
+-- 1.
 -- vim.api.nvim_create_autocmd({ "BufEnter" }, {
 --     pattern = { "*" },
 --     command = "normal zx zR",
 -- })
+--
+-- 2.
+-- After open file by telescope, run :e again.
+--
+-- If want default no fold, set:
+-- vim.opt.foldenable = false
+
+vim.api.nvim_create_user_command('TSFold', function()
+  vim.opt.foldmethod = "expr"
+  vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+end, {
+  desc = 'Enable fold based on tree-sitter'
+})
