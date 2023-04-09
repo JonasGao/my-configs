@@ -86,4 +86,4 @@ end, {
   desc = 'Enable fold based on tree-sitter'
 })
 
-vim.keymap.set('n', '<leader>z', ':TSFold<CR>', { noremap = true })
+vim.keymap.set('n', '<leader>zt', ':TSFold<CR>', { noremap = true })
