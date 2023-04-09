@@ -8,7 +8,7 @@ set signcolumn=yes
 set whichwrap=b,s,<,>,[,]
 set history=2048
 set backspace=indent,eol,start whichwrap+=<,>,[,]
-set timeoutlen=3000
+set timeoutlen=1200
 set wildmenu wildmode=longest:full,full
 set clipboard+=unnamed
 set nu rnu
@@ -66,6 +66,10 @@ nnoremap	<Leader>m    :set filetype=
 nnoremap	<Leader>h    :bp<CR>
 nnoremap	<Leader>l    :bn<CR>
 
+""" WhichKey mappings
+nnoremap <silent> <Leader> :WhichKey '\'<CR>
+nnoremap <silent> <Space> :WhichKey '<Space>'<CR>
+
 if $TERM ==? 'xterm-256color'
 	set termguicolors
 endif
@@ -86,6 +90,7 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
 Plug 'liuchengxu/vim-which-key'
 Plug 'morhetz/gruvbox'
+Plug 'rhysd/vim-healthcheck'
 call plug#end()
 
 set bg=dark
@@ -101,4 +106,3 @@ nnoremap 	ma	<Plug>(easymotion-overwin-f)
 nnoremap 	ms 	<Plug>(easymotion-overwin-f2)
 noremap 	mj 	<Plug>(easymotion-j)
 noremap 	mk 	<Plug>(easymotion-k)
-
