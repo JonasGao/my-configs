@@ -1,6 +1,5 @@
 param(
   [switch]$Install,
-  [switch]$Init,
   [switch]$Packer,
   [switch]$Config,
   [switch]$Dependency,
@@ -22,8 +21,7 @@ function Restore-InitVim
   $SOURCE = "$MY_CONFIG_HOME/vim/nvim/init.vim"
   $TARGET = "$NVIM_CONF_HOME/init.vim"
   nvim -d $TARGET $SOURCE
-  Copy-Item $SOURCE $TARGET -Confirm
-  Write-Host -ForegroundColor Green "Restore neovim config files finished."
+  Copy-Item $SOURCE $TARGET
 }
 
 function Install-Packer
@@ -38,6 +36,7 @@ function Install-Packer
 
 function Restore-Config
 {
+  Restore-InitVim
   $N = "$MY_CONFIG_HOME/vim/nvim"
   $L = "$N/lua"
   $P = "$N/plugin"
@@ -45,6 +44,7 @@ function Restore-Config
   Copy-Item $L "$NVIM_CONF_HOME/" -Recurse -Force
   Copy-Item $P "$NVIM_CONF_HOME/" -Recurse -Force
   Copy-Item $F "$NVIM_CONF_HOME/" -Recurse -Force
+  Write-Host -ForegroundColor Green "Restore neovim config files finished."
 }
 
 function Install-Dependency
@@ -77,11 +77,6 @@ function Get-Nvim
   Invoke-RestMethod -Uri "https://github.com/neovim/neovim/releases/download/stable/nvim-win64.msi" -OutFile $NvimMsi -Proxy $Proxy
   Write-Output "Downloaded"
   Start-Process $NvimMsi
-}
-
-if ($Init)
-{
-  Restore-InitVim
 }
 
 if ($Packer)
