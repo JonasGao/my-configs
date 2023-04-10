@@ -32,6 +32,10 @@ function Restore-Config
 
 function Install-Dependency
 {
+  if ($Proxy) {
+    Write-Host "Config scoop using proxy: $Proxy"
+    scoop config proxy $Proxy
+  }
   # For telescope-fzf-native
   scoop install cmake
   # for telescope preview
@@ -44,8 +48,9 @@ function Install-Dependency
   scoop install gcc
   # npm install -g tree-sitter-cli
   # if download fail, support HTTPS_PROXY env
+  # eg: (Powershell) $HTTPS_PROXY = http://127.0.0.1:7891; npm install -g tree-sitter-cli
   # or
-  cargo install tree-sitter-cli
+  # cargo install tree-sitter-cli
   # install cargo please download https://win.rustup.rs/x86_64
   # linux or unix, use "curl https://sh.rustup.rs -sSf | sh"
 
