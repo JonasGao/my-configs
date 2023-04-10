@@ -34,4 +34,4 @@
   hunk-header-line-number-style = "#067a00"
   hunk-header-style = file line-number syntax
 [http "https://github.com"]
-  proxy = http://127.0.0.1:7890
+  proxy = socks5://127.0.0.1:7891
