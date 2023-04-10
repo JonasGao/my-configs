@@ -48,7 +48,7 @@ function Install-Dependency
   scoop install gcc
   # npm install -g tree-sitter-cli
   # if download fail, support HTTPS_PROXY env
-  # eg: (Powershell) $HTTPS_PROXY = http://127.0.0.1:7891; npm install -g tree-sitter-cli
+  # eg: (Powershell) $HTTPS_PROXY = "http://127.0.0.1:7891"; npm install -g tree-sitter-cli
   # or
   # cargo install tree-sitter-cli
   # install cargo please download https://win.rustup.rs/x86_64
