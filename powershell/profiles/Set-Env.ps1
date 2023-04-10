@@ -9,6 +9,7 @@ $env:PATH = $env:PATH + ";" + $MAVEN_HOME
 $env:PATH = $env:PATH + ";$HOME\bin;$HOME\.local\bin"
 
 $NVIM_HOME = "$HOME\Apps\nvim-win64\Neovim"
+$NVIM_CONF = "$env:LOCALAPPDATA\nvim"
 $env:PATH = "$NVIM_HOME\bin;$env:PATH"
 
 $PoshTheme = "blue-owl"
