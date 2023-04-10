@@ -34,15 +34,22 @@ function Install-Dependency
 {
   # For telescope-fzf-native
   scoop install cmake
-  # For treesitter
-  scoop install gcc
-  # For lsp
-  scoop install lua-language-server
-  # Maybe for telescope preview
+  # for telescope preview
   scoop install bat
-  # For fuzzy finder (like telescope and fzf ...)
+  # for fuzzy finder and live-grep (like telescope and fzf ...)
   scoop install ripgrep
   scoop install fd
+
+  # For treesitter
+  scoop install gcc
+  # npm install -g tree-sitter-cli
+  # if download fail, support HTTPS_PROXY env
+  # or
+  cargo install tree-sitter-cli
+  # install cargo please download https://win.rustup.rs/x86_64
+
+  # For lsp
+  scoop install lua-language-server
 
   Build-TelescopeFzfNative
 }
