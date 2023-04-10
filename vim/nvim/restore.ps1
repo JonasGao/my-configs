@@ -47,6 +47,7 @@ function Install-Dependency
   # or
   cargo install tree-sitter-cli
   # install cargo please download https://win.rustup.rs/x86_64
+  # linux or unix, use "curl https://sh.rustup.rs -sSf | sh"
 
   # For lsp
   scoop install lua-language-server
