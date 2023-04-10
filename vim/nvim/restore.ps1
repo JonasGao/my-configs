@@ -51,8 +51,6 @@ function Install-Dependency
 
   # For lsp
   scoop install lua-language-server
-
-  Build-TelescopeFzfNative
 }
 
 function Build-TelescopeFzfNative
