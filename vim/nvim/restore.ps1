@@ -3,26 +3,9 @@ param(
   [switch]$Packer,
   [switch]$Config,
   [switch]$Dependency,
+  [switch]$BuildFzf,
   $Proxy
 )
-
-$NVIM_CONF_HOME="$HOME/AppData/Local/nvim"
-
-if (-not(Test-Path Variable:\MY_CONFIG_HOME))
-{
-  throw "There is no MY_CONFIG_HOME"
-}
-
-# Prepare parent folder
-New-Item -Type Container -Force "$NVIM_CONF_HOME" > $null
-
-function Restore-InitVim
-{
-  $SOURCE = "$MY_CONFIG_HOME/vim/nvim/init.vim"
-  $TARGET = "$NVIM_CONF_HOME/init.vim"
-  nvim -d $TARGET $SOURCE
-  Copy-Item $SOURCE $TARGET
-}
 
 function Install-Packer
 {
@@ -36,15 +19,15 @@ function Install-Packer
 
 function Restore-Config
 {
-  Restore-InitVim
-  $N = "$MY_CONFIG_HOME/vim/nvim"
-  $L = "$N/lua"
-  $P = "$N/plugin"
-  $F = "$N/after"
-  Copy-Item $L "$NVIM_CONF_HOME/" -Recurse -Force
-  Copy-Item $P "$NVIM_CONF_HOME/" -Recurse -Force
-  Copy-Item $F "$NVIM_CONF_HOME/" -Recurse -Force
-  Write-Host -ForegroundColor Green "Restore neovim config files finished."
+  $CONF_HOME="$HOME/AppData/Local/nvim"
+  if (Test-Path $CONF_HOME)
+  {
+    Write-Host -ForegroundColor Yellow "`"$CONF_HOME`" Already exists!"
+  } else
+  {
+    git clone "git@github.com:jonasgao/nvimrc.git" $CONF_HOME
+    Write-Host -ForegroundColor Green "Restore neovim config files finished."
+  }
 }
 
 function Install-Dependency
@@ -97,4 +80,9 @@ if ($Dependency)
 if ($Install)
 {
   Get-Nvim
+}
+
+if ($BuildFzf)
+{
+  Build-TelescopeFzfNative
 }
