@@ -35,3 +35,8 @@ function cumv
 {
   mvn -s $CUM2 $args
 }
+
+function Set-GoPathLocation
+{
+  Set-Location $env:GOPATH
+}

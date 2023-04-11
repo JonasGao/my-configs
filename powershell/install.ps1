@@ -1,3 +1,11 @@
+param (
+  [Switch]$Scoop,
+  [Switch]$OhMyPosh,
+  [Switch]$Profiles,
+  [Switch]$Modules,
+  $Proxy
+)
+
 $USER_MODULE_HOME = $env:PSModulePath.Split(";")[0]
 
 function Use-Module
@@ -17,87 +25,56 @@ function Use-Module
   }
 }
 
-function Install-Simple
+function Install-Modules
 {
-  $Source = "$MY_CONFIG_HOME\powershell\profiles\Microsoft.PowerShell_profile.ps1"
-  if (-not(Test-Path $Source))
+  if ($Modules)
   {
-    throw "There is no file of `"$Source`""
-  }
-  if (Test-Path $PROFILE)
-  {
-    nvim -d $PROFILE $Source
-  }
-  $Reply = Read-Host -Prompt "Do you want install powershell profile? [y]"
-  if ($Reply -eq "y")
-  {
-    Copy-Item $Source $PROFILE
-    Install-Module -Name DotNetVersionLister -Scope CurrentUser
-    if (-not(Test-Path $USER_MODULE_HOME))
-    {
-      New-Item $USER_MODULE_HOME -Force > $null
-    }
+    #Install-Module -Name DotNetVersionLister -Scope CurrentUser
     Use-Module -Path "module\MyPsScripts"
     Use-Module -Path "module\JdkSwitcher"
-    Use-Module -Name MyPsScripts
     Use-Module -Name posh-git
     Use-Module -Name Terminal-Icons
     #Use-Module -Name ZLocation
     Use-Module -Name z
-    Write-Host "Success install profile." -ForegroundColor Green
+    Write-Host "Success install Modules." -ForegroundColor Green
   }
 }
 
-function Install-OMP
+function Install-OmpProfile
 {
-  Copy-Item "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE -Confirm
-  Copy-Item "$MY_CONFIG_HOME\powershell\profiles\Set-Env.ps1" "$HOME\Set-Env.ps1" -Confirm
+  if ($Profiles)
+  {
+    $PROFILE_HOME = (Get-Item $PROFILE).Directory
+    Copy-Item "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE
+    Copy-Item "$MY_CONFIG_HOME\powershell\omp\env.ps1" "$PROFILE_HOME\env.ps1"
+    Write-Host "Success install Profiles." -ForegroundColor Green
+  }
 }
 
 function Install-Scoop
 {
-  Invoke-RestMethod get.scoop.sh | Invoke-Expression
-  scoop install delta
-  scoop install lua-language-server
+  if ($Scoop)
+  {
+    Invoke-RestMethod get.scoop.sh | Invoke-Expression
+    scoop install delta
+    scoop install lua-language-server
+  }
+}
+
+function Install-OhMyPosh
+{
+  if ($OhMyPosh)
+  {
+    winget install JanDeDobbeleer.OhMyPosh -s winget
+  }
 }
 
 if (-not(Test-Path Variable:\MY_CONFIG_HOME))
 {
   throw "There is no MY_CONFIG_HOME"
 }
-Write-Output "Which you want install?"
-Write-Output "1: simple"
-Write-Output "2: oh-my-posh"
-Write-Output "3: Scoop"
-Write-Output "4: JdkSwitcher"
-Write-Output "5: MyPsScripts"
-$Reply = Read-Host -Prompt "[1/2/3/4/5]"
-Switch ($Reply)
-{
-  1
-  {
-    # Simple
-    Install-Simple
-  }
-  2
-  {
-    # Oh my posh
-    Install-OMP
-  }
-  3
-  {
-    Install-Scoop
-  }
-  4
-  {
-    Use-Module -Path "module\JdkSwitcher"
-  }
-  5
-  {
-    Use-Module -Path "module\MyPsScripts"
-  }
-  default
-  {
-    Write-Output "Non matched. Finish install."
-  }
-}
+
+Install-Scoop
+Install-OhMyPosh
+Install-OmpProfile
+Install-Modules
