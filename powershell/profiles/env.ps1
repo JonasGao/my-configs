@@ -1,12 +1,11 @@
 $MY_CONFIG_HOME = "$HOME\my-github\my-configs"
 
-$CUM2 = "$HOME/.m2/_codeup/settings.xml"
-$HSM2 = "$HOME/.m2/_huashang/settings.xml"
+$env:PATH = $env:PATH + ";$HOME\bin;$HOME\.local\bin"
 
 $MAVEN_HOME = "D:\Maven\apache-maven-3.8.6-bin\apache-maven-3.8.6\bin"
 $env:PATH = $env:PATH + ";" + $MAVEN_HOME
-
-$env:PATH = $env:PATH + ";$HOME\bin;$HOME\.local\bin"
+$CUM2 = "$HOME/.m2/_codeup/settings.xml"
+$HSM2 = "$HOME/.m2/_huashang/settings.xml"
 
 $NVIM_HOME = "$HOME\Apps\nvim-win64\Neovim"
 $NVIM_CONF = "$env:LOCALAPPDATA\nvim"
@@ -16,8 +15,6 @@ $PoshTheme = "blue-owl"
 $PoshThemeConfig = "$($env:LOCALAPPDATA)\Programs\oh-my-posh\themes\$PoshTheme.omp.json"
 $MyPoshThemeConfig = "$HOME\.my.$PoshTheme.omp.json"
 $PoshConfig = $MyPoshThemeConfig
-
-Set-Alias -Name "vim" -Value "nvim"
 
 function sortpom
 {
