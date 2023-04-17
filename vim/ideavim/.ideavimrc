@@ -97,3 +97,4 @@ nmap  mF  <Plug>(easymotion-F)
 """ Which key ------------------------
 let g:WhichKey_FontFamily = "JetBrains Mono"
 let g:WhichKey_ShowVimActions = "true"
+let g:WhichKey_ProcessUnknownMappings = "false"
