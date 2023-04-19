@@ -1,5 +1,5 @@
 $PROFILE_HOME = (Get-Item $PROFILE).Directory
-$SET_ENV_NAME = "env.ps1"
+$SET_ENV_NAME = "Env.ps1"
 $SET_ENV = "$PROFILE_HOME/$SET_ENV_NAME"
 
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
