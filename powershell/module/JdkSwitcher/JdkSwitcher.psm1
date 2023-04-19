@@ -125,7 +125,13 @@ function Use-JavaHome
   throw "Please provider a key or a path!"
 }
 
+function Clear-JavaHome()
+{
+  Remove-Item $JAVA_HOME_LIST_FILE -Force
+}
+
 Export-ModuleMember -Function Set-JavaHome
 Export-ModuleMember -Function Get-JavaHome
 Export-ModuleMember -Function Use-JavaHome
 Export-ModuleMember -Function Search-JavaHome
+Export-ModuleMember -Function Clear-JavaHome
