@@ -16,6 +16,9 @@ $PoshThemeConfig = "$($env:LOCALAPPDATA)\Programs\oh-my-posh\themes\$PoshTheme.o
 $MyPoshThemeConfig = "$HOME\.my.$PoshTheme.omp.json"
 $PoshConfig = $MyPoshThemeConfig
 
+Import-Module "$MY_CONFIG_HOME\powershell\module\JdkSwitcher\JdkSwitcher.psm1"
+Import-Module "$MY_CONFIG_HOME\powershell\module\MyPsScripts\MyPsScripts.psm1"
+
 function sortpom
 {
   param (
