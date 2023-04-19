@@ -1,4 +1,4 @@
-$JAVA_HOME_LIST_FILE = "$HOME\.jdks\list"
+$JAVA_HOME_LIST_FILE = "$HOME\.jdks\javahome.csv"
 
 function Read-Jdks()
 {
