@@ -51,7 +51,7 @@ noremap      <Space>e     :action RecentFiles<CR>
 noremap      <Space>E     :action $LRU<CR>
 noremap      <Space>f     :action FileStructurePopup<CR>
 noremap      <Space>v     :action SelectInProjectView<CR>
-noremap      <Space>p     :NERDTree<CR>
+noremap      <Space>t     :NERDTree<CR>
 noremap      <Space>w     :action CloseContent<CR>
 noremap      <Space>N     :action GotoFile<CR>
 noremap      <Space>n     :action GotoClass<CR>
@@ -71,8 +71,9 @@ noremap      <Space>re    :action RenameElement<CR>
 noremap      <Space>rt    :action SurroundWith<CR>
 noremap      <Space>rr    :action Refactorings.QuickListPopupAction<CR>
 noremap      <Space>mr    :action Maven.Reimport<CR>
-noremap      <Space>t     :action Replace<CR>
+"noremap      <Space>?     :action Replace<CR>
 noremap      <Space>p     "0p
+noremap      <Space>y     "0y
 noremap      <Space>if    :action NewElement<CR>
 noremap      <Space>ie    :action Generate<CR>
 "-----------|------------|------------
