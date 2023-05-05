@@ -70,6 +70,8 @@ noremap      <Space>rg    :action RearrangeCode<CR>
 noremap      <Space>re    :action RenameElement<CR>
 noremap      <Space>rt    :action SurroundWith<CR>
 noremap      <Space>rr    :action Refactorings.QuickListPopupAction<CR>
+noremap      <Space>rR    :action RefactoringMenu<CR>
+noremap      <Space>rs    :action StringManipulation.Group.Main<CR>
 noremap      <Space>mr    :action Maven.Reimport<CR>
 "noremap      <Space>?     :action Replace<CR>
 noremap      <Space>p     "0p
