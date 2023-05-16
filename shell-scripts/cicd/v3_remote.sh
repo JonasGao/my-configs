@@ -1,9 +1,16 @@
 #!/bin/bash
 
+# 先存一个当前路径，说不定后边要用
 CWD=$(pwd)
 
-# 应用启动的工作目录
-APP_HOME="/home/deployer/zhebei/$2"
+# 工作空间
+WD=$(pwd)
+
+# 应用目录名称
+APP_NAME="$2"
+
+# 应用的工作目录
+APP_HOME="$WD/$APP_NAME"
 
 # 应用名称
 JAR_NAME="app"
