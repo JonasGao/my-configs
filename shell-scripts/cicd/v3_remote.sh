@@ -155,10 +155,10 @@ start_application() {
     pid=$!
     rc=$?
     if [ "$rc" = "0" ]; then
-      echo "Run jar succeed ($pid)"
+      echo "Run jar succeed (PID: $pid, RC: $rc)"
       echo "$pid" > $PID_PATH
     else
-      echo "Run jar failed with ($rc)"
+      echo "Run jar failed with (RC: $rc)"
       exit 3
     fi
   else
