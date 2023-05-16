@@ -152,13 +152,21 @@ start_application() {
     echo "  jar:   ${JAR_PATH}"
     echo "  args:  ${JAR_ARGS}"
     ${NOHUP} ${JAVA} ${JVM_OPTS} -jar ${JAR_PATH} ${JAR_ARGS} >${STD_OUT} 2>&1 &
-    pid=$!
-    rc=$?
-    if [ "$rc" = "0" ]; then
-      echo "Run jar succeed (PID: $pid, RC: $rc)"
-      echo "$pid" > $PID_PATH
+    local PID=$!
+    local NOHUP_RET=$?
+    local RET=99
+    if [ "$NOHUP_RET" = "0" ]; then
+      echo "Run nohup succeed (NOHUP RETURN: $NOHUP_RET, APP PID: $PID)"
+      echo "$PID" > $PID_PATH
+      sleep 1
+      if [ ! -d "/proc/$PID" ]; then
+        wait "$PID"
+        RET=$?
+        echo "ERROR: Run app fail. Return: $RET"
+        exit 4
+      fi
     else
-      echo "Run jar failed with (RC: $rc)"
+      echo "ERROR: Run jar failed with ($NOHUP_RET)"
       exit 3
     fi
   else
