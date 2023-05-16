@@ -59,16 +59,18 @@ PGREP=$(which pgrep 2>/dev/null)
 SET_ENV_FILENAME="setenv.sh"
 
 # 如果有配置文件，以配置文件覆盖
-CWD_SET_ENV=$(readlink -f "./$SET_ENV_FILENAME")
-if [ -f "$CWD_SET_ENV" ]; then
-  echo "Overwrite with $CWD_SET_ENV"
-  source $CWD_SET_ENV
+WDIR_SET_ENV=$(readlink -f "./$SET_ENV_FILENAME")
+if [ -f "$WDIR_SET_ENV" ]; then
+  echo "Overwrite with $WDIR_SET_ENV"
+  source $WDIR_SET_ENV
 fi
 APP_HOME_SET_ENV="$APP_HOME/conf/$SET_ENV_FILENAME"
 if [ -f "$APP_HOME_SET_ENV" ]; then
-  if [ "$APP_HOME_SET_ENV" != "$CWD_SET_ENV" ]; then
+  if [ "$APP_HOME_SET_ENV" != "$WDIR_SET_ENV" ]; then
     echo "Overwrite with $APP_HOME_SET_ENV"
     source $APP_HOME_SET_ENV
+  else
+    echo "WARN: APP_HOME_SET_ENV same with WDIR_SET_ENV is '$APP_HOME_SET_ENV'"
   fi
 fi
 
