@@ -30,6 +30,9 @@ PROG_NAME=$0
 # 当前脚本的操作参数
 ACTION=$1
 
+# 进程启动等待时间
+PROC_START_TIMEOUT=3
+
 # 等待应用启动的时间
 APP_START_TIMEOUT=30
 
@@ -158,7 +161,8 @@ start_application() {
     if [ "$NOHUP_RET" = "0" ]; then
       echo "Run nohup succeed (NOHUP RETURN: $NOHUP_RET, APP PID: $PID)"
       echo "$PID" > $PID_PATH
-      sleep 1
+      echo "Wait $PROC_START_TIMEOUT second."
+      sleep "$PROC_START_TIMEOUT"
       if [ ! -d "/proc/$PID" ]; then
         wait "$PID"
         RET=$?
