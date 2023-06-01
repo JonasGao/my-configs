@@ -57,13 +57,14 @@ noremap      <Space>h     :action PreviousTab<CR>
 noremap      <Space>l     :action NextTab<CR>
 noremap      <Space>e     :action RecentFiles<CR>
 noremap      <Space>E     :action $LRU<CR>
-noremap      <Space>f     :action FileStructurePopup<CR>
+noremap      <Space>frs   :%s/
+noremap      <Space>f/    :action StructuralSearchPlugin.StructuralSearchAction<CR>
 noremap      <Space>v     :action SelectInProjectView<CR>
 noremap      <Space>t     :NERDTree<CR>
 noremap      <Space>w     :action CloseContent<CR>
 noremap      <Space>N     :action GotoFile<CR>
 noremap      <Space>n     :action GotoClass<CR>
-noremap      <Space>/     :action StructuralSearchPlugin.StructuralSearchAction<CR>
+noremap      <Space>/     :action FileStructurePopup<CR>
 noremap      <Space>q     :action ParameterInfo<CR>
 noremap      <Space>a     ggvG$
 noremap      <Space>o     :action OverrideMethods<CR>
