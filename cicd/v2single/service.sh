@@ -2,6 +2,12 @@
 
 CWD=$(pwd)
 
+# 当前脚本的名字
+PROG_NAME=$0
+
+# 当前脚本的操作参数
+ACTION=$1
+
 # 应用启动的工作目录
 APP_HOME="$CWD"
 
@@ -15,12 +21,6 @@ JVM_OPTS="-server -Xmx512m"
 
 # JAR 包启动的时候传递的参数
 JAR_ARGS="--spring.config.location=file:conf/"
-
-# 当前脚本的名字
-PROG_NAME=$0
-
-# 当前脚本的操作参数
-ACTION=$1
 
 # 等待应用启动的时间
 APP_START_TIMEOUT=20
