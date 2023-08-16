@@ -154,7 +154,7 @@ function Get-Proxy
 function Get-StrHash()
 {
   param (
-    [parameter(Mandatory = $true)]
+    [parameter(Mandatory, ValueFromPipeline)]
     [ValidateNotNullOrEmpty()]
     [string]
     $Value,
