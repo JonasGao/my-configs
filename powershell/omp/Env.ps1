@@ -4,6 +4,7 @@ $env:PATH = $env:PATH + ";$HOME\bin;$HOME\.local\bin"
 
 $MAVEN_HOME = "D:\Maven\apache-maven-3.8.6-bin\apache-maven-3.8.6\bin"
 $env:PATH = $env:PATH + ";" + $MAVEN_HOME
+
 $M2_CU = "$HOME/.m2/_codeup/settings.xml"
 $M2_HS = "$HOME/.m2/_huashang/settings.xml"
 
@@ -59,9 +60,9 @@ function Format-Pom
   }
 }
 
-function cumv
+function mvn_cu
 {
-  mvn -s $M2_CU $args
+  mvn -s $M2_CU $args "-Dmaven.test.skip=true"
 }
 
 function Set-GoPathLocation
