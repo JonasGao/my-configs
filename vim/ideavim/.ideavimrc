@@ -73,7 +73,7 @@ noremap      <Space>gc    :action CheckinProject<CR>
 noremap      <Space>gp    :action Vcs.Push<CR>
 noremap      <Space>gf    :action Vcs.UpdateProject<CR>
 noremap      <Space>So    :action VimActions<CR>
-noremap      <Space>Ss    :action IdeaVim.ReloadVimRc.reload<CR>
+noremap      <Space>Ss    :so ~/.ideavimrc<CR>
 noremap      <Space>rf    :action ReformatCode<CR>
 noremap      <Space>rg    :action RearrangeCode<CR>
 noremap      <Space>re    :action RenameElement<CR>
@@ -113,3 +113,4 @@ nmap         <leader>qF   <Plug>(easymotion-F)
 let g:WhichKey_FontFamily = "JetBrains Mono"
 let g:WhichKey_ShowVimActions = "true"
 let g:WhichKey_ProcessUnknownMappings = "false"
+let g:WhichKeyDesc_EasyMotion_s = "<leader>q EasyMotion"
