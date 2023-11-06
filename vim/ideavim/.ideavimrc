@@ -113,4 +113,7 @@ nmap         <leader>qF   <Plug>(easymotion-F)
 let g:WhichKey_FontFamily = "JetBrains Mono"
 let g:WhichKey_ShowVimActions = "true"
 let g:WhichKey_ProcessUnknownMappings = "false"
-let g:WhichKeyDesc_EasyMotion_s = "<leader>q EasyMotion"
+let g:WhichKeyDesc_EasyMotion =   "<leader>q  EasyMotion"
+let g:WhichKeyDesc_EasyMotion_s = "<leader>qs Search"
+let g:WhichKeyDesc_EasyMotion_f = "<leader>qf Front"
+let g:WhichKeyDesc_EasyMotion_F = "<leader>qF Back"
