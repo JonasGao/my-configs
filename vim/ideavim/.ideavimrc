@@ -40,7 +40,10 @@ vnoremap     <leader>y   "*y
 vnoremap     <C-c>       "*y
 nnoremap     <leader>p   "*p
 vnoremap     <leader>p   "*p
-noremap      <leader>g    :action FindInPath<CR>
+noremap      <leader>ff    :action FindInPath<CR>
+noremap      <leader>gc    :action CheckinProject<CR>
+noremap      <leader>gp    :action Vcs.Push<CR>
+noremap      <leader>gf    :action Vcs.UpdateProject<CR>
 noremap      <leader>b    :action Switcher<CR>
 noremap      <leader>1    :action GoToTab1<CR>
 noremap      <leader>2    :action GoToTab2<CR>
@@ -69,9 +72,6 @@ noremap      <Space>q     :action ParameterInfo<CR>
 noremap      <Space>a     ggvG$
 noremap      <Space>o     :action OverrideMethods<CR>
 noremap      <Space>q     :action QuickJavaDoc<CR>
-noremap      <Space>gc    :action CheckinProject<CR>
-noremap      <Space>gp    :action Vcs.Push<CR>
-noremap      <Space>gf    :action Vcs.UpdateProject<CR>
 noremap      <Space>So    :action VimActions<CR>
 noremap      <Space>Ss    :so ~/.ideavimrc<CR>
 noremap      <Space>rf    :action ReformatCode<CR>
@@ -108,7 +108,12 @@ nmap         <leader>qF   <Plug>(easymotion-F)
 let g:WhichKey_FontFamily = "JetBrains Mono"
 let g:WhichKey_ShowVimActions = "true"
 let g:WhichKey_ProcessUnknownMappings = "false"
-let g:WhichKeyDesc_EasyMotion =   "<leader>q  EasyMotion"
+let g:WhichKeyDesc_EasyMotion =   "<leader>q  +EasyMotion"
 let g:WhichKeyDesc_EasyMotion_s = "<leader>qs Search"
 let g:WhichKeyDesc_EasyMotion_f = "<leader>qf Front"
 let g:WhichKeyDesc_EasyMotion_F = "<leader>qF Back"
+let g:WhichKeyDesc_Find =         "<leader>f  +Find"
+let g:WhichKeyDesc_Git =          "<leader>g  +Git"
+let g:WhichKeyDesc_Git_c =        "<leader>gc CheckinProject"
+let g:WhichKeyDesc_Git_p =        "<leader>gp Push"
+let g:WhichKeyDesc_Git_f =        "<leader>gf UpdateProject"
