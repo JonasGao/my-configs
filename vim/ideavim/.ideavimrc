@@ -89,11 +89,6 @@ noremap      <Space>y     "0y
 noremap      <Space>if    :action NewElement<CR>
 noremap      <Space>ie    :action Generate<CR>
 "------------|------------|------------
-noremap      Q            gq
-noremap      qd           dd
-noremap      qf           :action ReformatCode<CR>
-noremap      qc           :action CheckinProject<CR>
-"------------|------------|------------
 
 """ EasyMotion -----------------------
 "------------|------------|------------
