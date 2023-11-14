@@ -48,7 +48,8 @@ noremap      <leader>f/   :action StructuralSearchPlugin.StructuralSearchAction<
 noremap      <leader>gc   :action CheckinProject<CR>
 noremap      <leader>gp   :action Vcs.Push<CR>
 noremap      <leader>gf   :action Vcs.UpdateProject<CR>
-noremap      <leader>b    :action Switcher<CR>
+noremap      <leader>\    :action Switcher<CR>
+nmap         <leader>b    <Action>(ToggleLineBreakpoint)
 noremap      <leader>1    :action GoToTab1<CR>
 noremap      <leader>2    :action GoToTab2<CR>
 noremap      <leader>3    :action GoToTab3<CR>
@@ -111,15 +112,18 @@ nmap         <leader>qF   <Plug>(easymotion-F)
 let g:WhichKey_FontFamily = "JetBrains Mono"
 let g:WhichKey_ShowVimActions = "true"
 let g:WhichKey_ProcessUnknownMappings = "false"
+""" Which key descriptions ------------
+let g:WhichKeyDesc_slash =   "<Action>(Switcher)"
+let g:WhichKeyDesc_b =       "<Action>(ToggleLineBreakpoint)"
 "--+EasyMotion
-let g:WhichKeyDesc_q =   "<leader>q  +EasyMotion"
-let g:WhichKeyDesc_q_s = "<leader>qs Search"
-let g:WhichKeyDesc_q_f = "<leader>qf Front"
-let g:WhichKeyDesc_q_F = "<leader>qF Back"
+let g:WhichKeyDesc_q =       "<leader>q  +EasyMotion"
+let g:WhichKeyDesc_q_s =     "<leader>qs Search"
+let g:WhichKeyDesc_q_f =     "<leader>qf Front"
+let g:WhichKeyDesc_q_F =     "<leader>qF Back"
 "--+Find
-let g:WhichKeyDesc_f =   "<leader>f  +Find"
+let g:WhichKeyDesc_f =       "<leader>f  +Find"
 "--+Git
-let g:WhichKeyDesc_g =   "<leader>g  +Git"
-let g:WhichKeyDesc_g_c = "<leader>gc CheckinProject"
-let g:WhichKeyDesc_g_p = "<leader>gp Push"
-let g:WhichKeyDesc_g_f = "<leader>gf UpdateProject"
+let g:WhichKeyDesc_g =       "<leader>g  +Git"
+let g:WhichKeyDesc_g_c =     "<leader>gc CheckinProject"
+let g:WhichKeyDesc_g_p =     "<leader>gp Push"
+let g:WhichKeyDesc_g_f =     "<leader>gf UpdateProject"

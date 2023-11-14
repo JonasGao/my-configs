@@ -31,14 +31,11 @@ function Backup-Ideavimrc()
   {
     Copy-Item "$SRC" "$DST"
     Write-Host -ForegroundColor Green "Finished."
-    if ($Backup)
-    {
-      Push-Location "$MY_CONFIG_HOME/vim/ideavim"
-      git add .
-      git commit -m "Backup ideavimrc"
-      git push
-      Pop-Location
-    }
+    Push-Location "$MY_CONFIG_HOME/vim/ideavim"
+    git add .
+    git commit -m "Backup ideavimrc"
+    git push
+    Pop-Location
   }
 }
 
