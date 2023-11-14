@@ -7,6 +7,7 @@ set easymotion
 set textobj-entire
 set ReplaceWithRegister
 set which-key
+set exchange
 "" Multiple Cursors Plugin
 " 1. JetBrains multiple-cursors plugin
 " https://github.com/JetBrains/ideavim/wiki/IdeaVim-Plugins
@@ -15,6 +16,8 @@ set multiple-cursors
 " https://plugins.jetbrains.com/plugin/19162-ideavimmulticursor
 " https://github.com/dankinsoid/IdeaVimMulticursor
 set multicursor
+" Other plugins
+Plug 'machakann/vim-highlightedyank'
 
 """ Plugin settings -------------------
 let g:argtextobj_pairs="[:],(:),<:>"
