@@ -242,6 +242,20 @@ function Set-Env
   [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\bin", [EnvironmentVariableTarget]::Machine)
 }
 
+function Update-Pwsh
+{
+  $out = "$HOME/Downloads/pwsh.msi"
+  $h = @{ "Accept" = "application/vnd.github+json" }
+  $r = Invoke-RestMethod "https://api.github.com/repos/powershell/powershell/releases/latest" -Headers $h
+  $u = ($r.assets | Where-Object { $_.browser_download_url.endsWith("x64.msi") }).browser_download_url
+  Invoke-RestMethod $u -OutFile $out
+  if (Test-Path $out)
+  {
+    msiexec /i $out /passive
+    Remove-Item $out
+  }
+}
+
 Export-ModuleMember -Function Copy-Sshid
 Export-ModuleMember -Function Set-SbtHome
 Export-ModuleMember -Function Set-HttpProxy
@@ -251,3 +265,4 @@ Export-ModuleMember -Function Set-MvnHome
 Export-ModuleMember -Function Get-StrHash
 Export-ModuleMember -Function Copy-ItemUsingExplorer
 Export-ModuleMember -Function Move-ItemUsingExplorer
+Export-ModuleMember -Function Update-Pwsh
