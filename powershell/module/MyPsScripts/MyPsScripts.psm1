@@ -244,19 +244,21 @@ function Set-Env
 
 function Update-Pwsh
 {
-  $out = "$HOME/Downloads/pwsh.msi"
+  $out = "$HOME\Downloads\pwsh.msi"
   $h = @{ "Accept" = "application/vnd.github+json" }
   Write-Output "Calling GitHub API to get latest release."
   $r = Invoke-RestMethod "https://api.github.com/repos/powershell/powershell/releases/latest" -Headers $h
   $u = ($r.assets | Where-Object { $_.browser_download_url.endsWith("x64.msi") }).browser_download_url
   Write-Output "Got and download latest release `"$u`""
-  Invoke-RestMethod $u -OutFile $out
+  $p = "https://mirror.ghproxy.com/"
+  Write-Output "Using proxy `"$p`""
+  Invoke-RestMethod "$p$u" -OutFile $out
   if (Test-Path $out)
   {
     Write-Output "Installing msi"
-    msiexec /i $out /passive
+    msiexec /i $out /qb
     Remove-Item $out
-    Write-Output "Successfully installed"
+    Write-Output "Finished install"
   }
 }
 
