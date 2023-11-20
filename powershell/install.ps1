@@ -2,7 +2,7 @@ param (
   [Switch]$Scoop,
   [Switch]$OhMyPosh,
   [Switch]$Profiles,
-  [Switch]$Modules,
+  [Switch]$Force,
   $Proxy
 )
 
@@ -16,28 +16,33 @@ function Use-Module
   )
   if ($Name)
   {
-    Write-Output "Install online module `"$Name`""
-    Install-Module -Name $Name -Scope CurrentUser
+    if ($Force)
+    {
+      Install-Module -Name $Name -Scope CurrentUser -Force
+      Write-Output "Force installed online module `"$Name`""
+    } else
+    {
+      Install-Module -Name $Name -Scope CurrentUser
+      Write-Output "Installed online module `"$Name`""
+    }
   } elseif ($Path)
   {
-    Write-Output "Install local module `"$Path`""
     Copy-Item -Force -Recurse $Path $USER_MODULE_HOME
+    Write-Output "Installed local module `"$Path`""
   }
 }
 
 function Install-Modules
 {
-  if ($Modules)
-  {
-    #Install-Module -Name DotNetVersionLister -Scope CurrentUser
-    Use-Module -Path "module\MyPsScripts"
-    Use-Module -Path "module\JdkSwitcher"
-    Use-Module -Name posh-git
-    Use-Module -Name Terminal-Icons
-    #Use-Module -Name ZLocation
-    Use-Module -Name z
-    Write-Host "Success install Modules." -ForegroundColor Green
-  }
+  #Install-Module -Name DotNetVersionLister -Scope CurrentUser
+  Use-Module -Path "module\MyPsScripts"
+  Use-Module -Path "module\JdkSwitcher"
+  Use-Module -Path "module\MvnSwitcher"
+  Use-Module -Name posh-git
+  Use-Module -Name Terminal-Icons
+  #Use-Module -Name ZLocation
+  #Use-Module -Name z
+  Write-Host "Success install Modules." -ForegroundColor Green
 }
 
 function Install-OmpProfile
@@ -75,6 +80,9 @@ if (-not(Test-Path Variable:\MY_CONFIG_HOME))
 }
 
 Install-Scoop
+Write-Output "Installed scoop"
 Install-OhMyPosh
+Write-Output "Installed oh-my-posh"
 Install-OmpProfile
+Write-Output "Installed oh-my-posh profiles"
 Install-Modules
