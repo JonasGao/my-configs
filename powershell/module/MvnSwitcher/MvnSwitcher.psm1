@@ -130,8 +130,21 @@ function Clear-MvnHome()
   Remove-Item $JAVA_HOME_LIST_FILE -Force
 }
 
+function Install-Mvn()
+{
+  $v = "3.9.5"
+  $u = "https://dlcdn.apache.org/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"
+  $o = "$HOME\Downloads\apache-maven-$v-bin.zip"
+  Write-Output "Will download `"$u`" to `"$o`""
+  Invoke-RestMethod $u -OutFile $o
+  Write-Output "Downloaded `"$o`""
+  Expand-Archive -Path $o -DestinationPath "D:/Maven/"
+  Write-Output "Expanded"
+}
+
 Export-ModuleMember -Function Set-MvnHome
 Export-ModuleMember -Function Get-MvnHome
 Export-ModuleMember -Function Use-Mvn
 Export-ModuleMember -Function Search-MvnHome
 Export-ModuleMember -Function Clear-MvnHome
+Export-ModuleMember -Function Install-Mvn
