@@ -134,11 +134,17 @@ function Install-Mvn()
 {
   $v = "3.9.5"
   $u = "https://dlcdn.apache.org/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"
-  $o = "$HOME\Downloads\apache-maven-$v-bin.zip"
-  Write-Output "Will download `"$u`" to `"$o`""
-  Invoke-RestMethod $u -OutFile $o
-  Write-Output "Downloaded `"$o`""
-  Expand-Archive -Path $o -DestinationPath "D:/Maven/"
+  $out = "$HOME\Downloads\apache-maven-$v-bin.zip"
+  if (Test-Path $out)
+  {
+    Write-Output "Found `"$out`" exists"
+  } else
+  {
+    Write-Output "Will download `"$u`" to `"$out`""
+    Invoke-RestMethod $u -OutFile $out
+    Write-Output "Downloaded `"$out`""
+  }
+  Expand-Archive -Path $out -DestinationPath "D:/Maven/"
   Write-Output "Expanded"
 }
 
