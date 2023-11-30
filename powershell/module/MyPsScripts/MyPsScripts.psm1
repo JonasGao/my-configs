@@ -245,6 +245,13 @@ function Set-Env
 function Update-Pwsh
 {
   $out = "$HOME\Downloads\pwsh.msi"
+  if (Test-Path $out)
+  {
+    Write-Output "Found `"$out`" exists"
+    Remove-Item $out
+    Write-Output "Removed `"$out`""
+  }
+  Write-Output "Will download to `"$out`""
   $h = @{ "Accept" = "application/vnd.github+json" }
   Write-Output "Calling GitHub API to get latest release."
   $r = Invoke-RestMethod "https://api.github.com/repos/powershell/powershell/releases/latest" -Headers $h
@@ -257,7 +264,6 @@ function Update-Pwsh
   {
     Write-Output "Installing msi"
     msiexec /i $out /qb
-    Remove-Item $out
     Write-Output "Finished install"
   }
 }
