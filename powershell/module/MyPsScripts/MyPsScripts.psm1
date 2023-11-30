@@ -257,7 +257,14 @@ function Update-Pwsh
   $r = Invoke-RestMethod "https://api.github.com/repos/powershell/powershell/releases/latest" -Headers $h
   $u = ($r.assets | Where-Object { $_.browser_download_url.endsWith("x64.msi") }).browser_download_url
   Write-Output "Got and download latest release `"$u`""
-  $p = "https://mirror.ghproxy.com/"
+  if (Test-Path env:\GHPROXY)
+  {
+    $p = $env:GHPROXY
+  } else
+  {
+    # $p = "https://mirror.ghproxy.com/"
+    $p = "https://ghps.cc/"
+  }
   Write-Output "Using proxy `"$p`""
   Invoke-RestMethod "$p$u" -OutFile $out
   if (Test-Path $out)
