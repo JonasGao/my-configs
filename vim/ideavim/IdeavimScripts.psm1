@@ -1,4 +1,4 @@
-function Restore-Ideavimrc()
+function Update-Ideavimrc()
 {
   if (-not(Test-Path Variable:\MY_CONFIG_HOME))
   {
@@ -39,5 +39,5 @@ function Backup-Ideavimrc()
   }
 }
 
-Export-ModuleMember -Function Restore-Ideavimrc
+Export-ModuleMember -Function Update-Ideavimrc
 Export-ModuleMember -Function Backup-Ideavimrc
