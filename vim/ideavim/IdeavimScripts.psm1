@@ -1,3 +1,15 @@
+function Compare-Ideavimrc()
+{
+  if (-not(Test-Path Variable:\MY_CONFIG_HOME))
+  {
+    Write-Host "There is no MY_CONFIG_HOME" -ForegroundColor Red
+    Exit 1
+  }
+  $SRC = "$MY_CONFIG_HOME/vim/ideavim/.ideavimrc"
+  $DST = "$HOME/.ideavimrc"
+  delta $DST $SRC
+}
+
 function Update-Ideavimrc()
 {
   if (-not(Test-Path Variable:\MY_CONFIG_HOME))
@@ -41,3 +53,4 @@ function Backup-Ideavimrc()
 
 Export-ModuleMember -Function Update-Ideavimrc
 Export-ModuleMember -Function Backup-Ideavimrc
+Export-ModuleMember -Function Compare-Ideavimrc
