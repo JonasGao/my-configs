@@ -1,7 +1,6 @@
 param (
   [Switch]$Scoop,
   [Switch]$OhMyPosh,
-  [Switch]$Profiles,
   [Switch]$Force,
   $Proxy
 )
@@ -35,9 +34,6 @@ function Use-Module
 function Install-Modules
 {
   #Install-Module -Name DotNetVersionLister -Scope CurrentUser
-  Use-Module -Path "module\MyPsScripts"
-  Use-Module -Path "module\JdkSwitcher"
-  Use-Module -Path "module\MvnSwitcher"
   Use-Module -Name posh-git
   Use-Module -Name Terminal-Icons
   #Use-Module -Name ZLocation
@@ -45,15 +41,19 @@ function Install-Modules
   Write-Host "Success install Modules." -ForegroundColor Green
 }
 
+function Compare-OmpProfile
+{
+  $PROFILE_HOME = (Get-Item $PROFILE).Directory
+  delta "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE
+  delta "$MY_CONFIG_HOME\powershell\omp\Env.ps1" "$PROFILE_HOME\Env.ps1"
+}
+
 function Install-OmpProfile
 {
-  if ($Profiles)
-  {
-    $PROFILE_HOME = (Get-Item $PROFILE).Directory
-    Copy-Item "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE
-    Copy-Item "$MY_CONFIG_HOME\powershell\omp\env.ps1" "$PROFILE_HOME\env.ps1"
-    Write-Host "Success install Profiles." -ForegroundColor Green
-  }
+  $PROFILE_HOME = (Get-Item $PROFILE).Directory
+  Copy-Item "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE
+  Copy-Item "$MY_CONFIG_HOME\powershell\omp\Env.ps1" "$PROFILE_HOME\Env.ps1"
+  Write-Host "Success install Profiles." -ForegroundColor Green
 }
 
 function Install-Scoop

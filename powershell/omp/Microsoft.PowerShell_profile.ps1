@@ -1,13 +1,17 @@
 $PROFILE_HOME = (Get-Item $PROFILE).Directory
-$SET_ENV_NAME = "Env.ps1"
-$SET_ENV = "$PROFILE_HOME/$SET_ENV_NAME"
+$ENV_FILENAME = "Env.ps1"
+$ENV_FILE = "$PROFILE_HOME/$ENV_FILENAME"
+
+function Update-Env
+{
+  if (Test-Path "$ENV_FILE")
+  {
+    . "$ENV_FILE"
+  }
+}
 
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
-
-Import-Module posh-git
-Import-Module Terminal-Icons
-Import-Module z
 
 Set-Alias -Name vim -Value nvim
 Set-Alias -Name ll -Value Get-ChildItem
@@ -17,9 +21,15 @@ $env:LESSCHARSET = 'utf-8'
 $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 $env:POSH_GIT_ENABLED = $true
 
-if (Test-Path "$SET_ENV")
-{
-  . "$SET_ENV"
-}
+Update-Env
+
+$env:PATH = "$HOME\bin;$HOME\.local\bin;" + $env:PATH
+$env:PATH = "$MAVEN_HOME;" + $env:PATH
+$env:PATH = "$NVIM_HOME\bin;$env:PATH"
+
+Import-Module posh-git
+Import-Module Terminal-Icons
+Import-Module z
+Import-Module "$MY_CONFIG_HOME\powershell\module\MyPsScripts"
 
 oh-my-posh init pwsh --config $PoshConfig | Invoke-Expression
