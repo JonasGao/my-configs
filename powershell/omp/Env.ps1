@@ -1,15 +1,14 @@
 $MY_CONFIG_HOME = "$HOME\my-github\my-configs"
-
-$env:PATH = $env:PATH + ";$HOME\bin;$HOME\.local\bin"
-
-$MAVEN_HOME = "D:\Maven\apache-maven-3.8.6-bin\apache-maven-3.8.6\bin"
-$env:PATH = $env:PATH + ";" + $MAVEN_HOME
-
+$MAVEN_VERSION = "3.9.4"
+$MAVEN_HOME = "D:\Maven\apache-maven-$MAVEN_VERSION-bin\apache-maven-$MAVEN_VERSION\bin"
 $M2_CU = "$HOME/.m2/_codeup/settings.xml"
 $M2_HS = "$HOME/.m2/_huashang/settings.xml"
-
 $NVIM_HOME = "$env:NVIM_HOME"
 $NVIM_CONF = "$env:LOCALAPPDATA\nvim"
+$PWSH_PROFILE_HOME = $env:PWSH_PROFILE_HOME
+
+$env:PATH = "$HOME\bin;$HOME\.local\bin;" + $env:PATH
+$env:PATH = "$MAVEN_HOME;" + $env:PATH
 $env:PATH = "$NVIM_HOME\bin;$env:PATH"
 
 $PoshTheme = "blue-owl"
@@ -62,7 +61,7 @@ function Format-Pom
 
 function mvn_cu
 {
-  mvn -s $M2_CU $args "-Dmaven.test.skip=true"
+  mvn -s $M2_CU $args
 }
 
 function Set-GoPathLocation
