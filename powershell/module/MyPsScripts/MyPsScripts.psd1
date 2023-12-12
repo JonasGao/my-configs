@@ -12,7 +12,7 @@
   # RootModule = ''
 
   # Version number of this module.
-  ModuleVersion = '1.0.0'
+  ModuleVersion = '1.1.0'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -69,7 +69,10 @@
   NestedModules = @('.\BuildTools.psm1', 
     '.\Main.psm1', 
     '.\ProxyHelpers.psm1', 
-    '.\Explorer.psm1')
+    '.\Explorer.psm1',
+    '.\MvnSwitcher.psm1',
+    '.\JdkSwitcher.psm1'
+  )
 
   # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
   FunctionsToExport = '*'
