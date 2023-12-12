@@ -11,13 +11,13 @@ $env:PATH = "$HOME\bin;$HOME\.local\bin;" + $env:PATH
 $env:PATH = "$MAVEN_HOME;" + $env:PATH
 $env:PATH = "$NVIM_HOME\bin;$env:PATH"
 
-$PoshTheme = "blue-owl"
-$PoshThemeConfig = "$($env:LOCALAPPDATA)\Programs\oh-my-posh\themes\$PoshTheme.omp.json"
+$POSH_HOME = "C:\Users\udemo\scoop\apps\oh-my-posh\current\"
+$PoshTheme = "amro"
+$PoshThemeConfig = "$POSH_HOME\themes\$PoshTheme.omp.json"
 $MyPoshThemeConfig = "$HOME\.my.$PoshTheme.omp.json"
-$PoshConfig = $MyPoshThemeConfig
+$PoshConfig = $PoshThemeConfig
 
-Import-Module "$MY_CONFIG_HOME\powershell\module\JdkSwitcher\JdkSwitcher.psm1"
-Import-Module "$MY_CONFIG_HOME\powershell\module\MyPsScripts\MyPsScripts.psm1"
+Import-Module "$MY_CONFIG_HOME\powershell\module\MyPsScripts"
 
 function Update-Env
 {
