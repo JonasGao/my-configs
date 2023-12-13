@@ -1,6 +1,8 @@
 $PROFILE_HOME = (Get-Item $PROFILE).Directory
 $ENV_FILENAME = "Env.ps1"
 $ENV_FILE = "$PROFILE_HOME/$ENV_FILENAME"
+$NVIM_CONF = "$env:LOCALAPPDATA\nvim"
+$NVIM_HOME = "$env:NVIM_HOME"
 
 function Update-Env
 {
