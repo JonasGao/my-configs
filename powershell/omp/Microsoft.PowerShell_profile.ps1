@@ -4,14 +4,6 @@ $env:ENV_FILE = "$env:PROFILE_HOME/$env:ENV_FILENAME"
 $env:NVIM_CONF = "$env:LOCALAPPDATA\nvim"
 $env:NVIM_HOME = "$env:NVIM_HOME"
 
-function Update-Env
-{
-  if (Test-Path "$env:ENV_FILE")
-  {
-    . "$env:ENV_FILE"
-  }
-}
-
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
 
@@ -23,7 +15,7 @@ $env:LESSCHARSET = 'utf-8'
 $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 $env:POSH_GIT_ENABLED = $true
 
-Update-Env
+. "$env:ENV_FILE"
 
 $env:PATH = "$HOME\bin;$HOME\.local\bin;" + $env:PATH
 $env:PATH = "$env:MAVEN_HOME;" + $env:PATH
