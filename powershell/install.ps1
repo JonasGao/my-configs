@@ -6,6 +6,7 @@ param (
 )
 
 $USER_MODULE_HOME = $env:PSModulePath.Split(";")[0]
+$MY_CONFIG_HOME = $env:MY_CONFIG_HOME
 
 function Use-Module
 {
