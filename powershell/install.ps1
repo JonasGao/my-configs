@@ -41,18 +41,17 @@ function Install-Modules
   Write-Host "Success install Modules." -ForegroundColor Green
 }
 
-function Compare-OmpProfile
-{
-  $PROFILE_HOME = (Get-Item $PROFILE).Directory
-  delta "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE
-  delta "$MY_CONFIG_HOME\powershell\omp\Env.ps1" "$PROFILE_HOME\Env.ps1"
-}
-
 function Install-OmpProfile
 {
   $PROFILE_HOME = (Get-Item $PROFILE).Directory
   Copy-Item "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE
-  Copy-Item "$MY_CONFIG_HOME\powershell\omp\Env.ps1" "$PROFILE_HOME\Env.ps1"
+  if (Test-Path "$PROFILE_HOME\Env.ps1")
+  {
+    Write-Host "Skip init Env.ps1, already exists."
+  } else
+  {
+    Copy-Item "$MY_CONFIG_HOME\powershell\omp\Env.ps1" 
+  }
   Write-Host "Success install Profiles." -ForegroundColor Green
 }
 
