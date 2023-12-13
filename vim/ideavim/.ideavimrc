@@ -16,6 +16,8 @@ set multiple-cursors
 " https://plugins.jetbrains.com/plugin/19162-ideavimmulticursor
 " https://github.com/dankinsoid/IdeaVimMulticursor
 set multicursor
+" IdeaVim-Quickscope
+set quickscope
 " Other plugins
 Plug 'machakann/vim-highlightedyank'
 
