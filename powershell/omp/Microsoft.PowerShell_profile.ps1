@@ -17,8 +17,8 @@ $env:POSH_GIT_ENABLED = $true
 
 . "$env:ENV_FILE"
 
-$env:PATH = "$HOME\bin;$HOME\.local\bin;" + $env:PATH
-$env:PATH = "$env:MAVEN_HOME;" + $env:PATH
+$env:PATH = "$HOME\bin;$HOME\.local\bin;$env:PATH"
+$env:PATH = "$env:MAVEN_HOME\bin;$env:PATH"
 $env:PATH = "$env:NVIM_HOME\bin;$env:PATH"
 
 Import-Module posh-git
