@@ -15,6 +15,7 @@ $env:LESSCHARSET = 'utf-8'
 $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 $env:POSH_GIT_ENABLED = $true
 
+# Source custom env file
 . "$env:ENV_FILE"
 
 $env:PATH = "$HOME\bin;$HOME\.local\bin;$env:PATH"
