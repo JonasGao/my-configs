@@ -108,6 +108,9 @@ function Update-Pwsh
   }
 }
 
+$MY_SCRIPT_SOURCE_HOME = "$env:MY_CONFIG_HOME\powershell\module\MyPsScripts"
+
 Export-ModuleMember -Function Copy-Sshid
 Export-ModuleMember -Function Get-StrHash
 Export-ModuleMember -Function Update-Pwsh
+Export-ModuleMember -Variable MY_SCRIPT_SOURCE_HOME

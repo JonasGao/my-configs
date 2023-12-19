@@ -28,15 +28,27 @@ function Backup-EnvFile
   }
 }
 
+function Compare-Profile
+{
+  if ((Test-Path Env:\MY_CONFIG_HOME))
+  {
+    $TARGET_DIR = "$env:MY_CONFIG_HOME\powershell\omp"
+    $NAME = (Get-Item $PROFILE).Name
+    delta "$PROFILE" "$TARGET_DIR\${NAME}"
+  } else
+  {
+    Write-Host -ForegroundColor Red "Missing Env:MY_CONFIG_HOME."
+  }
+}
+
 function Save-Profile
 {
   if ((Test-Path Env:\MY_CONFIG_HOME))
   {
-    $TARGET_DIR = "$env:MY_CONFIG_HOME\powershell\omp\"
-    Copy-Item -Force "$PROFILE" "$TARGET_DIR"
+    $TARGET_DIR = "$env:MY_CONFIG_HOME\powershell\omp"
+    Copy-Item -Force "$PROFILE" "$TARGET_DIR\"
     Write-Host -ForegroundColor Green "Copied $PROFILE"
     Push-Location $TARGET_DIR
-    git diff
     git add .
     git commit -m "Save pwsh profile."
     git push
@@ -50,3 +62,4 @@ function Save-Profile
 Export-ModuleMember -Function Update-EnvFile
 Export-ModuleMember -Function Backup-EnvFile
 Export-ModuleMember -Function Save-Profile
+Export-ModuleMember -Function Compare-Profile
