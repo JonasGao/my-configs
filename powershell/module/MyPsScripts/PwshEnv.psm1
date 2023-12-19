@@ -38,7 +38,7 @@ function Save-Profile
     Push-Location $TARGET_DIR
     git diff
     git add .
-    git commit
+    git commit -m "Save pwsh profile."
     git push
     Pop-Location
   } else
