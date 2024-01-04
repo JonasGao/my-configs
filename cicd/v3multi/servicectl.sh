@@ -228,6 +228,8 @@ stop_application() {
       break
     fi
   done
+  echo -e "Java process failed exit. Still running in $CURR_PID"
+  exit 4
 }
 
 start() {
