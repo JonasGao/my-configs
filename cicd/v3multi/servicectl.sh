@@ -225,7 +225,7 @@ stop_application() {
     else
       echo -e "Java process has exited. Remove PID \"$PID_PATH\""
       rm "$PID_PATH" > /dev/null
-      break
+      return
     fi
   done
   echo -e "Java process failed exit. Still running in $CURR_PID"
