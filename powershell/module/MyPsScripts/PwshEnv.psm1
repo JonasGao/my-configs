@@ -49,8 +49,11 @@ function Save-Profile
     Copy-Item -Force "$PROFILE" "$TARGET_DIR\"
     Write-Host -ForegroundColor Green "Copied $PROFILE"
     Push-Location $TARGET_DIR
+    Write-Host -ForegroundColor Green "Git add"
     git add .
+    Write-Host -ForegroundColor Green "Commiting"
     git commit -m "Save pwsh profile."
+    Write-Host -ForegroundColor Green "Pushing"
     git push
     Pop-Location
   } else
