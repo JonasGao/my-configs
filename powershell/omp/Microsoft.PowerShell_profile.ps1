@@ -8,9 +8,12 @@ Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
 
 Set-Alias -Name vim -Value nvim
-Set-Alias -Name ll -Value Get-ChildItem
 Set-Alias -Name ls -Value Get-ChildItem
 Set-Alias -Name lg -Value lazygit
+function ll
+{
+  eza -l
+}
 
 $env:LESSCHARSET = 'utf-8'
 $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
