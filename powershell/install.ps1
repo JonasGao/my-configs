@@ -62,6 +62,7 @@ function Install-Scoop
   {
     Invoke-RestMethod get.scoop.sh | Invoke-Expression
     scoop install delta
+    scoop install eza
     scoop install lua-language-server
   }
 }
