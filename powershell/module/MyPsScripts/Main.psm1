@@ -36,8 +36,13 @@ function Copy-Sshid
   {
     throw "'$KeyFile' file is not exists!"
   }
-  Write-Output "Will copy '$KeyFile' to '$Target'"
-  Get-Content $keyFile | ssh $Target "mkdir -p .ssh; chmod 700 .ssh; [ -f .ssh/authorized_keys ] && chmod 600 .ssh/authorized_keys; cat >> .ssh/authorized_keys"
+  Write-Host -ForegroundColor Green "Will copy '$KeyFile' to '$Target'"
+  $cmds = @(
+    "[ -d .ssh ] || mkdir -p .ssh && chmod 700 .ssh"
+    "[ -f .ssh/authorized_keys ] || touch .ssh/authorized_keys && chmod 600 .ssh/authorized_keys"
+    "cat >> .ssh/authorized_keys"
+  )
+  Get-Content $keyFile | ssh $Target ($cmds -join "; ")
 }
 
 <#
