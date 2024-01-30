@@ -10,7 +10,7 @@ WD=$(pwd)
 APP_NAME="$2"
 
 # 应用的工作目录
-APP_HOME="$WD/$APP_NAME"
+APP_HOME=$(cd $WD/$APP_NAME; pwd)
 
 # 应用名称
 JAR_NAME="app"
@@ -254,6 +254,8 @@ fi
 if [ ! -d "$APP_HOME" ]; then
   echo "App Home not exists: $APP_HOME"
   exit 9
+else
+  echo "Using APP_HOME: $APP_HOME"
 fi
 
 # 创建出相关目录
