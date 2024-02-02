@@ -26,12 +26,12 @@ function Set-MvnHome()
 {
   param (
     [parameter(Mandatory = $true)]
-    [ValidateNotNullOrEmpty]
+    [ValidateNotNullOrEmpty()]
     [ValidateScript({ !$_.Contains(":") })]
     [string]
     $Key,
     [parameter(Mandatory = $true)]
-    [ValidateNotNullOrEmpty]
+    [ValidateNotNullOrEmpty()]
     [ValidateScript({ Test-Path -Path $_ -PathType container })]
     [string]
     $Path
