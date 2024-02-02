@@ -51,7 +51,7 @@ function Search-MvnHome()
 {
   param (
     [parameter]
-    [ValidateNotNullOrEmpty]
+    [ValidateNotNullOrEmpty()]
     [ValidateScript({ Test-Path -Path $_ -PathType container })]
     [string]
     $Path = ".",
