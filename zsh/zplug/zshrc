@@ -53,8 +53,8 @@ bindkey  "^[[3~"  delete-char
 bindkey  "^[[5~"  history-beginning-search-backward
 bindkey  "^[[6~"  history-beginning-search-forward
 
-alias ll='exa --icons -l'
-alias ll='exa --icons -l -a'
+alias ll='eza --icons -l'
+alias ll='eza --icons -l -a'
 alias v='vim'
 alias n='nvim'
 alias sdk='HTTPS_PROXY=http://127.0.0.1:7890 sdk'
