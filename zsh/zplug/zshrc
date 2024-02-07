@@ -55,9 +55,11 @@ bindkey  "^[[6~"  history-beginning-search-forward
 
 alias ll='eza --icons -l'
 alias ll='eza --icons -l -a'
-alias v='vim'
+alias vim='nvim'
+alias v='nvim'
 alias n='nvim'
 alias sdk='HTTPS_PROXY=http://127.0.0.1:7890 sdk'
+alias lg='lazygit'
 
 function re-source() {
   source "$HOME/.zshrc"
