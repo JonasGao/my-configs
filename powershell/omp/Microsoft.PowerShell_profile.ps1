@@ -12,7 +12,7 @@ Set-Alias -Name ls -Value Get-ChildItem
 Set-Alias -Name lg -Value lazygit
 function ll
 {
-  eza -l
+  eza -l $args
 }
 
 $env:LESSCHARSET = 'utf-8'
