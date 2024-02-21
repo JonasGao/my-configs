@@ -73,20 +73,23 @@ WDIR_SET_ENV=$(readlink -f "./$SET_ENV_FILENAME")
 if [ -f "$WDIR_SET_ENV" ]; then
   echo "Overwrite with $WDIR_SET_ENV"
   source $WDIR_SET_ENV
+  if [ -n "$POST_FUNC" ]; then
+    $POST_FUNC
+    unset POST_FUNC
+  fi
 fi
 APP_HOME_SET_ENV="$APP_HOME/conf/$SET_ENV_FILENAME"
 if [ -f "$APP_HOME_SET_ENV" ]; then
   if [ "$APP_HOME_SET_ENV" != "$WDIR_SET_ENV" ]; then
     echo "Overwrite with $APP_HOME_SET_ENV"
     source $APP_HOME_SET_ENV
+    if [ -n "$POST_FUNC" ]; then
+      $POST_FUNC
+      unset POST_FUNC
+    fi
   else
     echo "WARN: APP_HOME_SET_ENV same with WDIR_SET_ENV is '$APP_HOME_SET_ENV'"
   fi
-fi
-
-# 执行后置函数
-if [ "$POST_FUNC" != "" ]; then
-  $POST_FUNC
 fi
 
 # 全局变量
