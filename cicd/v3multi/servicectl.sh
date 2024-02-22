@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 先存一个当前路径，说不定后边要用
-CWD=$(pwd)
+CD=$(pwd)
 
 # 工作空间
 WD=$(pwd)
@@ -68,28 +68,29 @@ PGREP=$(which pgrep 2>/dev/null)
 # 环境配置文件名
 SET_ENV_FILENAME="setenv.sh"
 
-# 如果有配置文件，以配置文件覆盖
+# 使用顶层 env 脚本
 WDIR_SET_ENV=$(readlink -f "./$SET_ENV_FILENAME")
 if [ -f "$WDIR_SET_ENV" ]; then
   echo "Overwrite with $WDIR_SET_ENV"
   source $WDIR_SET_ENV
-  if [ -n "$POST_FUNC" ]; then
-    $POST_FUNC
-    unset POST_FUNC
-  fi
 fi
+
+# 使用各级应用 env 脚本
 APP_HOME_SET_ENV="$APP_HOME/conf/$SET_ENV_FILENAME"
 if [ -f "$APP_HOME_SET_ENV" ]; then
   if [ "$APP_HOME_SET_ENV" != "$WDIR_SET_ENV" ]; then
     echo "Overwrite with $APP_HOME_SET_ENV"
     source $APP_HOME_SET_ENV
-    if [ -n "$POST_FUNC" ]; then
-      $POST_FUNC
-      unset POST_FUNC
-    fi
   else
     echo "WARN: APP_HOME_SET_ENV same with WDIR_SET_ENV is '$APP_HOME_SET_ENV'"
   fi
+fi
+
+# 执行后置函数
+if [ -n "$POST_FUNC" ]; then
+  echo "Running POST_FUNC: $POST_FUNC"
+  $POST_FUNC
+  unset POST_FUNC
 fi
 
 # 全局变量
