@@ -2,10 +2,10 @@
  .Synopsis
   Just like linux/unix "ssh-copyid xxxxx".
  
- .Parameter Target
+ .Parameter Host
   Remote host.
 
- .Patameter KeyFile
+ .Patameter IdentityFile
   You will used key file
 
  .Example
@@ -20,29 +20,49 @@ function Copy-Sshid
     [parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
     [string] 
-    $Target, 
+    $Host, 
     [string]
-    $KeyFile = ""
+    $IdentityFile = ""
   )
-  if (!$KeyFile)
-  { 
-    $KeyFile = "$env:USERPROFILE\.ssh\id_rsa.pub" 
-  }
-  if (!$KeyFile.endsWith(".pub"))
-  { 
-    $KeyFile = "$KeyFile.pub" 
-  }
-  if (!(Test-Path -Path $KeyFile -PathType Leaf))
+ 
+  function searchIdentity
   {
-    throw "'$KeyFile' file is not exists!"
+    $sshHome = "$env:USERPROFILE\.ssh" 
+    if (!(Test-Path $sshHome))
+    {
+      throw "'$sshHome' not exists."
+    }
+    if (!(Test-Path $sshHome -PathType Container))
+    {
+      throw "'$sshHome' is not a directory."
+    }
+    Write-Host "Search $sshHome"
+    Get-ChildItem $sshHome | ForEach-Object {
+      if ($_.Name.StartsWith("id_") -and $_.Name.EndsWith(".pub"))
+      {
+        return $_
+      }
+    }
   }
-  Write-Host -ForegroundColor Green "Will copy '$KeyFile' to '$Target'"
+
+  if (!$IdentityFile)
+  {
+    $IdentityFile = searchIdentity
+  } elseif (!$IdentityFile.endsWith(".pub"))
+  {
+    $IdentityFile = "$IdentityFile.pub"
+  }
+  if (!(Test-Path -Path $IdentityFile -PathType Leaf))
+  {
+    throw "'$IdentityFile' file is not exists!"
+  }
+  Write-Host -ForegroundColor Green "Will copy '$IdentityFile' to '$Host'"
   $cmds = @(
     "[ -d .ssh ] || mkdir -p .ssh && chmod 700 .ssh"
     "[ -f .ssh/authorized_keys ] || touch .ssh/authorized_keys && chmod 600 .ssh/authorized_keys"
     "cat >> .ssh/authorized_keys"
   )
-  Get-Content $keyFile | ssh $Target ($cmds -join "; ")
+  Get-Content $IdentityFile | ssh $Host ($cmds -join "; ")
 }
 
 <#
