@@ -80,13 +80,20 @@ function latestuse()
     Set-Content -Path $LATEST_USE_MVN -Value $Value
   } else
   {
-    Get-Content $LATEST_USE_MVN
+    if (Test-Path $LATEST_USE_MVN)
+    {
+      Get-Content $LATEST_USE_MVN
+    }
   }
 }
 
 function setupenv ()
 {
   $target_path = $args[0]
+  if (!$target_path)
+  {
+    return
+  }
   $latest_path = $env:MAVEN_HOME
   $env:MAVEN_HOME = $target_path
   if ($latest_path)
