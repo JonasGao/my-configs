@@ -317,6 +317,7 @@ p|pid)
   ;;
 c|check)
   health-check
+  print-info
   ;;
 *)
   usage
