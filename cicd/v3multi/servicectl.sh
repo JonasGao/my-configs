@@ -6,6 +6,12 @@ CD=$(pwd)
 # 工作空间
 WD=$(pwd)
 
+# 当前脚本的名字
+PROG_NAME=$0
+
+# 当前脚本的操作参数
+ACTION=$1
+
 # 应用目录名称
 APP_NAME="$2"
 
@@ -23,12 +29,6 @@ JVM_OPTS="-server -Xmx512m"
 
 # JAR 包启动的时候传递的参数
 JAR_ARGS="--server.port=${APP_PORT}"
-
-# 当前脚本的名字
-PROG_NAME=$0
-
-# 当前脚本的操作参数
-ACTION=$1
 
 # 进程启动等待时间
 [ -z "$PROC_START_TIMEOUT" ] && PROC_START_TIMEOUT=3
@@ -69,7 +69,7 @@ PGREP=$(which pgrep 2>/dev/null)
 SET_ENV_FILENAME="setenv.sh"
 
 # 使用顶层 env 脚本
-WDIR_SET_ENV=$(readlink -f "./$SET_ENV_FILENAME")
+WDIR_SET_ENV=$(readlink -f "$WD/$SET_ENV_FILENAME")
 if [ -f "$WDIR_SET_ENV" ]; then
   echo "Overwrite with $WDIR_SET_ENV"
   source $WDIR_SET_ENV

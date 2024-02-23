@@ -69,7 +69,7 @@ PGREP=$(which pgrep 2>/dev/null)
 SET_ENV_FILENAME="setenv.sh"
 
 # 使用顶层 env 脚本
-WDIR_SET_ENV=$(readlink -f "./$SET_ENV_FILENAME")
+WDIR_SET_ENV=$(readlink -f "$WD/$SET_ENV_FILENAME")
 if [ -f "$WDIR_SET_ENV" ]; then
   echo "Overwrite with $WDIR_SET_ENV"
   source $WDIR_SET_ENV
