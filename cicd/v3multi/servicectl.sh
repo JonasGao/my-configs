@@ -109,16 +109,42 @@ There are some commands:
 """
 }
 
-health_check() {
-  if [ "$HEALTH_CHECK" = "0" ]; then
-    echo "Health check disabled"
-    return
-  fi
+term-health-check() {
   exp_time=0
   echo "Checking ${HEALTH_CHECK_URL}"
   while true; do
     if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" ${HEALTH_CHECK_URL}); then
-      echo "Status-code is $status_code"
+      printf "Status-code is ${status_code}. "
+      for code in ${HEALTH_HTTP_CODE[@]}
+      do
+        if [ "$status_code" == "$code" ]; then
+          break 2
+        fi
+      done
+    else
+      printf "curl return $?. "
+    fi
+
+    ((exp_time++))
+    printf "Waiting to health check: $exp_time..."
+    sleep 1
+    printf "\r"
+
+    if [ "$exp_time" -gt ${APP_START_TIMEOUT} ]; then
+      echo 'app start failed. try tail application log'
+      tail ${APP_LOG}
+      exit 2
+    fi
+  done
+  echo "Health check ${HEALTH_CHECK_URL} success"
+}
+
+simple-health-check() {
+  exp_time=0
+  echo "Checking ${HEALTH_CHECK_URL}"
+  while true; do
+    if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" ${HEALTH_CHECK_URL}); then
+      printf "Status-code is ${status_code}. "
       for code in ${HEALTH_HTTP_CODE[@]}
       do
         if [ "$status_code" == "$code" ]; then
@@ -142,8 +168,20 @@ health_check() {
   echo "Health check ${HEALTH_CHECK_URL} success"
 }
 
-start_application() {
-  query_java_pid
+health-check() {
+  if [ "$HEALTH_CHECK" = "0" ]; then
+    echo "Health check disabled"
+    return
+  fi
+  if [ -z "$TERM" ]; then
+    simple-health-check
+  else
+    term-health-check
+  fi
+}
+
+start-application() {
+  query-java-pid
   if [ "$CURR_PID" = "" ]
   then
     if [ ! -f "$JAR_PATH" ]; then
@@ -183,7 +221,7 @@ start_application() {
   fi
 }
 
-query_java_pid() {
+query-java-pid() {
   CURR_PID=
   if [ -f "$PID_PATH" ]; then
     local pid=$(cat "$PID_PATH")
@@ -209,8 +247,8 @@ query_java_pid() {
   fi
 }
 
-stop_application() {
-  query_java_pid
+stop-application() {
+  query-java-pid
 
   if [[ ! $CURR_PID ]]; then
     echo "No java process!"
@@ -237,15 +275,15 @@ stop_application() {
 }
 
 start() {
-  start_application
+  start-application
   if [ "$OTHER_RUNNING" = false ]
   then
-    health_check
+    health-check
   fi
 }
 
 stop() {
-  stop_application
+  stop-application
 }
 
 # 检查参数
@@ -302,11 +340,11 @@ r|restart)
   start
   ;;
 p|pid)
-  query_java_pid
+  query-java-pid
   echo "Current running in $CURR_PID"
   ;;
 c|check)
-  health_check
+  health-check
   ;;
 *)
   usage
