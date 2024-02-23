@@ -316,8 +316,8 @@ p|pid)
   echo "Current running in $CURR_PID"
   ;;
 c|check)
-  health-check
   print-info
+  health-check
   ;;
 *)
   usage
