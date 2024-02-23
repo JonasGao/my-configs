@@ -20,6 +20,8 @@ scoop install delta
 scoop install eza
 scoop install oh-my-posh
 scoop install aria2
+scoop install ripgrep
+scoop install fd
 Write-Host "Success install delta/eza/oh-my-posh." -ForegroundColor Green
 
 $PROFILE_HOME = (Get-Item $PROFILE).Directory
