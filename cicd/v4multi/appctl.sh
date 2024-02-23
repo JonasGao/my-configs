@@ -13,10 +13,19 @@ PROG_NAME=$0
 ACTION="$1"
 
 # 应用的工作目录
-APP_HOME="$2"
+APP_HOME=$(cd $2; pwd)
 
 # 应用目录名称
 APP_NAME=$(basename $WD/$APP_NAME)
+
+# 日志输出目录
+LOG_HOME="${APP_HOME}/logs"
+
+# 程序库目录
+LIB_HOME="${APP_HOME}/lib"
+
+# 配置目录
+CONF_HOME="${APP_HOME}/conf"
 
 # 应用名称
 [ -z "$JAR_NAME" ] && JAR_NAME="app"
@@ -43,22 +52,19 @@ HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
 HEALTH_HTTP_CODE=(200 404 403 405)
 
 # JAR 包的绝对路径
-JAR_PATH="${APP_HOME}/lib/${JAR_NAME}.jar"
+JAR_PATH="${LIB_HOME}/${JAR_NAME}.jar"
 
 # 应用的控制台输出
-STD_OUT="${APP_HOME}/logs/app.log"
-
-# 应用的日志输出路径
-APP_LOG_HOME=${APP_HOME}
+STD_OUT="${LOG_HOME}/std.out"
 
 # 应用的日志文件
 APP_LOG=${STD_OUT}
 
 # PID 位置
-PID_PATH="${APP_HOME}/conf/pid"
+PID_PATH="${CONF_HOME}/pid"
 
 # 需要初始化的目录
-INIT_DIRS=($APP_HOME $APP_LOG_HOME "$APP_HOME/lib" "$APP_HOME/conf" "$APP_HOME/logs")
+INIT_DIRS=($APP_HOME $LOG_HOME $CONF_HOME $LIB_HOME)
 
 # 准备相关工具
 JAVA=$(which java 2>/dev/null)
@@ -109,7 +115,7 @@ There are some commands:
 """
 }
 
-health_check() {
+health-check() {
   if [ "$HEALTH_CHECK" = "0" ]; then
     echo "Health check disabled"
     return
@@ -142,8 +148,18 @@ health_check() {
   echo "Health check ${HEALTH_CHECK_URL} success"
 }
 
-start_application() {
-  query_java_pid
+print-info() {
+  echo "Working Directory: $(pwd)"
+  echo "Using:"
+  echo "  nohup: $NOHUP"
+  echo "  java:  $JAVA"
+  echo "  opts:  ${JVM_OPTS}"
+  echo "  jar:   ${JAR_PATH}"
+  echo "  args:  ${JAR_ARGS}"
+}
+
+start-application() {
+  query-java-pid
   if [ "$CURR_PID" = "" ]
   then
     if [ ! -f "$JAR_PATH" ]; then
@@ -151,13 +167,7 @@ start_application() {
       exit 404
     fi
     cd "$APP_HOME"
-    echo "Working Directory: $(pwd)"
-    echo "Using:"
-    echo "  nohup: $NOHUP"
-    echo "  java:  $JAVA"
-    echo "  opts:  ${JVM_OPTS}"
-    echo "  jar:   ${JAR_PATH}"
-    echo "  args:  ${JAR_ARGS}"
+    print-info | tee "${LOG_HOME}/version.info"
     ${NOHUP} ${JAVA} ${JVM_OPTS} -jar ${JAR_PATH} ${JAR_ARGS} >${STD_OUT} 2>&1 &
     local PID=$!
     local NOHUP_RET=$?
@@ -183,7 +193,7 @@ start_application() {
   fi
 }
 
-query_java_pid() {
+query-java-pid() {
   CURR_PID=
   if [ -f "$PID_PATH" ]; then
     local pid=$(cat "$PID_PATH")
@@ -209,8 +219,8 @@ query_java_pid() {
   fi
 }
 
-stop_application() {
-  query_java_pid
+stop-application() {
+  query-java-pid
 
   if [[ ! $CURR_PID ]]; then
     echo "No java process!"
@@ -237,15 +247,15 @@ stop_application() {
 }
 
 start() {
-  start_application
+  start-application
   if [ "$OTHER_RUNNING" = false ]
   then
-    health_check
+    health-check
   fi
 }
 
 stop() {
-  stop_application
+  stop-application
 }
 
 # 检查参数
@@ -302,11 +312,11 @@ r|restart)
   start
   ;;
 p|pid)
-  query_java_pid
+  query-java-pid
   echo "Current running in $CURR_PID"
   ;;
 c|check)
-  health_check
+  health-check
   ;;
 *)
   usage
