@@ -302,6 +302,14 @@ init-dirs() {
   done
 }
 
+update() {
+  [ -n "$GHPROXY" ] && echo "Will use GHPROXY: $GHPROXY"
+  echo "Update location: $PROG_NAME"
+  curl -o $PROG_NAME "${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"
+  chmod u+x $PROG_NAME
+  echo -e "\e[32mSucceed update $PROG_NAME\e[0m"
+}
+
 usage() {
   printf """Usage: $PROG_NAME <command> <service|dir name>
 There are some commands:
@@ -375,6 +383,9 @@ c|check)
   ;;
 i|init)
   init-dirs
+  ;;
+u|update)
+  update
   ;;
 *)
   usage
