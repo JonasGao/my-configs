@@ -4,28 +4,37 @@
 CD=$(pwd)
 
 # 工作空间
-WD=$(pwd)
+WD="$CD"
 
 # 当前脚本的名字
 PROG_NAME=$0
 
 # 当前脚本的操作参数
-ACTION=$1
-
-# 应用目录名称
-APP_NAME="$2"
+ACTION="$1"
 
 # 应用的工作目录
-APP_HOME=$(cd $WD/$APP_NAME; pwd)
+APP_HOME=$(cd $2; pwd)
+
+# 应用目录名称
+APP_NAME=$(basename $WD/$APP_NAME)
+
+# 日志输出目录
+LOG_HOME="${APP_HOME}/logs"
+
+# 程序库目录
+LIB_HOME="${APP_HOME}/lib"
+
+# 配置目录
+CONF_HOME="${APP_HOME}/conf"
 
 # 应用名称
-JAR_NAME="app"
+[ -z "$JAR_NAME" ] && JAR_NAME="app"
 
 # 应用启动的端口
-APP_PORT=8080
+[ -z "$APP_PORT" ] && APP_PORT=8080
 
 # JVM 配置参数
-JVM_OPTS="-server -Xmx512m"
+[ -z "$JVM_OPTS" ] && JVM_OPTS="-server -Xmx512m"
 
 # JAR 包启动的时候传递的参数
 JAR_ARGS="--server.port=${APP_PORT}"
@@ -43,22 +52,19 @@ HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
 HEALTH_HTTP_CODE=(200 404 403 405)
 
 # JAR 包的绝对路径
-JAR_PATH="${APP_HOME}/lib/${JAR_NAME}.jar"
+JAR_PATH="${LIB_HOME}/${JAR_NAME}.jar"
 
 # 应用的控制台输出
-STD_OUT="${APP_HOME}/logs/app.log"
-
-# 应用的日志输出路径
-APP_LOG_HOME=${APP_HOME}
+STD_OUT="${LOG_HOME}/std.out"
 
 # 应用的日志文件
 APP_LOG=${STD_OUT}
 
 # PID 位置
-PID_PATH="${APP_HOME}/conf/pid"
+PID_PATH="${CONF_HOME}/pid"
 
 # 需要初始化的目录
-INIT_DIRS=($APP_HOME $APP_LOG_HOME "$APP_HOME/lib" "$APP_HOME/conf" "$APP_HOME/logs")
+INIT_DIRS=($APP_HOME $LOG_HOME $CONF_HOME $LIB_HOME)
 
 # 准备相关工具
 JAVA=$(which java 2>/dev/null)
@@ -180,6 +186,16 @@ health-check() {
   fi
 }
 
+print-info() {
+  echo "Working Directory: $(pwd)"
+  echo "Using:"
+  echo "  nohup: $NOHUP"
+  echo "  java:  $JAVA"
+  echo "  opts:  ${JVM_OPTS}"
+  echo "  jar:   ${JAR_PATH}"
+  echo "  args:  ${JAR_ARGS}"
+}
+
 start-application() {
   query-java-pid
   if [ "$CURR_PID" = "" ]
@@ -189,13 +205,7 @@ start-application() {
       exit 404
     fi
     cd "$APP_HOME"
-    echo "Working Directory: $(pwd)"
-    echo "Using:"
-    echo "  nohup: $NOHUP"
-    echo "  java:  $JAVA"
-    echo "  opts:  ${JVM_OPTS}"
-    echo "  jar:   ${JAR_PATH}"
-    echo "  args:  ${JAR_ARGS}"
+    print-info | tee "${LOG_HOME}/version.info"
     ${NOHUP} ${JAVA} ${JVM_OPTS} -jar ${JAR_PATH} ${JAR_ARGS} >${STD_OUT} 2>&1 &
     local PID=$!
     local NOHUP_RET=$?
@@ -344,6 +354,7 @@ p|pid)
   echo "Current running in $CURR_PID"
   ;;
 c|check)
+  print-info
   health-check
   ;;
 *)
