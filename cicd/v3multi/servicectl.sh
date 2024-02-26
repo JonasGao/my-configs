@@ -302,7 +302,7 @@ init-dirs() {
   done
 }
 
-update() {
+update-self() {
   [ -n "$GHPROXY" ] && echo "Will use GHPROXY: $GHPROXY"
   echo "Update location: $PROG_NAME"
   curl -o $PROG_NAME "${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"
@@ -395,7 +395,7 @@ i|init)
   init-dirs
   ;;
 u|update)
-  update
+  update-self
   ;;
 *)
   usage
