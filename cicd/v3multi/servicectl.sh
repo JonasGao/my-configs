@@ -113,18 +113,6 @@ fi
 CURR_PID=
 OTHER_RUNNING=false
 
-usage() {
-  printf """Usage: $PROG_NAME <command> <service|dir name>
-There are some commands:
-  d, deploy
-  s, start
-  t, stop
-  r, restart
-  p, pid
-  c, check
-"""
-}
-
 term-health-check() {
   exp_time=0
   echo "Checking ${HEALTH_CHECK_URL}"
@@ -306,6 +294,27 @@ stop() {
   stop-application
 }
 
+init-dirs() {
+  # 创建出相关目录
+  for d in ${INIT_DIRS[@]}
+  do
+    mkdir -p "$d"
+  done
+}
+
+usage() {
+  printf """Usage: $PROG_NAME <command> <service|dir name>
+There are some commands:
+  i, init
+  d, deploy
+  s, start
+  t, stop
+  r, restart
+  p, pid
+  c, check
+"""
+}
+
 # 检查参数
 if [ "$1" = "" ] || [ "$2" = "" ]; then
   usage
@@ -321,10 +330,7 @@ else
 fi
 
 # 创建出相关目录
-for d in ${INIT_DIRS[@]}
-do
-  mkdir -p "$d"
-done
+init-dirs
 
 case "$ACTION" in
 d|deploy)
@@ -366,6 +372,9 @@ p|pid)
 c|check)
   print-info
   health-check
+  ;;
+i|init)
+  init-dirs
   ;;
 *)
   usage
