@@ -325,10 +325,19 @@ There are some commands:
 }
 
 # 检查参数
-if [ "$1" = "" ] || [ "$2" = "" ]; then
+if [ -z "$ACTION" ]; then
+  echo -e "\e[31mError: missing arguments 'command' at position 1.\e[0m"
   usage
-  exit 0
+  exit 1
 fi
+case "$ACTION" in
+u|update)
+  # Ignore #2 validation
+  ;;
+*)
+  [ -z "$2" ] && echo -e "\e[31mError: missing arguments 'service or dir name' at position 2.\e[0m" && usage && echo 2
+  ;;
+esac
 
 # 检查基本目录是否存在
 if [ ! -d "$APP_HOME" ]; then
