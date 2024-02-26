@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# # Install
+#
+# ## Project local install
+# curl -o servicectl https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh
+#
+# ## Global install
+# curl -o appctl https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh
+# install appctl /usr/local/bin
+# rm appctl
+
 # 先存一个当前路径，说不定后边要用
 CD=$(pwd)
 
