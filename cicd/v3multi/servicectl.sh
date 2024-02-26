@@ -320,6 +320,7 @@ There are some commands:
   r, restart
   p, pid
   c, check
+  u, update
 """
 }
 
