@@ -68,6 +68,7 @@
   # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
   NestedModules = @('.\BuildTools.psm1', 
     '.\Main.psm1', 
+    '.\Maven.psm1', 
     '.\ProxyHelpers.psm1', 
     '.\Explorer.psm1',
     '.\MvnSwitcher.psm1',
