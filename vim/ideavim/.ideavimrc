@@ -73,6 +73,7 @@ noremap      <Space>frs   :%s/
 noremap      <Space>v     :action SelectInProjectView<CR>
 noremap      <Space>t     :NERDTree<CR>
 noremap      <Space>w     :action CloseContent<CR>
+noremap      <Space>W     :action CloseProject<CR>
 noremap      <Space>N     :action GotoFile<CR>
 noremap      <Space>n     :action GotoClass<CR>
 noremap      <Space>/     :action FileStructurePopup<CR>
