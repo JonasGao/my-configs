@@ -12,20 +12,20 @@ function Format-Pom
     "-Dsort.sortProperties=true",
     "-Dsort.sortExecutions=true",
     "-Dsort.sortDependencyExclusions=groupId,artifactId",
-    "-Dsort.lineSeparator=`"\n`"",
     "-Dsort.ignoreLineSeparators=false",
     "-Dsort.expandEmptyElements=false",
     "-Dsort.nrOfIndentSpace=2",
+    "-Dsort.createBackupFile=false",
     "-Dsort.indentSchemaLocation=true"
   )
 
   if ($Settings)
   {
     Write-Output "Using: $Settings"
-    mvn -s $Settings $arr
+    mvn -s $Settings $arr $args
   } else
   {
-    mvn $arr
+    mvn $arr $args
   }
 }
 
