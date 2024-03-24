@@ -32,3 +32,6 @@ Import-Module Terminal-Icons
 Import-Module "$env:MY_CONFIG_HOME\powershell\module\MyPsScripts"
 
 oh-my-posh init pwsh --config $env:POSH_CONFIG | Invoke-Expression
+
+# Import zoxide
+Invoke-Expression (& { (zoxide init powershell | Out-String) })
