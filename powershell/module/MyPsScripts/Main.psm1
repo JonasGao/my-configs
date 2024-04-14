@@ -102,7 +102,9 @@ function Get-StrHash()
 
 function Update-Pwsh
 {
-  $out = "$HOME\Downloads\pwsh.msi"
+  $out_dir = "$HOME\Downloads"
+  $out_file = "pwsh.msi"
+  $out = "$out_dir\$out_file"
   if (Test-Path $out)
   {
     Write-Output "Found `"$out`" exists"
@@ -120,12 +122,21 @@ function Update-Pwsh
     $ghproxy = $env:GHPROXY
     Write-Output "Using proxy `"$ghproxy`""
   }
-  Invoke-RestMethod "$ghproxy$u" -OutFile $out
+  if (Get-Command "aria2c")
+  {
+    aria2c -o $out_file -d $out_dir "$ghproxy$u"
+  } else
+  {
+    Invoke-RestMethod "$ghproxy$u" -OutFile $out
+  }
   if (Test-Path $out)
   {
     Write-Output "Installing msi"
     msiexec /i $out /qb
     Write-Output "Finished install"
+  } else
+  {
+    Write-Output "Not found msi file. Skip install."
   }
 }
 
