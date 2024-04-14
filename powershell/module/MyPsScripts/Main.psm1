@@ -117,14 +117,10 @@ function Update-Pwsh
   Write-Output "Got and download latest release `"$u`""
   if (Test-Path env:\GHPROXY)
   {
-    $p = $env:GHPROXY
-  } else
-  {
-    # $p = "https://mirror.ghproxy.com/"
-    $p = "https://ghps.cc/"
+    $ghproxy = $env:GHPROXY
+    Write-Output "Using proxy `"$ghproxy`""
   }
-  Write-Output "Using proxy `"$p`""
-  Invoke-RestMethod "$p$u" -OutFile $out
+  Invoke-RestMethod "$ghproxy$u" -OutFile $out
   if (Test-Path $out)
   {
     Write-Output "Installing msi"
