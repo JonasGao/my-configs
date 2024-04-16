@@ -40,57 +40,60 @@ set idearefactormode=keep
 
 """ Mappings --------------------------
 let mapleader = "\\"
-"------------|------------|-------------
-vnoremap     <leader>y    "*y
-vnoremap     <C-c>        "*y
-nnoremap     <leader>p    "*p
-vnoremap     <leader>p    "*p
-noremap      <leader>cf   :action ReformatCode<CR>
-noremap      <leader>cr   :action RearrangeCode<CR>
-noremap      <leader>ff   :action FindInPath<CR>
-noremap      <leader>f/   :action StructuralSearchPlugin.StructuralSearchAction<CR>
-noremap      <leader>gc   :action CheckinProject<CR>
-noremap      <leader>gp   :action Vcs.Push<CR>
-noremap      <leader>gf   :action Vcs.UpdateProject<CR>
-noremap      <leader>\    :action Switcher<CR>
-nmap         <leader>b    <Action>(ToggleLineBreakpoint)
-noremap      <leader>1    :action GoToTab1<CR>
-noremap      <leader>2    :action GoToTab2<CR>
-noremap      <leader>3    :action GoToTab3<CR>
-noremap      <leader>4    :action GoToTab4<CR>
-noremap      <leader>5    :action GoToTab5<CR>
-"------------|------------|-------------
-noremap      <Space>b     :action GotoDeclaration<CR>
-noremap      <Space>B     :action GotoImplementation<CR>
-noremap      <Space><C-b> :action GotoSuperMethod<CR>
-noremap      <Space>k     :action Back<CR>
-noremap      <Space>j     :action Forward<CR>
-noremap      <Space>h     :action PreviousTab<CR>
-noremap      <Space>l     :action NextTab<CR>
-noremap      <Space>e     :action RecentFiles<CR>
-noremap      <Space>E     :action $LRU<CR>
-noremap      <Space>frs   :%s/
-noremap      <Space>v     :action SelectInProjectView<CR>
-noremap      <Space>t     :NERDTree<CR>
-noremap      <Space>w     :action CloseContent<CR>
-noremap      <Space>W     :action CloseProject<CR>
-noremap      <Space>N     :action GotoFile<CR>
-noremap      <Space>n     :action GotoClass<CR>
-noremap      <Space>/     :action FileStructurePopup<CR>
-noremap      <Space>q     :action ParameterInfo<CR>
-noremap      <Space>a     ggvG$
-noremap      <Space>o     :action OverrideMethods<CR>
-noremap      <Space>q     :action QuickJavaDoc<CR>
-noremap      <Space>So    :action VimActions<CR>
-noremap      <Space>Ss    :so ~/.ideavimrc<CR>
-noremap      <Space>rg    :action RearrangeCode<CR>
-noremap      <Space>re    :action RenameElement<CR>
-noremap      <Space>rt    :action SurroundWith<CR>
-noremap      <Space>rr    :action Refactorings.QuickListPopupAction<CR>
-noremap      <Space>rl    :action defaultLombokData<CR>
-noremap      <Space>rR    :action RefactoringMenu<CR>
-noremap      <Space>rs    :action StringManipulation.Group.Main<CR>
-noremap      <Space>mr    :action Maven.Reimport<CR>
+" Leader mappings
+vnoremap     <leader>y      "*y
+vnoremap     <C-c>          "*y
+nnoremap     <leader>p      "*p
+vnoremap     <leader>p      "*p
+noremap      <leader>cf     :action ReformatCode<CR>
+noremap      <leader>cr     :action RearrangeCode<CR>
+noremap      <leader>ff     :action FindInPath<CR>
+noremap      <leader>f/     :action StructuralSearchPlugin.StructuralSearchAction<CR>
+noremap      <leader>gc     :action CheckinProject<CR>
+noremap      <leader>gp     :action Vcs.Push<CR>
+noremap      <leader>gf     :action Vcs.UpdateProject<CR>
+noremap      <leader>\      :action Switcher<CR>
+nmap         <leader>b      <Action>(ToggleLineBreakpoint)
+noremap      <leader>1      :action GoToTab1<CR>
+noremap      <leader>2      :action GoToTab2<CR>
+noremap      <leader>3      :action GoToTab3<CR>
+noremap      <leader>4      :action GoToTab4<CR>
+noremap      <leader>5      :action GoToTab5<CR>
+" Different viewer mappings
+noremap      <leader><C-d>  :action NextDiff<CR>
+noremap      <leader><C-f>  :action PreviousDiff<CR>
+" Space leader mappings
+noremap      <Space>b       :action GotoDeclaration<CR>
+noremap      <Space>B       :action GotoImplementation<CR>
+noremap      <Space><C-b>   :action GotoSuperMethod<CR>
+noremap      <Space>k       :action Back<CR>
+noremap      <Space>j       :action Forward<CR>
+noremap      <Space>h       :action PreviousTab<CR>
+noremap      <Space>l       :action NextTab<CR>
+noremap      <Space>e       :action RecentFiles<CR>
+noremap      <Space>E       :action $LRU<CR>
+noremap      <Space>frs     :%s/
+noremap      <Space>v       :action SelectInProjectView<CR>
+noremap      <Space>t       :NERDTree<CR>
+noremap      <Space>w       :action CloseContent<CR>
+noremap      <Space>W       :action CloseProject<CR>
+noremap      <Space>N       :action GotoFile<CR>
+noremap      <Space>n       :action GotoClass<CR>
+noremap      <Space>/       :action FileStructurePopup<CR>
+noremap      <Space>q       :action ParameterInfo<CR>
+noremap      <Space>a       ggvG$
+noremap      <Space>o       :action OverrideMethods<CR>
+noremap      <Space>q       :action QuickJavaDoc<CR>
+noremap      <Space>So      :action VimActions<CR>
+noremap      <Space>Ss      :so ~/.ideavimrc<CR>
+noremap      <Space>rg      :action RearrangeCode<CR>
+noremap      <Space>re      :action RenameElement<CR>
+noremap      <Space>rt      :action SurroundWith<CR>
+noremap      <Space>rr      :action Refactorings.QuickListPopupAction<CR>
+noremap      <Space>rl      :action defaultLombokData<CR>
+noremap      <Space>rR      :action RefactoringMenu<CR>
+noremap      <Space>rs      :action StringManipulation.Group.Main<CR>
+noremap      <Space>mr      :action Maven.Reimport<CR>
 "noremap      <Space>?     :action Replace<CR>
 noremap      <Space>p     "0p
 noremap      <Space>y     "0y
