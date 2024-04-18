@@ -28,7 +28,7 @@ function Update-Ideavimrc()
   }
 }
 
-function Backup-Ideavimrc()
+function Save-Ideavimrc()
 {
   if (-not(Test-Path Env:\MY_CONFIG_HOME))
   {
@@ -52,5 +52,5 @@ function Backup-Ideavimrc()
 }
 
 Export-ModuleMember -Function Update-Ideavimrc
-Export-ModuleMember -Function Backup-Ideavimrc
+Export-ModuleMember -Function Save-Ideavimrc
 Export-ModuleMember -Function Compare-Ideavimrc
