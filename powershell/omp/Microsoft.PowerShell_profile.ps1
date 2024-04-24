@@ -39,3 +39,12 @@ Invoke-Expression (& { (zoxide init powershell | Out-String) })
 
 # Setup PSFzf
 Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
+
+# Custom ssh completion
+Register-ArgumentCompleter -CommandName ssh -Native -ScriptBlock {
+  param($wordToComplete, $commandAst, $cursorPosition)
+  Get-Content ${Env:HOMEPATH}\.ssh\config `
+  | Select-String -Pattern "^Host "
+  | ForEach-Object { $_ -replace "host ", "" }
+  | Sort-Object -Unique
+}
