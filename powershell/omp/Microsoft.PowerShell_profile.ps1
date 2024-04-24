@@ -28,6 +28,7 @@ $env:PATH = "$env:MAVEN_HOME\bin;$env:PATH"
 $env:PATH = "$env:NVIM_HOME\bin;$env:PATH"
 
 Import-Module posh-git
+Import-Module PSFzf
 Import-Module Terminal-Icons
 Import-Module "$env:MY_CONFIG_HOME\powershell\module\MyPsScripts"
 
@@ -35,3 +36,6 @@ oh-my-posh init pwsh --config $env:POSH_CONFIG | Invoke-Expression
 
 # Import zoxide
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
+
+# Setup PSFzf
+Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
