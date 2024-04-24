@@ -6,6 +6,7 @@ if (!$MY_CONFIG_HOME)
 }
 
 Install-Module -Name posh-git -Scope CurrentUser
+Install-Module -Name PSFzf -Scope CurrentUser -RequiredVersion 2.5.22
 Write-Host "Success install Modules." -ForegroundColor Green
 
 if (-not (Get-Command scoop))
@@ -21,9 +22,10 @@ scoop install eza
 scoop install oh-my-posh
 scoop install aria2
 scoop install ripgrep
+scoop install fzf
 scoop install fd
 scoop install zoxide
-Write-Host "Success install delta/eza/oh-my-posh." -ForegroundColor Green
+Write-Host "Success install components from scroop." -ForegroundColor Green
 
 $PROFILE_HOME = (Get-Item $PROFILE).Directory
 Copy-Item "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE
