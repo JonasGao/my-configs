@@ -44,7 +44,7 @@ CONF_HOME="${APP_HOME}/conf"
 [ -z "$APP_PORT" ] && APP_PORT=8080
 
 # JVM 配置参数
-[ -z "$JVM_OPTS" ] && JVM_OPTS="-server -Xmx512m"
+[ -z "$JVM_OPTS" ] && JVM_OPTS="-server -Xmx512m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_HOME/logs/"
 
 # JAR 包启动的时候传递的参数
 JAR_ARGS="--server.port=${APP_PORT}"
