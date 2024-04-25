@@ -46,5 +46,6 @@ Register-ArgumentCompleter -CommandName ssh -Native -ScriptBlock {
   Get-Content ${Env:HOMEPATH}\.ssh\config `
   | Select-String -Pattern "^Host "
   | ForEach-Object { $_ -replace "host ", "" }
+  | Where-Object { $_ -like "${wordToComplete}*" } `
   | Sort-Object -Unique
 }
