@@ -1,14 +1,19 @@
 #!/bin/bash
 
 CWD=$(pwd)
-APP="${CWD}/simphooks"
-PROG_NAME=$0
+PROG=$0
+PROG_DIR=$(dirname $PROG)
+PROG_NAME=$(basename $PROG)
+TARGET_APP="simphook"
+WD="${PROG_DIR}"
+
+APP="${WD}/${TARGET_APP}"
 ACTION=$1
 PIDF="pid"
 NOHUP=$(which nohup 2>/dev/null)
 PGREP=$(which pgrep 2>/dev/null)
 CURR_PID=
-STD_OUTF="${CWD}/app.log"
+STD_OUTF="${WD}/app.log"
 
 usage() {
   printf """Usage: $PROG_NAME <command>
@@ -21,7 +26,7 @@ There are some commands:
 }
 
 debug() {
-  [ "$DEBUG" = "1" ] && echo $1
+  [ "$DEBUG" = "1" ] && echo "[DEBUG]" $@
 }
 
 set_pid() {
@@ -36,14 +41,8 @@ set_pid() {
   fi
   if [ "$CURR_PID" = "" ]
   then
-    if [ "$PGREP" = "" ]
-    then
-      debug "Using ps"
-      CURR_PID=$(ps -ef | grep "${APP}" | grep -v grep | grep -v "$$" | awk '{print$2}')
-    else
-      debug "Using ${PGREP} -f '${APP}' | grep -v '$$'"
-      CURR_PID=$(${PGREP} -f "${APP}" | grep -v "$$")
-    fi
+    debug "Using ${PGREP} -f '${TARGET_APP}' | grep -v '$$'"
+    CURR_PID=$(${PGREP} -f "${TARGET_APP}" | grep -v "$$")
   fi
 }
 
@@ -70,7 +69,7 @@ run_app() {
 stop_app() {
   set_pid
   if [[ ! $CURR_PID ]]; then
-    echo "No ${APP} process!"
+    echo "No ${TARGET_APP} process!"
     return
   fi
   echo "Stopping... process"
