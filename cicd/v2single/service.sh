@@ -1,7 +1,5 @@
 #!/bin/bash
 
-CWD=$(pwd)
-
 # 当前脚本的名字
 PROG_NAME=$0
 
@@ -9,7 +7,7 @@ PROG_NAME=$0
 ACTION=$1
 
 # 应用启动的工作目录
-APP_HOME="$CWD"
+APP_HOME=$(dirname $PROG_NAME)
 
 JAR_NAME="app"
 
