@@ -43,7 +43,7 @@ APP_LOG_HOME=${APP_HOME}
 APP_LOG=${STD_OUT}
 
 # PID 位置
-PID="${APP_HOME}/pid"
+PID_PATH="${APP_HOME}/pid"
 
 # 准备相关工具
 JAVA=$(which java 2>/dev/null)
@@ -119,6 +119,16 @@ health_check() {
   echo "Health check ${HEALTH_CHECK_URL} success"
 }
 
+print-info() {
+  echo "Working Directory: $(pwd)"
+  echo "Using:"
+  echo "  nohup: $NOHUP"
+  echo "  java:  $JAVA"
+  echo "  opts:  ${JVM_OPTS}"
+  echo "  jar:   ${JAR_PATH}"
+  echo "  args:  ${JAR_ARGS}"
+}
+
 start_application() {
   query_java_pid
   if [ "$CURR_PID" = "" ]
@@ -127,15 +137,25 @@ start_application() {
       echo "There is no file \"$JAR_PATH\"" >&2
       exit 404
     fi
-    echo "Run (${JAR_PATH})"
+    cd "$APP_HOME"
+    print-info | tee "${LOG_HOME}/version.info"
     ${NOHUP} ${JAVA} ${JVM_OPTS} -jar ${JAR_PATH} ${JAR_ARGS} >${STD_OUT} 2>&1 &
-    pid=$!
-    rc=$?
-    if [ "$rc" = "0" ]; then
-      echo "Run jar succeed ($pid)"
-      echo "$pid" > $PID
+    local PID=$!
+    local NOHUP_RET=$?
+    local RET=99
+    if [ "$NOHUP_RET" = "0" ]; then
+      echo "Run nohup succeed (NOHUP RETURN: $NOHUP_RET, APP PID: $PID)"
+      echo "$PID" > $PID_PATH
+      echo "Wait $PROC_START_TIMEOUT second."
+      sleep "$PROC_START_TIMEOUT"
+      if [ ! -d "/proc/$PID" ]; then
+        wait "$PID"
+        RET=$?
+        echo "ERROR: Run app fail. Return: $RET"
+        exit 4
+      fi
     else
-      echo "Run jar failed with ($rc)"
+      echo "ERROR: Run jar failed with ($NOHUP_RET)"
       exit 3
     fi
   else
@@ -150,9 +170,9 @@ debug() {
 
 query_java_pid() {
   CURR_PID=
-  if [ -f "$PID" ]; then
-    pid=$(cat "$PID")
-    debug "Using ${PID}. Got ${pid}"
+  if [ -f "$PID_PATH" ]; then
+    pid=$(cat "$PID_PATH")
+    debug "Using ${PID_PATH}. Got ${pid}"
     if ps $pid > /dev/null
     then
       CURR_PID="$pid"
