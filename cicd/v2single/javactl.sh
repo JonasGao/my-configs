@@ -48,7 +48,7 @@ fi
 [ -z "$HEALTH_HTTP_CODE" ] && HEALTH_HTTP_CODE=(200 404 403 405)
 
 # JAR 包的绝对路径
-[ -z "$JAR_PATH" ] && JAR_PATH="${APP_HOME}/${JAR_NAME}.jar"
+[ -z "$JAR_PATH" ] && JAR_PATH="${APP_HOME}/${JAR_NAME}"
 
 # 应用的控制台输出
 # 例如 STD_OUT=${APP_HOME}/logs/start.log
