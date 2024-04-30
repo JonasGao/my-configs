@@ -135,11 +135,11 @@ start_application() {
   if [ "$CURR_PID" = "" ]
   then
     if [ ! -f "$JAR_PATH" ]; then
-      echo "There is no file \"$JAR_PATH\"" >&2
+      echo "There is no file \"$JAR_PATH\" ($(pwd))" >&2
       exit 404
     fi
     cd "$APP_HOME"
-    print-info | tee "${LOG_HOME}/version.info"
+    print-info | tee "${APP_HOME}/version.info"
     ${NOHUP} ${JAVA} ${JVM_OPTS} -jar ${JAR_PATH} ${JAR_ARGS} >${STD_OUT} 2>&1 &
     local PID=$!
     local NOHUP_RET=$?
@@ -195,7 +195,7 @@ stop_application() {
     return
   fi
 
-  echo "Stopping java process"
+  echo "Stopping java process ($CURR_PID)."
   times=60
   for e in $(seq $times); do
     sleep 1
@@ -205,10 +205,13 @@ stop_application() {
       kill "$CURR_PID"
       echo -e "  -- stopping java lasts ${COST_TIME} seconds."
     else
-      echo -e "Java process has exited"
-      break
+      echo -e "Java process has exited. Remove PID \"$PID_PATH\""
+      rm "$PID_PATH" > /dev/null
+      return
     fi
   done
+  echo -e "Java process failed exit. Still running in $CURR_PID"
+  exit 4
 }
 
 start() {
