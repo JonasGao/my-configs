@@ -9,6 +9,7 @@ ACTION=$1
 # 应用启动的工作目录
 APP_HOME=$(dirname $PROG_NAME)
 
+# 目标 jar 包
 JAR_NAME="app"
 
 # 应用启动的端口
@@ -22,33 +23,6 @@ JAR_ARGS="--spring.config.location=file:conf/"
 
 # 等待应用启动的时间
 APP_START_TIMEOUT=20
-
-# 应用健康检查URL
-HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
-
-# 健康的HTTP代码
-HEALTH_HTTP_CODE=(200 404 403 405)
-
-# JAR 包的绝对路径
-JAR_PATH="${APP_HOME}/${JAR_NAME}.jar"
-
-# 应用的控制台输出
-# 例如 STD_OUT=${APP_HOME}/logs/start.log
-STD_OUT="${APP_HOME}/app.log"
-
-# 应用的日志输出路径
-APP_LOG_HOME=${APP_HOME}
-
-# 应用的日志文件
-APP_LOG=${STD_OUT}
-
-# PID 位置
-PID_PATH="${APP_HOME}/pid"
-
-# 准备相关工具
-JAVA=$(which java 2>/dev/null)
-NOHUP=$(which nohup 2>/dev/null)
-PGREP=$(which pgrep 2>/dev/null)
 
 # 环境配置文件名
 SET_ENV_FILENAME="setenv.sh"
@@ -66,6 +40,33 @@ if [ -f "$APP_HOME_SET_ENV" ]; then
     source $APP_HOME_SET_ENV
   fi
 fi
+
+# 应用健康检查URL
+[ -z "$HEALTH_CHECK_URL" ] && HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
+
+# 健康的HTTP代码
+[ -z "$HEALTH_HTTP_CODE" ] && HEALTH_HTTP_CODE=(200 404 403 405)
+
+# JAR 包的绝对路径
+[ -z "$JAR_PATH" ] && JAR_PATH="${APP_HOME}/${JAR_NAME}.jar"
+
+# 应用的控制台输出
+# 例如 STD_OUT=${APP_HOME}/logs/start.log
+[ -z "$STD_OUT" ] && STD_OUT="${APP_HOME}/app.log"
+
+# 应用的日志输出路径
+[ -z "$APP_LOG_HOME" ] && APP_LOG_HOME=${APP_HOME}
+
+# 应用的日志文件
+[ -z "$APP_LOG" ] && APP_LOG=${STD_OUT}
+
+# PID 位置
+[ -z "$PID_PATH" ] && PID_PATH="${APP_HOME}/pid"
+
+# 准备相关工具
+[ -z "$JAVA" ] && JAVA=$(which java 2>/dev/null)
+[ -z "$NOHUP" ] && NOHUP=$(which nohup 2>/dev/null)
+[ -z "$PGREP" ] && PGREP=$(which pgrep 2>/dev/null)
 
 # 创建出相关目录
 mkdir -p ${APP_HOME}
