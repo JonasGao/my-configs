@@ -161,14 +161,8 @@ query_java_pid() {
   if [ "$CURR_PID" = "" ]
   then
     target=${JAR_PATH}
-    if [ "$PGREP" = "" ]
-    then
-      debug "Using ps"
-      CURR_PID=$(ps -ef | grep java | grep "${target}" | grep -v grep | grep -v "$$" | awk '{print$2}')
-    else
-      debug "Using ${PGREP} -f '${target}' | grep -v '$$'"
-      CURR_PID=$(${PGREP} -f "${target}" | grep -v "$$")
-    fi
+    debug "Using ${PGREP} -f '${target}' | grep -v '$$'"
+    CURR_PID=$(${PGREP} -f "${target}" | grep -v "$$")
   fi
 }
 
