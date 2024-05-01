@@ -95,8 +95,9 @@ health_check() {
   exp_time=0
   echo "Checking ${HEALTH_CHECK_URL}"
   while true; do
+    printf "\rHealth check: $exp_time..."
     if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" ${HEALTH_CHECK_URL}); then
-      echo "Status-code is $status_code"
+      printf " Http respond $status_code"
       for code in ${HEALTH_HTTP_CODE[@]}
       do
         if [ "$status_code" == "$code" ]; then
@@ -104,20 +105,19 @@ health_check() {
         fi
       done
     else
-      printf "curl return $?. "
+      printf " CURL return $?"
     fi
 
     sleep 1
     ((exp_time++))
-    echo "Waiting to health check: $exp_time..."
 
     if [ "$exp_time" -gt ${APP_START_TIMEOUT} ]; then
-      echo 'app start failed. try tail application log'
+      printf "\rApp start failed. try tail application log.\n"
       tail ${APP_LOG}
       exit 2
     fi
   done
-  echo "Health check ${HEALTH_CHECK_URL} success"
+  printf "\rHealth check ${HEALTH_CHECK_URL} success.\n"
 }
 
 print-info() {
@@ -147,8 +147,8 @@ start_application() {
     if [ "$NOHUP_RET" = "0" ]; then
       echo "Run nohup succeed (NOHUP RETURN: $NOHUP_RET, APP PID: $PID)"
       echo "$PID" > $PID_PATH
-      echo "Wait $PROC_START_TIMEOUT second."
-      sleep "$PROC_START_TIMEOUT"
+      echo "Wait 1 second."
+      sleep 1
       if [ ! -d "/proc/$PID" ]; then
         wait "$PID"
         RET=$?
