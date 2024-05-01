@@ -203,14 +203,14 @@ stop_application() {
     if ps $CURR_PID > /dev/null
     then
       kill "$CURR_PID"
-      echo -e "  -- stopping java lasts ${COST_TIME} seconds."
+      printf "\r  -- stopping java lasts %s seconds." "${COST_TIME}"
     else
-      echo -e "Java process has exited. Remove PID \"$PID_PATH\""
+      printf "\rJava process has exited. Remove PID \"%s\"\n" "$PID_PATH"
       rm "$PID_PATH" > /dev/null
       return
     fi
   done
-  echo -e "Java process failed exit. Still running in $CURR_PID"
+  printf "\rJava process failed exit. Still running in %s\n" "$CURR_PID"
   exit 4
 }
 
