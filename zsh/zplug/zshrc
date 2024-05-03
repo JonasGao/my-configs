@@ -73,7 +73,7 @@ function re-source() {
 
 test -f "$HOME/.env" && source "$HOME/.env"
 test -f "$HOME/.alias" && source "$HOME/.alias"
-test -f "$HOME/.functions" && source "$HOME/.functions"
+test -f "$HOME/.funcs" && source "$HOME/.funcs"
 
 # Addition tools
 
