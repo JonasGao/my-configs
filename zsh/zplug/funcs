@@ -1,0 +1,5 @@
+#!/bin/zsh
+function aget() {
+  [ -z "$1" ] && echo "Missing parameter 1: Target URL" && exit 1
+  aria2c --all-proxy "$PROXY" "$1"
+}
