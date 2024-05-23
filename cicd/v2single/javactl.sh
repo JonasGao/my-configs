@@ -7,19 +7,19 @@ PROG_NAME=$0
 ACTION=$1
 
 # 应用启动的工作目录
-APP_HOME=$(dirname $PROG_NAME)
+APP_HOME=$(dirname "$PROG_NAME")
 
 # 目标 jar 包
-JAR_NAME="app"
+JAR_NAME="app.jar"
 
 # 应用启动的端口
 APP_PORT=8090
 
 # JVM 配置参数
-JVM_OPTS="-server -Xmx512m"
+JVM_OPTS="-server -Xmx512m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_HOME/logs/"
 
 # JAR 包启动的时候传递的参数
-JAR_ARGS="--spring.config.location=file:conf/"
+JAR_ARGS="--spring.config.location=file:conf/ --server.port=${APP_PORT}"
 
 # 等待应用启动的时间
 APP_START_TIMEOUT=20
@@ -31,13 +31,13 @@ SET_ENV_FILENAME="setenv.sh"
 CWD_SET_ENV=$(readlink -f "./$SET_ENV_FILENAME")
 if [ -f "$CWD_SET_ENV" ]; then
   echo "Overwrite with $CWD_SET_ENV"
-  source $CWD_SET_ENV
+  source "$CWD_SET_ENV"
 fi
 APP_HOME_SET_ENV="$APP_HOME/$SET_ENV_FILENAME"
 if [ -f "$APP_HOME_SET_ENV" ]; then
   if [ "$APP_HOME_SET_ENV" != "$CWD_SET_ENV" ]; then
     echo "Overwrite with $APP_HOME_SET_ENV"
-    source $APP_HOME_SET_ENV
+    source "$APP_HOME_SET_ENV"
   fi
 fi
 
@@ -69,8 +69,8 @@ fi
 [ -z "$PGREP" ] && PGREP=$(which pgrep 2>/dev/null)
 
 # 创建出相关目录
-mkdir -p ${APP_HOME}
-mkdir -p ${APP_LOG_HOME}
+mkdir -p "${APP_HOME}"
+mkdir -p "${APP_LOG_HOME}"
 
 # 全局变量
 CURR_PID=
@@ -98,7 +98,7 @@ health_check() {
     printf "\rHealth check: $exp_time..."
     if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" ${HEALTH_CHECK_URL}); then
       printf " Http respond $status_code"
-      for code in ${HEALTH_HTTP_CODE[@]}
+      for code in "${HEALTH_HTTP_CODE[@]}"
       do
         if [ "$status_code" == "$code" ]; then
           break 2
@@ -136,7 +136,7 @@ start_application() {
   then
     if [ ! -f "$JAR_PATH" ]; then
       echo "There is no file \"$JAR_PATH\" ($(pwd))" >&2
-      exit 404
+      exit 44
     fi
     cd "$APP_HOME"
     print-info | tee "${APP_HOME}/version.info"
