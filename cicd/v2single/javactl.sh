@@ -87,20 +87,43 @@ There are some commands:
 """
 }
 
-print-processing() {
+print-step() {
   if [ "$CI" = "1" ]; then
-    printf "\r%s" "$1"
-  else
     printf "%s\n" "$1"
+  else
+    printf "\r%s" "$1"
   fi
 }
 
-finish-processing() {
+start-step() {
   if [ "$CI" = "1" ]; then
-    printf "\r%s\n" "$1"
+    printf "%s" "$1"
   else
-    printf "%s\n" "$1"
+    printf "\r%s" "$1"
   fi
+}
+
+append-step() {
+  if [ "$CI" = "1" ]; then
+    printf "%s\n" "$1"
+  else
+    printf "%s" "$1"
+  fi
+}
+
+finish-step() {
+  if [ "$CI" = "1" ]; then
+    printf "%s\n" "$1"
+  else
+    printf "\r%s\n" "$1"
+  fi
+}
+
+curlerr() {
+  case $1 in
+    7) printf "Failed to connect() to host or proxy." ;;
+    *) printf "CURL return $1" ;;
+  esac
 }
 
 health_check() {
@@ -111,9 +134,9 @@ health_check() {
   exp_time=0
   echo "Checking ${HEALTH_CHECK_URL}"
   while true; do
-    print-processing "Health check: $exp_time..."
+    start-step "Health check: $exp_time."
     if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" "${HEALTH_CHECK_URL}"); then
-      printf " Http respond $status_code"
+      append-step " Http respond $status_code"
       for code in "${HEALTH_HTTP_CODE[@]}"
       do
         if [ "$status_code" == "$code" ]; then
@@ -121,19 +144,19 @@ health_check() {
         fi
       done
     else
-      printf " CURL return $?"
+      append-step " $(curlerr $?)"
     fi
 
     sleep 1
     ((exp_time++))
 
     if [ "$exp_time" -gt ${APP_START_TIMEOUT} ]; then
-      finish-processing "App start failed. try tail application log."
+      finish-step "App start failed. try tail application log."
       tail ${APP_LOG}
       exit 2
     fi
   done
-  finish-processing "Health check ${HEALTH_CHECK_URL} success."
+  finish-step "Health check ${HEALTH_CHECK_URL} success."
 }
 
 print-info() {
@@ -219,14 +242,14 @@ stop_application() {
     if ps "$CURR_PID" > /dev/null
     then
       kill "$CURR_PID"
-      print-processing "Stopping java lasts $COST_TIME seconds."
+      print-step "Stopping java lasts $COST_TIME seconds."
     else
-      finish-processing "Java process has exited. Remove PID \"$PID_PATH\""
+      finish-step "Java process has exited. Remove PID \"$PID_PATH\""
       rm "$PID_PATH" > /dev/null
       return
     fi
   done
-  finish-processing "Java process failed exit. Still running in $CURR_PID"
+  finish-step "Java process failed exit. Still running in $CURR_PID"
   exit 4
 }
 
