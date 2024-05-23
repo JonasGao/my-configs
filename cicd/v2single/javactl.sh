@@ -87,6 +87,22 @@ There are some commands:
 """
 }
 
+print-processing() {
+  if [ "$CI" = "1" ]; then
+    printf "\r%s" "$1"
+  else
+    printf "%s\n" "$1"
+  fi
+}
+
+finish-processing() {
+  if [ "$CI" = "1" ]; then
+    printf "\r%s\n" "$1"
+  else
+    printf "%s\n" "$1"
+  fi
+}
+
 health_check() {
   if [ "$HEALTH_CHECK" = "1" ]; then
     echo "Health check disabled"
@@ -95,8 +111,8 @@ health_check() {
   exp_time=0
   echo "Checking ${HEALTH_CHECK_URL}"
   while true; do
-    printf "\rHealth check: $exp_time..."
-    if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" ${HEALTH_CHECK_URL}); then
+    print-processing "Health check: $exp_time..."
+    if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" "${HEALTH_CHECK_URL}"); then
       printf " Http respond $status_code"
       for code in "${HEALTH_HTTP_CODE[@]}"
       do
@@ -112,12 +128,12 @@ health_check() {
     ((exp_time++))
 
     if [ "$exp_time" -gt ${APP_START_TIMEOUT} ]; then
-      printf "\rApp start failed. try tail application log.\n"
+      finish-processing "App start failed. try tail application log."
       tail ${APP_LOG}
       exit 2
     fi
   done
-  printf "\rHealth check ${HEALTH_CHECK_URL} success.\n"
+  finish-processing "Health check ${HEALTH_CHECK_URL} success."
 }
 
 print-info() {
@@ -196,21 +212,21 @@ stop_application() {
   fi
 
   echo "Stopping java process ($CURR_PID)."
-  times=60
+  times="$APP_START_TIMEOUT"
   for e in $(seq $times); do
     sleep 1
     COST_TIME=$((times - e))
-    if ps $CURR_PID > /dev/null
+    if ps "$CURR_PID" > /dev/null
     then
       kill "$CURR_PID"
-      printf "\r  -- stopping java lasts %s seconds." "${COST_TIME}"
+      print-processing "Stopping java lasts $COST_TIME seconds."
     else
-      printf "\rJava process has exited. Remove PID \"%s\"\n" "$PID_PATH"
+      finish-processing "Java process has exited. Remove PID \"$PID_PATH\""
       rm "$PID_PATH" > /dev/null
       return
     fi
   done
-  printf "\rJava process failed exit. Still running in %s\n" "$CURR_PID"
+  finish-processing "Java process failed exit. Still running in $CURR_PID"
   exit 4
 }
 
