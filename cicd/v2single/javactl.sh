@@ -102,7 +102,7 @@ fi
 curlerr() {
   case $1 in
     7) printf "Failed to connect() to host or proxy." ;;
-    *) printf "CURL return $1" ;;
+    *) printf "CURL return %s" "$1" ;;
   esac
 }
 
