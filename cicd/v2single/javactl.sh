@@ -87,37 +87,17 @@ There are some commands:
 """
 }
 
-print-step() {
-  if [ -z "$TERM" ]; then
-    printf "%s\n" "$1"
-  else
-    printf "\r%s" "$1"
-  fi
-}
-
-start-step() {
-  if [ -z "$TERM" ]; then
-    printf "%s" "$1"
-  else
-    printf "\r%s" "$1"
-  fi
-}
-
-append-step() {
-  if [ -z "$TERM" ]; then
-    printf "%s\n" "$1"
-  else
-    printf "%s" "$1"
-  fi
-}
-
-finish-step() {
-  if [ -z "$TERM" ]; then
-    printf "%s\n" "$1"
-  else
-    printf "\r%s\n" "$1"
-  fi
-}
+if [[ "$TERM" == xterm* ]]; then
+  print-step()  { printf "\r%s" "$1"; }
+  start-step()  { printf "\r%s" "$1"; }
+  append-step() { printf "%s" "$1"; }
+  finish-step() { printf "\r%s\n" "$1"; }
+else
+  print-step()  { printf "%s\n" "$1"; }
+  start-step()  { printf "%s" "$1"; }
+  append-step() { printf "%s\n" "$1"; }
+  finish-step() { printf "%s\n" "$1"; }
+fi
 
 curlerr() {
   case $1 in
@@ -132,9 +112,9 @@ health_check() {
     return
   fi
   exp_time=0
-  echo "Checking ${HEALTH_CHECK_URL}"
+  echo "Health checking ${HEALTH_CHECK_URL}"
   while true; do
-    start-step "Health check: $exp_time."
+    start-step "$exp_time."
     if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" "${HEALTH_CHECK_URL}"); then
       append-step " Http respond $status_code"
       for code in "${HEALTH_HTTP_CODE[@]}"
