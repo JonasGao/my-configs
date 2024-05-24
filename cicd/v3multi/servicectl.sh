@@ -132,7 +132,7 @@ curlerr() {
   esac
 }
 
-health_check() {
+health-check() {
   if [ "$HEALTH_CHECK" = "1" ]; then
     echo "Health check disabled"
     return
