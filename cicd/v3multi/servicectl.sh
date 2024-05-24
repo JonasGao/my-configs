@@ -245,21 +245,21 @@ stop-application() {
   fi
 
   echo "Stopping java process ($CURR_PID)."
-  times=60
+  times="$APP_START_TIMEOUT"
   for e in $(seq $times); do
     sleep 1
     COST_TIME=$((times - e))
     if ps $CURR_PID > /dev/null
     then
       kill "$CURR_PID"
-      echo -e "  -- stopping java lasts ${COST_TIME} seconds."
+      print-step "Stopping java lasts $COST_TIME seconds."
     else
-      echo -e "Java process has exited. Remove PID \"$PID_PATH\""
+      finish-step "Java process has exited. Remove PID \"$PID_PATH\""
       rm "$PID_PATH" > /dev/null
       return
     fi
   done
-  echo -e "Java process failed exit. Still running in $CURR_PID"
+  finish-step "Java process failed exit. Still running in $CURR_PID"
   exit 4
 }
 
