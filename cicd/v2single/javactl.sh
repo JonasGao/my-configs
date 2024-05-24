@@ -88,7 +88,7 @@ There are some commands:
 }
 
 print-step() {
-  if [ "$CI" = "1" ]; then
+  if [ -z "$TERM" ]; then
     printf "%s\n" "$1"
   else
     printf "\r%s" "$1"
@@ -96,7 +96,7 @@ print-step() {
 }
 
 start-step() {
-  if [ "$CI" = "1" ]; then
+  if [ -z "$TERM" ]; then
     printf "%s" "$1"
   else
     printf "\r%s" "$1"
@@ -104,7 +104,7 @@ start-step() {
 }
 
 append-step() {
-  if [ "$CI" = "1" ]; then
+  if [ -z "$TERM" ]; then
     printf "%s\n" "$1"
   else
     printf "%s" "$1"
@@ -112,7 +112,7 @@ append-step() {
 }
 
 finish-step() {
-  if [ "$CI" = "1" ]; then
+  if [ -z "$TERM" ]; then
     printf "%s\n" "$1"
   else
     printf "\r%s\n" "$1"
