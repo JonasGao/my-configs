@@ -113,75 +113,56 @@ fi
 CURR_PID=
 OTHER_RUNNING=false
 
-term-health-check() {
-  exp_time=0
-  echo "Checking ${HEALTH_CHECK_URL}"
-  while true; do
-    if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" ${HEALTH_CHECK_URL}); then
-      printf "Status-code is ${status_code}. "
-      for code in ${HEALTH_HTTP_CODE[@]}
-      do
-        if [ "$status_code" == "$code" ]; then
-          break 2
-        fi
-      done
-    else
-      printf "curl return $?. "
-    fi
+if [[ "$TERM" == xterm* ]]; then
+  print-step()  { printf "\r%s" "$1"; }
+  start-step()  { printf "\r%s" "$1"; }
+  append-step() { printf "%s" "$1"; }
+  finish-step() { printf "\r%s\n" "$1"; }
+else
+  print-step()  { printf "%s\n" "$1"; }
+  start-step()  { printf "%s" "$1"; }
+  append-step() { printf "%s\n" "$1"; }
+  finish-step() { printf "%s\n" "$1"; }
+fi
 
-    ((exp_time++))
-    printf "Waiting to health check: $exp_time..."
-    sleep 1
-    printf "\r"
-
-    if [ "$exp_time" -gt ${APP_START_TIMEOUT} ]; then
-      echo 'app start failed. try tail application log'
-      tail ${APP_LOG}
-      exit 2
-    fi
-  done
-  echo "Health check ${HEALTH_CHECK_URL} success"
+curlerr() {
+  case $1 in
+    7) printf "Failed to connect() to host or proxy." ;;
+    *) printf "CURL return %s" "$1" ;;
+  esac
 }
 
-simple-health-check() {
-  exp_time=0
-  echo "Checking ${HEALTH_CHECK_URL}"
-  while true; do
-    if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" ${HEALTH_CHECK_URL}); then
-      printf "Status-code is ${status_code}. "
-      for code in ${HEALTH_HTTP_CODE[@]}
-      do
-        if [ "$status_code" == "$code" ]; then
-          break 2
-        fi
-      done
-    else
-      printf "curl return $?. "
-    fi
-
-    sleep 1
-    ((exp_time++))
-    echo "Waiting to health check: $exp_time..."
-
-    if [ "$exp_time" -gt ${APP_START_TIMEOUT} ]; then
-      echo 'app start failed. try tail application log'
-      tail ${APP_LOG}
-      exit 2
-    fi
-  done
-  echo "Health check ${HEALTH_CHECK_URL} success"
-}
-
-health-check() {
-  if [ "$HEALTH_CHECK" = "0" ]; then
+health_check() {
+  if [ "$HEALTH_CHECK" = "1" ]; then
     echo "Health check disabled"
     return
   fi
-  if [ -z "$TERM" ]; then
-    simple-health-check
-  else
-    term-health-check
-  fi
+  exp_time=0
+  echo "Health checking ${HEALTH_CHECK_URL}"
+  while true; do
+    start-step "$exp_time."
+    if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" "${HEALTH_CHECK_URL}"); then
+      append-step " Http respond $status_code"
+      for code in "${HEALTH_HTTP_CODE[@]}"
+      do
+        if [ "$status_code" == "$code" ]; then
+          break 2
+        fi
+      done
+    else
+      append-step " $(curlerr $?)"
+    fi
+
+    sleep 1
+    ((exp_time++))
+
+    if [ "$exp_time" -gt ${APP_START_TIMEOUT} ]; then
+      finish-step "App start failed. try tail application log."
+      tail ${APP_LOG}
+      exit 2
+    fi
+  done
+  finish-step "Health check ${HEALTH_CHECK_URL} success."
 }
 
 print-info() {
