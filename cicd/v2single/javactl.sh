@@ -258,7 +258,7 @@ r|restart)
   ;;
 p|pid)
   query_java_pid
-  echo "Current running in $CURR_PID"
+  ps -wwfp "$CURR_PID"
   ;;
 c|check)
   health_check
