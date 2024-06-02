@@ -22,6 +22,7 @@ $env:POSH_GIT_ENABLED = $true
 
 # Source custom env file
 . "$env:ENV_FILE"
+. "$HOME\function.ps1"
 
 $env:PATH = "$HOME\bin;$HOME\.local\bin;$env:PATH"
 $env:PATH = "$env:MAVEN_HOME\bin;$env:PATH"
