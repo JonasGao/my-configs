@@ -73,6 +73,7 @@
     '.\Explorer.psm1',
     '.\MvnSwitcher.psm1',
     '.\JdkSwitcher.psm1',
+    '.\Ssh.psm1',
     '.\PwshEnv.psm1'
   )
 
