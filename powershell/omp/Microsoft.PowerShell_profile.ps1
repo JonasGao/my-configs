@@ -22,7 +22,6 @@ $env:POSH_GIT_ENABLED = $true
 
 # Source custom env file
 . "$env:ENV_FILE"
-. "$HOME\function.ps1"
 
 $env:PATH = "$HOME\bin;$HOME\.local\bin;$env:PATH"
 $env:PATH = "$env:MAVEN_HOME\bin;$env:PATH"
@@ -32,6 +31,9 @@ Import-Module posh-git
 Import-Module PSFzf
 Import-Module Terminal-Icons
 Import-Module "$env:MY_CONFIG_HOME\powershell\module\MyPsScripts"
+
+# Source local custom function
+. "$HOME\function.ps1"
 
 oh-my-posh init pwsh --config $env:POSH_CONFIG | Invoke-Expression
 
