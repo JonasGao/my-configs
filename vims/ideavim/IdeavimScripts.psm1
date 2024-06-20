@@ -19,7 +19,7 @@ function Compare-Ideavimrc()
     Exit 1
   }
   prepare
-  delta $script:dst $Script:src
+  delta $script:dst $script:src
 }
 
 function Update-Ideavimrc()
@@ -30,7 +30,7 @@ function Update-Ideavimrc()
     Exit 1
   }
   prepare
-  delta $script:dst $Script:src
+  delta $script:dst $script:src
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
@@ -46,13 +46,14 @@ function Save-Ideavimrc()
     Write-Host "There is no MY_CONFIG_HOME" -ForegroundColor Red
     Exit 1
   }
+  prepare
   delta $script:src $script:dst
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
     Copy-Item "$script:src" "$script:dst"
     Write-Host -ForegroundColor Green "Finished."
-    Push-Location "$env:MY_CONFIG_HOME/vim/ideavim"
+    Push-Location "$env:MY_CONFIG_HOME/vims/ideavim"
     git add .
     git commit -m "Backup ideavimrc"
     git push
