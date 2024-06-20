@@ -46,7 +46,7 @@ function Save-Ideavimrc()
     Write-Host "There is no MY_CONFIG_HOME" -ForegroundColor Red
     Exit 1
   }
-  delta $script:dst $script:src
+  delta $script:src $script:dst
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
