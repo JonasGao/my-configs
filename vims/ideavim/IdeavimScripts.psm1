@@ -5,7 +5,7 @@ function prepare()
     Write-Host "There is no MY_CONFIG_HOME" -ForegroundColor Red
     Exit 1
   }
-  $rcSrc = "vim/ideavim/.ideavimrc"
+  $rcSrc = "vims/ideavim/.ideavimrc"
   $rcDst = ".ideavimrc"
   $script:src = "$env:MY_CONFIG_HOME/$rcSrc"
   $script:dst = "$HOME/$rcDst"
