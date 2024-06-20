@@ -1,3 +1,16 @@
+function prepare()
+{
+  if (-not(Test-Path Env:\MY_CONFIG_HOME))
+  {
+    Write-Host "There is no MY_CONFIG_HOME" -ForegroundColor Red
+    Exit 1
+  }
+  $rcSrc = "vim/ideavim/.ideavimrc"
+  $rcDst = ".ideavimrc"
+  $script:src = "$env:MY_CONFIG_HOME/$rcSrc"
+  $script:dst = "$HOME/$rcDst"
+}
+
 function Compare-Ideavimrc()
 {
   if (-not(Test-Path Env:\MY_CONFIG_HOME))
@@ -5,9 +18,8 @@ function Compare-Ideavimrc()
     Write-Host "There is no MY_CONFIG_HOME" -ForegroundColor Red
     Exit 1
   }
-  $SRC = "$env:MY_CONFIG_HOME/vim/ideavim/.ideavimrc"
-  $DST = "$HOME/.ideavimrc"
-  delta $DST $SRC
+  prepare
+  delta $script:dst $Script:src
 }
 
 function Update-Ideavimrc()
@@ -17,13 +29,12 @@ function Update-Ideavimrc()
     Write-Host "There is no MY_CONFIG_HOME" -ForegroundColor Red
     Exit 1
   }
-  $SRC = "$env:MY_CONFIG_HOME/vim/ideavim/.ideavimrc"
-  $DST = "$HOME/.ideavimrc"
-  delta $DST $SRC
+  prepare
+  delta $script:dst $Script:src
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
-    Copy-Item "$SRC" "$DST"
+    Copy-Item "$script:src" "$script:dst"
     Write-Host -ForegroundColor Green "Finished."
   }
 }
@@ -35,13 +46,11 @@ function Save-Ideavimrc()
     Write-Host "There is no MY_CONFIG_HOME" -ForegroundColor Red
     Exit 1
   }
-  $DST = "$env:MY_CONFIG_HOME/vim/ideavim/.ideavimrc"
-  $SRC = "$HOME/.ideavimrc"
-  delta $DST $SRC
+  delta $script:dst $script:src
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
-    Copy-Item "$SRC" "$DST"
+    Copy-Item "$script:src" "$script:dst"
     Write-Host -ForegroundColor Green "Finished."
     Push-Location "$env:MY_CONFIG_HOME/vim/ideavim"
     git add .
