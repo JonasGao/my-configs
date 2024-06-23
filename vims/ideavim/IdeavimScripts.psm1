@@ -7,8 +7,8 @@ function prepare()
   }
   $rcSrc = "vims/ideavim/.ideavimrc"
   $rcDst = ".ideavimrc"
-  $script:src = "$env:MY_CONFIG_HOME/$rcSrc"
-  $script:dst = "$HOME/$rcDst"
+  $script:repo = "$env:MY_CONFIG_HOME/$rcSrc"
+  $script:user = "$HOME/$rcDst"
 }
 
 function Compare-Ideavimrc()
@@ -19,7 +19,7 @@ function Compare-Ideavimrc()
     Exit 1
   }
   prepare
-  delta $script:dst $script:src
+  delta $script:user $script:repo
 }
 
 function Update-Ideavimrc()
@@ -30,11 +30,11 @@ function Update-Ideavimrc()
     Exit 1
   }
   prepare
-  delta $script:dst $script:src
+  delta $script:user $script:repo
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
-    Copy-Item "$script:src" "$script:dst"
+    Copy-Item "$script:repo" "$script:user"
     Write-Host -ForegroundColor Green "Finished."
   }
 }
@@ -47,11 +47,11 @@ function Save-Ideavimrc()
     Exit 1
   }
   prepare
-  delta $script:src $script:dst
+  delta $script:repo $script:user
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
-    Copy-Item "$script:src" "$script:dst"
+    Copy-Item "$script:user" "$script:repo"
     Write-Host -ForegroundColor Green "Finished."
     Push-Location "$env:MY_CONFIG_HOME/vims/ideavim"
     git add .
