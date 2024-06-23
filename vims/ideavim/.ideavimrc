@@ -54,7 +54,10 @@ noremap      <leader>gc     :action CheckinProject<CR>
 noremap      <leader>gp     :action Vcs.Push<CR>
 noremap      <leader>gf     :action Vcs.UpdateProject<CR>
 noremap      <leader>\      :action Switcher<CR>
-nmap         <leader>b      <Action>(ToggleLineBreakpoint)
+nmap         <leader>l      <Action>(ToggleLineBreakpoint)
+nmap         <leader>bb     <Action>(CompileDirty)
+nmap         <leader>bB     <Action>(CompileProject)
+nmap         <leader>bd     <Action>(Debug)
 noremap      <leader>1      :action GoToTab1<CR>
 noremap      <leader>2      :action GoToTab2<CR>
 noremap      <leader>3      :action GoToTab3<CR>
@@ -133,6 +136,8 @@ let g:WhichKeyDesc_qf =     "<leader>qf Front"
 let g:WhichKeyDesc_qF =     "<leader>qF Back"
 "--+Find
 let g:WhichKeyDesc_f =      "<leader>f  +Find"
+"--+Build
+let g:WhichKeyDesc_f =      "<leader>b  +Build"
 "--+Git
 let g:WhichKeyDesc_g =      "<leader>g  +Git"
 let g:WhichKeyDesc_gc =     "<leader>gc CheckinProject"
