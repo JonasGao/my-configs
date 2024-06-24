@@ -107,6 +107,7 @@ noremap      <Space>ie      :action Generate<CR>
 " Insert mode mappings
 inoremap     <C-f>          :action Find<CR>
 inoremap     <C-v>          <C-r>+
+inoremap     <C-p>          :action ParameterInfo<CR>
 
 """ EasyMotion -----------------------
 "------------|------------|------------
