@@ -53,11 +53,16 @@ function Update-Pwsh
   if (Test-Path env:\GHPROXY)
   {
     $ghproxy = $env:GHPROXY
-    Write-Output "Using proxy `"$ghproxy`""
+    Write-Output "Using ghproxy `"$ghproxy`""
   }
   if (Get-Command "aria2c")
   {
-    aria2c -o $out_file -d $out_dir "$ghproxy$u"
+    Write-Output "Using aria2c downloading."
+    if (Test-Path env:\ARIA2_PROXY)
+    {
+      Write-Output "Using proxy for aria2c: $env:ARIA2_PROXY"
+    }
+    aria2c -o $out_file -d $out_dir --all-proxy $env:ARIA2_PROXY "$ghproxy$u"
   } else
   {
     Invoke-RestMethod "$ghproxy$u" -OutFile $out
