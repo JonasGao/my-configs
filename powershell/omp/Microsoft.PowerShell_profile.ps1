@@ -8,10 +8,13 @@ Set-PSReadlineKeyHandler -Key Tab -Function Complete
 Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
 
 Set-Alias -Name vim -Value nvim
-Set-Alias -Name ls -Value Get-ChildItem
 Set-Alias -Name lg -Value lazygit
 Set-Alias -Name ar -Value aria2c
 function ll
+{
+  eza -l $args
+}
+function ls
 {
   eza -l $args
 }
