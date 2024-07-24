@@ -58,6 +58,7 @@ function Update-Pwsh
   if (Get-Command "aria2c")
   {
     Write-Output "Using aria2c downloading."
+    Write-Output "Checking proxy ARIA2_PROXY"
     if (Test-Path env:\ARIA2_PROXY)
     {
       Write-Output "Using proxy for aria2c: $env:ARIA2_PROXY"
