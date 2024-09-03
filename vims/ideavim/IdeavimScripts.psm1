@@ -11,17 +11,6 @@ function prepare()
   $script:user = "$HOME/$rcDst"
 }
 
-function Compare-Ideavimrc()
-{
-  if (-not(Test-Path Env:\MY_CONFIG_HOME))
-  {
-    Write-Host "There is no MY_CONFIG_HOME" -ForegroundColor Red
-    Exit 1
-  }
-  prepare
-  delta $script:user $script:repo
-}
-
 function Update-Ideavimrc()
 {
   if (-not(Test-Path Env:\MY_CONFIG_HOME))
@@ -30,7 +19,7 @@ function Update-Ideavimrc()
     Exit 1
   }
   prepare
-  delta $script:user $script:repo
+  delta $script:repo $script:user
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
@@ -47,7 +36,7 @@ function Save-Ideavimrc()
     Exit 1
   }
   prepare
-  delta $script:repo $script:user
+  delta  $script:user  $script:repo
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
@@ -63,4 +52,3 @@ function Save-Ideavimrc()
 
 Export-ModuleMember -Function Update-Ideavimrc
 Export-ModuleMember -Function Save-Ideavimrc
-Export-ModuleMember -Function Compare-Ideavimrc
