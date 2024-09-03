@@ -48,7 +48,9 @@ nnoremap     <leader>p      "*p
 vnoremap     <leader>p      "*p
 noremap      <leader>cf     :action ReformatCode<CR>
 noremap      <leader>cr     :action RearrangeCode<CR>
-noremap      <leader>ff     :action FindInPath<CR>
+noremap      <leader>fF     :action FindInPath<CR>
+noremap      <leader>ff     :action Find<CR>
+noremap      <leader>fr     :action Replace<CR>
 noremap      <leader>f/     :action StructuralSearchPlugin.StructuralSearchAction<CR>
 noremap      <leader>gc     :action CheckinProject<CR>
 noremap      <leader>gp     :action Vcs.Push<CR>
