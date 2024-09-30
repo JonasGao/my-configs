@@ -36,14 +36,14 @@ function Save-Ideavimrc()
     Exit 1
   }
   prepare
-  delta  $script:user  $script:repo
+  delta  $script:repo  $script:user
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
     Copy-Item "$script:user" "$script:repo"
     Write-Host -ForegroundColor Green "Finished."
     Push-Location "$env:MY_CONFIG_HOME/vims/ideavim"
-    git add .
+    git add $script:repo
     git commit -m "Backup ideavimrc"
     git push
     Pop-Location
