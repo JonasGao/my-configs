@@ -19,7 +19,7 @@ function Update-Ideavimrc()
     Exit 1
   }
   prepare
-  delta $script:repo $script:user
+  delta  $script:user  $script:repo
   $REPLY = Read-Host -Prompt "Press [y] continue..."
   if ($REPLY -eq "y")
   {
