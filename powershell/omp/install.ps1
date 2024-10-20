@@ -10,7 +10,8 @@ Install-Module -Name posh-git -Scope CurrentUser
 Install-Module -Name PSFzf -Scope CurrentUser -RequiredVersion 2.5.22
 Write-Host "Success install Modules." -ForegroundColor Green
 
-if (-not (Get-Command scoop))
+
+if (-not (Get-Command scoop -ErrorAction SilentlyContinue))
 {
   Write-Host "Not found command scoop. Will install scoop."
   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
