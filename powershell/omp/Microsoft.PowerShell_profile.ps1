@@ -36,7 +36,10 @@ Import-Module Terminal-Icons
 Import-Module "$env:MY_CONFIG_HOME\powershell\module\MyPsScripts"
 
 # Source local custom function
-. "$HOME\function.ps1"
+if (Test-Path -Path "$HOME\function.ps1")
+{
+    . "$HOME\function.ps1"
+}
 
 oh-my-posh init pwsh --config $env:POSH_CONFIG | Invoke-Expression
 
