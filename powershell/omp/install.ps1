@@ -39,6 +39,7 @@ try
 Write-Host "Success install components from scroop." -ForegroundColor Green
 
 $PROFILE_HOME = (Get-Item $PROFILE).Directory
+New-Item -ItemType Directory -Path $PROFILE_HOME -Force
 Copy-Item "$MY_CONFIG_HOME\powershell\omp\Microsoft.PowerShell_profile.ps1" $PROFILE
 if (Test-Path "$PROFILE_HOME\Env.ps1")
 {
