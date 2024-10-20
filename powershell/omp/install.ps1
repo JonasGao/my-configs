@@ -46,6 +46,6 @@ if (Test-Path "$PROFILE_HOME\Env.ps1")
   Write-Host "Skip init Env.ps1, already exists."
 } else
 {
-  Copy-Item "$MY_CONFIG_HOME\powershell\omp\Env.ps1" 
+  Copy-Item "$MY_CONFIG_HOME\powershell\omp\Env.ps1" $PROFILE_HOME
 }
 Write-Host "Success install Profiles." -ForegroundColor Green
