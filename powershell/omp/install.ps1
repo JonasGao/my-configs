@@ -19,14 +19,30 @@ if (-not (Get-Command scoop -ErrorAction SilentlyContinue))
   Write-Host "Success install scoop." -ForegroundColor Green
 }
 
-scoop install delta
-scoop install eza
-scoop install oh-my-posh
-scoop install aria2
-scoop install ripgrep
-scoop install fzf
-scoop install fd
-scoop install zoxide
+if ($PROXY)
+{
+    scoop config proxy $PROXY
+    scoop config https_proxy $PROXY
+}
+
+try
+{
+    scoop install delta
+    scoop install eza
+    scoop install oh-my-posh
+    scoop install aria2
+    scoop install ripgrep
+    scoop install fzf
+    scoop install fd
+    scoop install zoxide
+} finally 
+{
+    if ($PROXY)
+    {
+        scoop config rm proxy
+        scoop config rm https_proxy
+    }
+}
 Write-Host "Success install components from scroop." -ForegroundColor Green
 
 $PROFILE_HOME = (Get-Item $PROFILE).Directory
