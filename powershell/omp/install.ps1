@@ -7,6 +7,7 @@ if (!$MY_CONFIG_HOME) {
 }
 
 Install-Module -Name posh-git -Scope CurrentUser
+Install-Module -Name Terminal-Icons -Scope CurrentUser
 Install-Module -Name PSFzf -Scope CurrentUser -RequiredVersion 2.5.22
 Write-Host "Success install Modules." -ForegroundColor Green
 
