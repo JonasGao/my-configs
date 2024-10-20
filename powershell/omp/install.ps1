@@ -1,15 +1,9 @@
 $MY_CONFIG_HOME = $env:MY_CONFIG_HOME
 
-if (-not (Test-Path env:MY_CONFIG_HOME)) {
-    $profilePath = Join-Path -Path (Get-Location) -ChildPath "Microsoft.PowerShell_profile.ps1"
-    if (Test-Path $profilePath) {
-        $MY_CONFIG_HOME = (Get-Location).Path
-        Write-Host "MY_CONFIG_HOME 设置为当前目录：$((Get-Location).Path)"
-    } else {
-        Write-Error "错误：当前目录下不存在 Microsoft.PowerShell_profile.ps1 文件，并且环境变量 MY_CONFIG_HOME 未设置。"
-    }
-} else {
-    Write-Host "环境变量 MY_CONFIG_HOME 已存在，其值为：$env:MY_CONFIG_HOME"
+if (!$MY_CONFIG_HOME) {
+    $scriptPath = Split-Path -Path $PSScriptRoot -Parent
+    $MY_CONFIG_HOME = Split-Path -Path $scriptPath -Parent
+    Write-Host "MY_CONFIG_HOME 设置为：$MY_CONFIG_HOME"
 }
 
 Install-Module -Name posh-git -Scope CurrentUser
