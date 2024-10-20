@@ -28,6 +28,7 @@ if ($PROXY)
 try
 {
     scoop install delta eza oh-my-posh aria2 ripgrep fzf fd zoxide
+    Write-Host "Success install components from scoop." -ForegroundColor Green
 } finally 
 {
     if ($PROXY)
@@ -36,7 +37,6 @@ try
         scoop config rm https_proxy
     }
 }
-Write-Host "Success install components from scroop." -ForegroundColor Green
 
 $PROFILE_HOME = Split-Path -Path $PROFILE -Parent
 New-Item -ItemType Directory -Path $PROFILE_HOME -Force
