@@ -1,4 +1,4 @@
-$env:MY_CONFIG_HOME = "$HOME\Github\jonas\my-configs"
+$env:MY_CONFIG_HOME = "$HOME\my-configs"
 $env:MAVEN_VER = "3.8.7"
 $env:MAVEN_HOME = "D:\Maven\apache-maven-$MAVEN_VER\bin"
 $env:M2_CU = "$HOME/.m2/_codeup/settings.xml"
