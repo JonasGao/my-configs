@@ -27,14 +27,7 @@ if ($PROXY)
 
 try
 {
-    scoop install delta
-    scoop install eza
-    scoop install oh-my-posh
-    scoop install aria2
-    scoop install ripgrep
-    scoop install fzf
-    scoop install fd
-    scoop install zoxide
+    scoop install delta eza oh-my-posh aria2 ripgrep fzf fd zoxide
 } finally 
 {
     if ($PROXY)
