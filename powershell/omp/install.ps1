@@ -15,7 +15,7 @@ if (-not (Get-Command scoop -ErrorAction SilentlyContinue))
 {
   Write-Host "Not found command scoop. Will install scoop."
   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-  Invoke-RestMethod get.scoop.sh | Invoke-Expression
+  Invoke-RestMethod get.scoop.sh -Proxy $PROXY | Invoke-Expression
   Write-Host "Success install scoop." -ForegroundColor Green
 }
 
