@@ -16,6 +16,7 @@ if (-not (Get-Command scoop -ErrorAction SilentlyContinue))
   Write-Host "Not found command scoop. Will install scoop."
   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
   Invoke-RestMethod get.scoop.sh -Proxy $PROXY | Invoke-Expression
+  scoop config aria2-warning-enabled false
   Write-Host "Success install scoop." -ForegroundColor Green
 }
 
@@ -24,7 +25,6 @@ if ($PROXY)
     scoop config proxy $PROXY
     scoop config https_proxy $PROXY
 }
-
 try
 {
     scoop install delta eza oh-my-posh aria2 ripgrep fzf fd zoxide
