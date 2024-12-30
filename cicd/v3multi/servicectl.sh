@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# CD application control script.
+# Version 3.1
+#
 # # Install
 #
 # ## Project local install
