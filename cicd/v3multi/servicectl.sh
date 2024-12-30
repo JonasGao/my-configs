@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CD application control script.
-# Version 3.1
+# Version 3.2
 #
 # # Install
 #
@@ -26,10 +26,10 @@ PROG_NAME=$0
 ACTION="$1"
 
 # 应用的工作目录
-APP_HOME=$(cd $2; pwd)
+APP_HOME=$(cd "$2" && pwd)
 
 # 应用目录名称
-APP_NAME=$(basename $WD/$APP_NAME)
+APP_NAME=$(basename "$WD/$APP_NAME")
 
 # 日志输出目录
 LOG_HOME="${APP_HOME}/logs"
@@ -77,7 +77,7 @@ APP_LOG=${STD_OUT}
 PID_PATH="${CONF_HOME}/pid"
 
 # 需要初始化的目录
-INIT_DIRS=($APP_HOME $LOG_HOME $CONF_HOME $LIB_HOME)
+INIT_DIRS=("$APP_HOME" "$LOG_HOME" "$CONF_HOME" "$LIB_HOME")
 
 # 准备相关工具
 JAVA=$(which java 2>/dev/null)
@@ -91,7 +91,7 @@ SET_ENV_FILENAME="setenv.sh"
 WDIR_SET_ENV=$(readlink -f "$WD/$SET_ENV_FILENAME")
 if [ -f "$WDIR_SET_ENV" ]; then
   echo "Overwrite with $WDIR_SET_ENV"
-  source $WDIR_SET_ENV
+  source "$WDIR_SET_ENV"
 fi
 
 # 使用各级应用 env 脚本
@@ -99,7 +99,7 @@ APP_HOME_SET_ENV="$APP_HOME/conf/$SET_ENV_FILENAME"
 if [ -f "$APP_HOME_SET_ENV" ]; then
   if [ "$APP_HOME_SET_ENV" != "$WDIR_SET_ENV" ]; then
     echo "Overwrite with $APP_HOME_SET_ENV"
-    source $APP_HOME_SET_ENV
+    source "$APP_HOME_SET_ENV"
   else
     echo "WARN: APP_HOME_SET_ENV same with WDIR_SET_ENV is '$APP_HOME_SET_ENV'"
   fi
@@ -159,9 +159,9 @@ health-check() {
     sleep 1
     ((exp_time++))
 
-    if [ "$exp_time" -gt ${APP_START_TIMEOUT} ]; then
+    if [ "$exp_time" -gt "${APP_START_TIMEOUT}" ]; then
       finish-step "App start failed. try tail application log."
-      tail ${APP_LOG}
+      tail "${APP_LOG}"
       exit 2
     fi
   done
@@ -184,9 +184,9 @@ start-application() {
   then
     if [ ! -f "$JAR_PATH" ]; then
       echo "There is no file \"$JAR_PATH\"" >&2
-      exit 404
+      exit 5
     fi
-    cd "$APP_HOME"
+    cd "$APP_HOME" || exit 7
     print-info | tee "${LOG_HOME}/version.info"
     ${NOHUP} ${JAVA} ${JVM_OPTS} -jar ${JAR_PATH} ${JAR_ARGS} >${STD_OUT} 2>&1 &
     local PID=$!
@@ -194,7 +194,7 @@ start-application() {
     local RET=99
     if [ "$NOHUP_RET" = "0" ]; then
       echo "Run nohup succeed (NOHUP RETURN: $NOHUP_RET, APP PID: $PID)"
-      echo "$PID" > $PID_PATH
+      echo "$PID" > "$PID_PATH"
       echo "Wait $PROC_START_TIMEOUT second."
       sleep "$PROC_START_TIMEOUT"
       if [ ! -d "/proc/$PID" ]; then
@@ -216,8 +216,9 @@ start-application() {
 query-java-pid() {
   CURR_PID=
   if [ -f "$PID_PATH" ]; then
-    local pid=$(cat "$PID_PATH")
-    if ps $pid > /dev/null
+    local pid
+    pid=$(cat "$PID_PATH")
+    if ps "$pid" > /dev/null
     then
       CURR_PID="$pid"
       echo "Got pid ($pid) from \"$PID_PATH\""
@@ -227,15 +228,9 @@ query-java-pid() {
   fi
   if [ "$CURR_PID" = "" ]
   then
-    target=${JAR_PATH}
-    if [ "$PGREP" = "" ]
-    then
-      echo "Query process by ps"
-      CURR_PID=$(ps -ef | grep java | grep "${target}" | grep -v grep | grep -v "$$" | awk '{print$2}')
-    else
-      echo "Query process by ${PGREP} -f \"${target}\" | grep -v \"\$\$\""
-      CURR_PID=$(${PGREP} -f "${target}" | grep -v "$$")
-    fi
+    target="${JAR_PATH}"
+    echo "Query process by ${PGREP} -f \"${target}\" | grep -v \"\$\$\""
+    CURR_PID=$(${PGREP} -f "${target}" | grep -v "$$")
   fi
 }
 
@@ -252,7 +247,7 @@ stop-application() {
   for e in $(seq $times); do
     sleep 1
     COST_TIME=$((times - e))
-    if ps $CURR_PID > /dev/null
+    if ps "$CURR_PID" > /dev/null
     then
       kill "$CURR_PID"
       print-step "Stopping java lasts $COST_TIME seconds."
@@ -289,13 +284,13 @@ init-dirs() {
 update-self() {
   [ -n "$GHPROXY" ] && echo "Will use GHPROXY: $GHPROXY"
   echo "Update location: $PROG_NAME"
-  curl -o $PROG_NAME "${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"
-  chmod u+x $PROG_NAME
+  curl -o "$PROG_NAME" "${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"
+  chmod u+x "$PROG_NAME"
   echo -e "\e[32mSucceed update $PROG_NAME\e[0m"
 }
 
 usage() {
-  printf """Usage: $PROG_NAME <command> <service|dir name>
+  printf """Usage: %s <command> <service|dir name>
 There are some commands:
   i, init
   d, deploy
@@ -305,7 +300,7 @@ There are some commands:
   p, pid
   c, check
   u, update
-"""
+""" "$PROG_NAME"
 }
 
 # 检查参数
