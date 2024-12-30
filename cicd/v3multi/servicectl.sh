@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CD application control script.
-# Version 3.2
+# Version 3.3
 #
 # # Install
 #
@@ -56,7 +56,7 @@ JAR_ARGS="--server.port=${APP_PORT}"
 [ -z "$PROC_START_TIMEOUT" ] && PROC_START_TIMEOUT=3
 
 # 等待应用启动的时间
-[ -z "$APP_START_TIMEOUT" ] && APP_START_TIMEOUT=30
+[ -z "$APP_START_TIMEOUT" ] && APP_START_TIMEOUT=150
 
 # 应用健康检查URL
 HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
@@ -149,11 +149,22 @@ health-check() {
       for code in "${HEALTH_HTTP_CODE[@]}"
       do
         if [ "$status_code" == "$code" ]; then
+          # break 2, finish health check.
           break 2
         fi
       done
     else
       append-step " $(curlerr $?)"
+    fi
+
+    # exp_time mod 10 == 0, check process is running.
+    if [ $((exp_time % 10)) -eq 0 ]; then
+      query-java-pid
+      if [ "$CURR_PID" = "" ]; then
+        finish-step "App start failed. try tail application log."
+        tail "${APP_LOG}"
+        exit 2
+      fi
     fi
 
     sleep 1
