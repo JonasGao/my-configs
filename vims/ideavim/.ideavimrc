@@ -67,8 +67,10 @@ let g:WhichKeyDesc_gc =     "<leader>gc CheckinProject"
 let g:WhichKeyDesc_gp =     "<leader>gp Push"
 let g:WhichKeyDesc_gf =     "<leader>gf UpdateProject"
 noremap      <leader>gc     :action CheckinProject<CR>
+noremap      <leader>ga     :action CheckinProject<CR>:action TriggerCosyCommitMessageGenerationAction<CR>
 noremap      <leader>gp     :action Vcs.Push<CR>
 noremap      <leader>gf     :action Vcs.UpdateProject<CR>
+noremap      <leader>gc     :action Vcs.UpdateProject<CR>
 
 """ Which key descriptions ------------
 let g:WhichKeyDesc_slash =  "<leader>\  Switcher"
