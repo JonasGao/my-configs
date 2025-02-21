@@ -7,8 +7,8 @@ if (!$MY_CONFIG_HOME)
   Write-Host "MY_CONFIG_HOME 设置为：$MY_CONFIG_HOME"
 }
 
-Install-Module -Name posh-git -Scope CurrentUser
-Install-Module -Name PSFzf -Scope CurrentUser -RequiredVersion 2.5.22
+Install-Module -Name posh-git -Scope CurrentUser -Force
+Install-Module -Name PSFzf -Scope CurrentUser -RequiredVersion 2.5.22 -Force
 Write-Host "Success install Modules." -ForegroundColor Green
 
 
