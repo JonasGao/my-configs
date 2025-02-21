@@ -1,13 +1,13 @@
 $MY_CONFIG_HOME = $env:MY_CONFIG_HOME
 
-if (!$MY_CONFIG_HOME) {
-    $scriptPath = Split-Path -Path $PSScriptRoot -Parent
-    $MY_CONFIG_HOME = Split-Path -Path $scriptPath -Parent
-    Write-Host "MY_CONFIG_HOME 设置为：$MY_CONFIG_HOME"
+if (!$MY_CONFIG_HOME)
+{
+  $scriptPath = Split-Path -Path $PSScriptRoot -Parent
+  $MY_CONFIG_HOME = Split-Path -Path $scriptPath -Parent
+  Write-Host "MY_CONFIG_HOME 设置为：$MY_CONFIG_HOME"
 }
 
 Install-Module -Name posh-git -Scope CurrentUser
-Install-Module -Name Terminal-Icons -Scope CurrentUser
 Install-Module -Name PSFzf -Scope CurrentUser -RequiredVersion 2.5.22
 Write-Host "Success install Modules." -ForegroundColor Green
 
@@ -23,20 +23,20 @@ if (-not (Get-Command scoop -ErrorAction SilentlyContinue))
 
 if ($PROXY)
 {
-    scoop config proxy $PROXY
-    scoop config https_proxy $PROXY
+  scoop config proxy $PROXY
+  scoop config https_proxy $PROXY
 }
 try
 {
-    scoop install delta eza oh-my-posh aria2 ripgrep fzf fd zoxide
-    Write-Host "Success install components from scoop." -ForegroundColor Green
+  scoop install delta eza oh-my-posh aria2 ripgrep fzf fd zoxide
+  Write-Host "Success install components from scoop." -ForegroundColor Green
 } finally 
 {
-    if ($PROXY)
-    {
-        scoop config rm proxy
-        scoop config rm https_proxy
-    }
+  if ($PROXY)
+  {
+    scoop config rm proxy
+    scoop config rm https_proxy
+  }
 }
 
 $PROFILE_HOME = Split-Path -Path $PROFILE -Parent
