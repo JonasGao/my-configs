@@ -19,7 +19,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
 networks:
   redis:
     driver: bridge
