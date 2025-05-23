@@ -15,9 +15,6 @@ services:
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
-    dns:
-      - 127.0.0.1
-      - 223.5.5.5
     logging:
       driver: "json-file"
       options:
