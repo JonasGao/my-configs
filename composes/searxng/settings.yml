@@ -1,0 +1,23 @@
+# see https://docs.searxng.org/admin/settings/settings.html#settings-use-default-settings
+use_default_settings: true
+server:
+  # base_url is defined in the SEARXNG_BASE_URL environment variable, see .env and docker-compose.yml
+  secret_key: "zdhykpuORhqPnqAdPyr3mtezoHGMCJ"  # change this!
+  limiter: false  # can be disabled for a private instance
+  image_proxy: false
+ui:
+  static_use_hash: true
+redis:
+  url: redis://172.16.201.96:6379/1
+search:
+  formats:
+    - html
+    - json
+outgoing:
+  request_timeout: 3.0
+  max_request_timeout: 10.0
+  proxies:
+    http: http://172.16.201.190:7890
+    https: http://172.16.201.190:7890
+  using_tor_proxy: false
+  retries: 0
