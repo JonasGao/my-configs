@@ -9,7 +9,7 @@ services:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
-      - redis-net
+      - redis
     deploy:
       resources:
         limits:
