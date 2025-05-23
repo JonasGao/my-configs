@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# 显示帮助信息的函数
+show_help() {
+    echo "Usage: $0 [-r] <image_name:tag>"
+    echo "Options:"
+    echo "  -r    Remove first domain part from image name"
+    echo "Example:"
+    echo "  $0 docker.io/library/nginx:latest"
+    echo "  $0 -r docker.io/library/nginx:latest"
+    exit 1
+}
+
+# 处理命令行参数
+REMOVE_DOMAIN=false
+while getopts "rh" opt; do
+    case $opt in
+        r)
+            REMOVE_DOMAIN=true
+            ;;
+        h)
+            show_help
+            ;;
+        \?)
+            show_help
+            ;;
+    esac
+done
+
+# 移除已处理的选项，剩下的参数就是镜像名称
+shift $((OPTIND-1))
+
+# 检查是否提供了镜像名称
+if [ $# -lt 1 ]; then
+    show_help
+fi
+
+# 设置变量
+SOURCE_IMAGE="$1"
+LOCAL_REGISTRY="127.0.0.1:5000"
+
+echo "开始处理镜像: ${SOURCE_IMAGE}"
+
+# 拉取原始镜像
+docker pull "${SOURCE_IMAGE}"
+
+# 处理目标镜像名称
+if [ "$REMOVE_DOMAIN" = true ]; then
+    # 移除第一段域名
+    # 例如: docker.io/library/nginx:latest -> library/nginx:latest
+    TARGET_IMAGE=$(echo "${SOURCE_IMAGE}" | sed -E 's|^[^/]+/||')
+else
+    TARGET_IMAGE="${SOURCE_IMAGE}"
+fi
+
+echo "处理后的镜像名称: ${TARGET_IMAGE}"
+
+# 标记镜像
+docker tag "${SOURCE_IMAGE}" "${LOCAL_REGISTRY}/${TARGET_IMAGE}"
+
+# 推送到本地仓库
+docker push "${LOCAL_REGISTRY}/${TARGET_IMAGE}"
+
+# 输出绿色的“镜像同步完成”信息
+echo -e "\033[32m镜像同步完成: ${LOCAL_REGISTRY}/${TARGET_IMAGE}\033[0m"
+
+# 清理本地临时镜像
+docker rmi "${SOURCE_IMAGE}"
+docker rmi "${LOCAL_REGISTRY}/${TARGET_IMAGE}"
+
+echo "清理完成"
