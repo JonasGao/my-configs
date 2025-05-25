@@ -1,7 +1,7 @@
 function New-SshProxy
 {
   param($Name, $Port, $SshTarget)
-  $FullName = "Proxy-$Name"
+  $FullName = "Start-${Name}Proxy"
   Set-Item -Path function:global:$FullName -Value {
     Write-Output "Startuping ssh @$Port"
     ssh -CND 127.0.0.1:$Port $SshTarget
