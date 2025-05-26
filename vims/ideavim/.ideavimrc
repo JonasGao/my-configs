@@ -98,6 +98,11 @@ nmap         <leader>qs   <Plug>(easymotion-s)
 nmap         <leader>qf   <Plug>(easymotion-f)
 nmap         <leader>qF   <Plug>(easymotion-F)
 
+"--+Replacing
+" Quick remove message from validation annotation
+nnoremap     <leader>dv     :%s/,\?message \?= \?".\+"//g<CR>
+nnoremap     <leader>dx     :%s/\(@\w\+\)()/\1/g<CR>
+
 noremap      <leader>1      :action GoToTab1<CR>
 noremap      <leader>2      :action GoToTab2<CR>
 noremap      <leader>3      :action GoToTab3<CR>
@@ -173,4 +178,4 @@ inoremap     <C-p>          :action ParameterInfo<CR>
 """ Which key ------------------------
 let g:WhichKey_FontFamily = "JetBrains Mono"
 let g:WhichKey_ShowVimActions = "true"
-let g:WhichKey_ProcessUnknownMappings = "false"
+let g:WhichKey_ProcessUnknownMappings = "true"
