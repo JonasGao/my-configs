@@ -99,9 +99,17 @@ nmap         <leader>qf   <Plug>(easymotion-f)
 nmap         <leader>qF   <Plug>(easymotion-F)
 
 "--+Replacing
+let g:WhichKeyDesc_d =      "<leader>d  +Delete"
+let g:WhichKeyDesc_dv =     "<leader>dv Delete validation messages"
+let g:WhichKeyDesc_dx =     "<leader>dx Delete empty brackets"
 " Quick remove message from validation annotation
 nnoremap     <leader>dv     :%s/,\?message \?= \?".\+"//g<CR>
 nnoremap     <leader>dx     :%s/\(@\w\+\)()/\1/g<CR>
+
+"--+Running/Debugging
+let g:WhichKeyDesc_r =      "<leader>r  +Running/Debugging"
+let g:WhichKeyDesc_rr =     "<leader>rr Rerun"
+nmap         <leader>rr     <Action>(Rerun)
 
 noremap      <leader>1      :action GoToTab1<CR>
 noremap      <leader>2      :action GoToTab2<CR>
