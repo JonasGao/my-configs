@@ -11,7 +11,7 @@ set exchange
 "" Multiple Cursors Plugin
 " 1. JetBrains multiple-cursors plugin
 " https://github.com/JetBrains/ideavim/wiki/IdeaVim-Plugins
-set multiple-cursors
+" set multiple-cursors
 " 2. IdeaVimMulticursor(dankinsoid)
 " https://plugins.jetbrains.com/plugin/19162-ideavimmulticursor
 " https://github.com/dankinsoid/IdeaVimMulticursor
