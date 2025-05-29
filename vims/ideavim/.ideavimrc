@@ -103,7 +103,7 @@ let g:WhichKeyDesc_d =      "<leader>d  +Delete"
 let g:WhichKeyDesc_dv =     "<leader>dv Delete validation messages"
 let g:WhichKeyDesc_dx =     "<leader>dx Delete empty brackets"
 " Quick remove message from validation annotation
-nnoremap     <leader>dv     :%s/,\?message \?= \?".\+"//g<CR>
+nnoremap     <leader>dv     :%s/,\? \?message \?= \?".\+"//g<CR>
 nnoremap     <leader>dx     :%s/\(@\w\+\)()/\1/g<CR>
 
 "--+Running/Debugging
