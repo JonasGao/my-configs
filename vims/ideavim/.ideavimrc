@@ -48,21 +48,21 @@ nnoremap     <leader>p      "*p
 vnoremap     <leader>p      "*p
 
 "--+Code
-let g:WhichKeyDesc_c =      "<leader>c  +Code"
+let g:WhichKeyDesc_c =      "<leader>c  Code"
 let g:WhichKeyDesc_cf =     "<leader>cf ReformatCode"
 let g:WhichKeyDesc_cr =     "<leader>cr RearrangeCode"
 noremap      <leader>cf     :action ReformatCode<CR>
 noremap      <leader>cr     :action RearrangeCode<CR>
 
 "--+Find
-let g:WhichKeyDesc_f =      "<leader>f  +Find"
+let g:WhichKeyDesc_f =      "<leader>f  Find"
 noremap      <leader>fF     :action FindInPath<CR>
 noremap      <leader>ff     :action Find<CR>
 noremap      <leader>fr     :action Replace<CR>
 noremap      <leader>f/     :action StructuralSearchPlugin.StructuralSearchAction<CR>
 
 "--+Git
-let g:WhichKeyDesc_g =      "<leader>g  +Git"
+let g:WhichKeyDesc_g =      "<leader>g  Git"
 let g:WhichKeyDesc_gc =     "<leader>gc Checkin Project"
 let g:WhichKeyDesc_ga =     "<leader>gc Checkin Project with message"
 let g:WhichKeyDesc_gp =     "<leader>gp Push"
@@ -79,7 +79,7 @@ noremap      <leader>\      :action Switcher<CR>
 nmap         <leader>l      <Action>(ToggleLineBreakpoint)
 
 "--+Build
-let g:WhichKeyDesc_b =      "<leader>b  +Build"
+let g:WhichKeyDesc_b =      "<leader>b  Build"
 let g:WhichKeyDesc_bm =     "<leader>bm Reimport Maven"
 let g:WhichKeyDesc_bb =     "<leader>bb Build"
 let g:WhichKeyDesc_bB =     "<leader>bB Rebuild"
@@ -90,7 +90,7 @@ nmap         <leader>bd     <Action>(Debug)
 noremap      <leader>bm     :action Maven.Reimport<CR>
 
 "--+EasyMotion
-let g:WhichKeyDesc_q =      "<leader>q  +EasyMotion"
+let g:WhichKeyDesc_q =      "<leader>q  EasyMotion"
 let g:WhichKeyDesc_qs =     "<leader>qs Search"
 let g:WhichKeyDesc_qf =     "<leader>qf Front"
 let g:WhichKeyDesc_qF =     "<leader>qF Back"
@@ -99,7 +99,7 @@ nmap         <leader>qf   <Plug>(easymotion-f)
 nmap         <leader>qF   <Plug>(easymotion-F)
 
 "--+Replacing
-let g:WhichKeyDesc_d =      "<leader>d  +Delete"
+let g:WhichKeyDesc_d =      "<leader>d  Delete"
 let g:WhichKeyDesc_dv =     "<leader>dv Delete validation messages"
 let g:WhichKeyDesc_dx =     "<leader>dx Delete empty brackets"
 " Quick remove message from validation annotation
@@ -112,23 +112,23 @@ let g:WhichKeyDesc_rr =     "<leader>rr Rerun"
 nmap         <leader>rr     <Action>(Rerun)
 
 "--+Refactoring
-let g:WhichKeyDesc_r =      "<leader>r   +Refactoring"
-let g:WhichKeyDesc_rg =     "<leader>rg  Rearrange Code"
-let g:WhichKeyDesc_re =     "<leader>re  Rename Element"
-let g:WhichKeyDesc_rt =     "<leader>rt  Surround With"
-let g:WhichKeyDesc_rr =     "<leader>rr  QuickListPopupAction"
-let g:WhichKeyDesc_rl =     "<leader>rl  Lombok Data"
-let g:WhichKeyDesc_rR =     "<leader>rR  Menu"
-let g:WhichKeyDesc_rs =     "<leader>rs  String Manipulation"
-let g:WhichKeyDesc_rc =     "<leader>rc  Change Signature"
-noremap      <leader>rg      :action RearrangeCode<CR>
-noremap      <leader>re      :action RenameElement<CR>
-noremap      <leader>rt      :action SurroundWith<CR>
-noremap      <leader>rr      :action Refactorings.QuickListPopupAction<CR>
-noremap      <leader>rl      :action defaultLombokData<CR>
-noremap      <leader>rR      :action RefactoringMenu<CR>
-noremap      <leader>rs      :action StringManipulation.Group.Main<CR>
-noremap      <leader>rc      :action ChangeSignature<CR>
+let g:WhichKeyDesc_r =      "<leader>e   Refactoring"
+let g:WhichKeyDesc_rg =     "<leader>eg  Rearrange Code"
+let g:WhichKeyDesc_re =     "<leader>ee  Rename Element"
+let g:WhichKeyDesc_rt =     "<leader>et  Surround With"
+let g:WhichKeyDesc_rr =     "<leader>er  QuickListPopupAction"
+let g:WhichKeyDesc_rl =     "<leader>el  Lombok Data"
+let g:WhichKeyDesc_rR =     "<leader>eR  Menu"
+let g:WhichKeyDesc_rs =     "<leader>es  String Manipulation"
+let g:WhichKeyDesc_rc =     "<leader>ec  Change Signature"
+noremap      <leader>eg      :action RearrangeCode<CR>
+noremap      <leader>ee      :action RenameElement<CR>
+noremap      <leader>et      :action SurroundWith<CR>
+noremap      <leader>er      :action Refactorings.QuickListPopupAction<CR>
+noremap      <leader>el      :action defaultLombokData<CR>
+noremap      <leader>eR      :action RefactoringMenu<CR>
+noremap      <leader>es      :action StringManipulation.Group.Main<CR>
+noremap      <leader>ec      :action ChangeSignature<CR>
 
 noremap      <leader>1      :action GoToTab1<CR>
 noremap      <leader>2      :action GoToTab2<CR>
