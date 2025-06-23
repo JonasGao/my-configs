@@ -11,7 +11,7 @@ set exchange
 "" Multiple Cursors Plugin
 " 1. JetBrains multiple-cursors plugin
 " https://github.com/JetBrains/ideavim/wiki/IdeaVim-Plugins
-" set multiple-cursors
+set multiple-cursors
 " 2. IdeaVimMulticursor(dankinsoid)
 " https://plugins.jetbrains.com/plugin/19162-ideavimmulticursor
 " https://github.com/dankinsoid/IdeaVimMulticursor
@@ -111,6 +111,25 @@ let g:WhichKeyDesc_r =      "<leader>r  +Running/Debugging"
 let g:WhichKeyDesc_rr =     "<leader>rr Rerun"
 nmap         <leader>rr     <Action>(Rerun)
 
+"--+Refactoring
+let g:WhichKeyDesc_r =      "<leader>r   +Refactoring"
+let g:WhichKeyDesc_rg =     "<leader>rg  Rearrange Code"
+let g:WhichKeyDesc_re =     "<leader>re  Rename Element"
+let g:WhichKeyDesc_rt =     "<leader>rt  Surround With"
+let g:WhichKeyDesc_rr =     "<leader>rr  QuickListPopupAction"
+let g:WhichKeyDesc_rl =     "<leader>rl  Lombok Data"
+let g:WhichKeyDesc_rR =     "<leader>rR  Menu"
+let g:WhichKeyDesc_rs =     "<leader>rs  String Manipulation"
+let g:WhichKeyDesc_rc =     "<leader>rc  Change Signature"
+noremap      <leader>rg      :action RearrangeCode<CR>
+noremap      <leader>re      :action RenameElement<CR>
+noremap      <leader>rt      :action SurroundWith<CR>
+noremap      <leader>rr      :action Refactorings.QuickListPopupAction<CR>
+noremap      <leader>rl      :action defaultLombokData<CR>
+noremap      <leader>rR      :action RefactoringMenu<CR>
+noremap      <leader>rs      :action StringManipulation.Group.Main<CR>
+noremap      <leader>rc      :action ChangeSignature<CR>
+
 noremap      <leader>1      :action GoToTab1<CR>
 noremap      <leader>2      :action GoToTab2<CR>
 noremap      <leader>3      :action GoToTab3<CR>
@@ -146,24 +165,7 @@ noremap      <Space>So      :action VimActions<CR>
 noremap      <Space>Ss      :so ~/.ideavimrc<CR>
 noremap      <Space>Sr      :action IdeaVim.ReloadVimRc.reload<CR>
 
-let g:WhichKeyDesc_space =      "<Space>    +Space"
-let g:WhichKeyDesc_space_r =    "<Space>r   +Refactoring"
-let g:WhichKeyDesc_space_rg =   "<Space>rg  Rearrange Code"
-let g:WhichKeyDesc_space_re =   "<Space>re  Rename Element"
-let g:WhichKeyDesc_space_rt =   "<Space>rt  Surround With"
-let g:WhichKeyDesc_space_rr =   "<Space>rr  QuickListPopupAction"
-let g:WhichKeyDesc_space_rl =   "<Space>rl  Lombok Data"
-let g:WhichKeyDesc_space_rR =   "<Space>rR  Menu"
-let g:WhichKeyDesc_space_rs =   "<Space>rs  String Manipulation"
-let g:WhichKeyDesc_space_rc =   "<Space>rc  Change Signature"
-noremap      <Space>rg      :action RearrangeCode<CR>
-noremap      <Space>re      :action RenameElement<CR>
-noremap      <Space>rt      :action SurroundWith<CR>
-noremap      <Space>rr      :action Refactorings.QuickListPopupAction<CR>
-noremap      <Space>rl      :action defaultLombokData<CR>
-noremap      <Space>rR      :action RefactoringMenu<CR>
-noremap      <Space>rs      :action StringManipulation.Group.Main<CR>
-noremap      <Space>rc      :action ChangeSignature<CR>
+
 
 noremap      <Space>p       "0p
 noremap      <Space>y       "0y
