@@ -143,8 +143,10 @@ noremap      <leader>ec     :action ChangeSignature<CR>
 " leader t
 let g:WhichKeyDesc_t =      "<leader>t  Tools"
 let g:WhichKeyDesc_tt =     "<leader>tt Translate"
-let g:WhichKeyDesc_ttr =    "<leader>ttr Translate and replace"
+let g:WhichKeyDesc_ttr =    "<leader>ttr Replace"
+let g:WhichKeyDesc_ttt =    "<leader>ttt Translate"
 noremap      <leader>ttr    :action Translation.TranslateAndReplaceAction<CR>
+noremap      <leader>ttt    :action Translation.EditorTranslateAction<CR>
 
 noremap      <leader>1      :action GoToTab1<CR>
 noremap      <leader>2      :action GoToTab2<CR>
