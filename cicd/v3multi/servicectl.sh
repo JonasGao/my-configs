@@ -180,13 +180,13 @@ health-check() {
 }
 
 print-info() {
-  echo "Working Directory: $(pwd)"
-  echo "Using:"
-  echo "  nohup: $NOHUP"
-  echo "  java:  $JAVA"
-  echo "  opts:  ${JVM_OPTS}"
-  echo "  jar:   ${JAR_PATH}"
-  echo "  args:  ${JAR_ARGS}"
+  echo -e "\033[1;36mWorking Directory:\033[0m $(pwd)"
+  echo -e "\033[1;33mUsing:\033[0m"
+  echo -e "  \033[1;32mnohup:\033[0m $NOHUP"
+  echo -e "  \033[1;32mjava:\033[0m  $JAVA"
+  echo -e "  \033[1;32mopts:\033[0m  ${JVM_OPTS}"
+  echo -e "  \033[1;32mjar:\033[0m   ${JAR_PATH}"
+  echo -e "  \033[1;32margs:\033[0m  ${JAR_ARGS}"
 }
 
 start-application() {
@@ -229,19 +229,34 @@ query-java-pid() {
   if [ -f "$PID_PATH" ]; then
     local pid
     pid=$(cat "$PID_PATH")
-    if ps "$pid" > /dev/null
+    if ps "$pid" > /dev/null 2>&1
     then
       CURR_PID="$pid"
       echo "Got pid ($pid) from \"$PID_PATH\""
     else
-      echo "PID ($pid) from \"$PID_PATH\" can not found by ps. Will search by pgrep or ps."
+      echo "PID ($pid) from \"$PID_PATH\" can not found by ps. Will search by pgrep."
+      rm -f "$PID_PATH"
     fi
   fi
-  if [ "$CURR_PID" = "" ]
-  then
-    target="${JAR_PATH}"
-    echo "Query process by ${PGREP} -f \"${target}\" | grep -v \"\$\$\""
-    CURR_PID=$(${PGREP} -f "${target}" | grep -v "$$")
+  
+  if [ -z "$CURR_PID" ] && [ -x "$PGREP" ]; then
+    # 使用pgrep更精确地查找java进程，排除当前shell进程
+    CURR_PID=$($PGREP -f "java.*$(basename "$JAR_PATH")" -v -p "$$" 2>/dev/null)
+    
+    # 如果找到多个进程，尝试更精确匹配
+    local pid_count
+    pid_count=$(echo "$CURR_PID" | wc -l)
+    if [ "$pid_count" -gt 1 ]; then
+      echo "WARNING: Found multiple processes, trying more precise matching"
+      CURR_PID=$($PGREP -f "java.*-jar.*$(basename "$JAR_PATH")" -v -p "$$" 2>/dev/null)
+    fi
+  fi
+  
+  # 最后的验证，确保进程确实存在
+  if [ -n "$CURR_PID" ]; then
+    if ! ps $CURR_PID > /dev/null 2>&1; then
+      CURR_PID=
+    fi
   fi
 }
 
