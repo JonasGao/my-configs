@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CD application control script.
-# Version 3.3
+# Version 4.0
 #
 # # Install
 #
