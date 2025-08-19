@@ -586,6 +586,12 @@ CONF_HOME="${APP_HOME}/conf"
 # JAR 包启动的时候传递的参数
 JAR_ARGS="--server.port=${APP_PORT}"
 
+# 进程启动等待时间
+[ -z "$PROC_START_TIMEOUT" ] && PROC_START_TIMEOUT=3
+
+# 等待应用启动的时间
+[ -z "$APP_START_TIMEOUT" ] && APP_START_TIMEOUT=150
+
 # JAR 包的绝对路径
 JAR_PATH="${LIB_HOME}/${JAR_NAME}.jar"
 
@@ -600,6 +606,12 @@ PID_PATH="${CONF_HOME}/pid"
 
 # 需要初始化的目录
 INIT_DIRS=("$APP_HOME" "$LOG_HOME" "$CONF_HOME" "$LIB_HOME")
+
+# 应用健康检查URL
+HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
+
+# 健康的HTTP代码
+HEALTH_HTTP_CODE=(200 404 403 405)
 
 case "$ACTION" in
 d|deploy)
