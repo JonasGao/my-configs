@@ -331,34 +331,39 @@ There are some commands:
 
 # 检查参数
 if [ -z "$ACTION" ]; then
-  echo -e "\e[31mError: missing arguments 'command' at position 1.\e[0m"
+  echo -e "\033[31mError: Missing argument 'command' at position 1.\033[0m" >&2
   usage
   exit 1
 fi
+
 case "$ACTION" in
 u|update)
   # Ignore #2 validation
+  update-self
+  exit 0
   ;;
 *)
-  [ -z "$2" ] && echo -e "\e[31mError: missing arguments 'service or dir name' at position 2.\e[0m" && usage && echo 2
+  if [ -z "$2" ]; then
+    echo -e "\033[31mError: Missing argument 'service or dir name' at position 2.\033[0m" >&2
+    usage
+    exit 2
+  fi
   ;;
 esac
 
 # 检查基本目录是否存在
 if [ ! -d "$APP_HOME" ]; then
-  echo "App Home not exists: $APP_HOME"
+  echo -e "\033[31mError: App home directory does not exist.\033[0m" >&2
   exit 9
-else
-  echo "Using APP_HOME: $APP_HOME"
 fi
 
 # 创建出相关目录
-init-dirs
+echo "Using APP_HOME: $APP_HOME"
 
 case "$ACTION" in
 d|deploy)
   if [ ! -f "$APP_HOME/${JAR_NAME}.jar" ]; then
-    echo "There is no deploy target \"$APP_HOME/${JAR_NAME}.jar\""
+    echo -e "\033[31mError: Deployment target does not exist: $APP_HOME/${JAR_NAME}.jar\033[0m" >&2
     exit 10
   fi
   echo "Do deploy. Stop first."
@@ -403,6 +408,7 @@ u|update)
   update-self
   ;;
 *)
+  echo -e "\033[31mError: Unknown command '$ACTION'\033[0m" >&2
   usage
   exit 1
   ;;
