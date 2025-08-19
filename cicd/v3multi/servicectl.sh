@@ -29,7 +29,23 @@ ACTION="$1"
 VERSION="4.3"
 
 # 应用的工作目录
-APP_HOME=$(cd "$2" && pwd)
+# init 命令不强制要求参数目录已存在，未提供则使用当前目录
+if [ "$ACTION" = "i" ] || [ "$ACTION" = "init" ]; then
+  if [ -n "$2" ]; then
+    case "$2" in
+    /*)
+      APP_HOME="$2"
+      ;;
+    *)
+      APP_HOME="$(pwd)/$2"
+      ;;
+    esac
+  else
+    APP_HOME="$CD"
+  fi
+else
+  APP_HOME=$(cd "$2" && pwd)
+fi
 
 # 应用目录名称
 APP_NAME=$(basename "$WD/$APP_NAME")
@@ -548,6 +564,9 @@ u | update)
   update-self
   exit 0
   ;;
+i | init)
+  # init 不需要第二个参数
+  ;;
 g | generate-env)
   generate_env_template "$2"
   exit 0
@@ -579,10 +598,12 @@ h | help | --help)
   ;;
 esac
 
-# 检查基本目录是否存在
-if [ ! -d "$APP_HOME" ]; then
-  echo -e "\033[31mError: App home directory does not exist.\033[0m" >&2
-  exit 9
+# 检查基本目录是否存在（init 跳过）
+if [ "$ACTION" != "i" ] && [ "$ACTION" != "init" ]; then
+  if [ ! -d "$APP_HOME" ]; then
+    echo -e "\033[31mError: App home directory does not exist.\033[0m" >&2
+    exit 9
+  fi
 fi
 
 # 加载环境配置文件
