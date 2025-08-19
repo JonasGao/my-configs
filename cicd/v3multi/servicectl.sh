@@ -300,11 +300,18 @@ stop() {
 }
 
 init-dirs() {
+  echo "Initializing required directories..."
   # 创建出相关目录
   for d in ${INIT_DIRS[@]}
   do
-    mkdir -p "$d"
+    if [ ! -d "$d" ]; then
+      echo "Creating directory: $d"
+      mkdir -p "$d"
+    else
+      echo "Directory already exists: $d"
+    fi
   done
+  echo "Directory initialization completed."
 }
 
 update-self() {
