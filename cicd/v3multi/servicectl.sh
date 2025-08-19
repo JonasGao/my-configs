@@ -323,7 +323,7 @@ update-self() {
 }
 
 usage() {
-  printf """Usage: %s <command> <service|dir name>
+  printf """Usage: %s <command> <service|dir name> [jar file name]
 There are some commands:
   i, init
   d, deploy
@@ -347,12 +347,16 @@ Deploy command:
   4. Start the application with the new JAR file
 
   Requirements:
-  - A JAR file must exist in the service directory with the name ${JAR_NAME}.jar
+  - A JAR file must exist in the service directory with the name specified or ${JAR_NAME}.jar by default
   - The application must be initialized (directories created) before deploying
   - The service directory must be specified as the second argument
 
-  Example:
+  Usage:
+    %s d <service> [jar-file-name]
+
+  Examples:
     %s d my-service
+    %s d my-service my-app-1.0.jar
 
 EOF
 }
@@ -401,20 +405,29 @@ echo "Using APP_HOME: $APP_HOME"
 
 case "$ACTION" in
 d|deploy)
-  if [ ! -f "$APP_HOME/${JAR_NAME}.jar" ]; then
-    echo -e "\033[31mError: Deployment target does not exist: $APP_HOME/${JAR_NAME}.jar\033[0m" >&2
+  # 检查是否提供了第三个参数（jar包名称）
+  if [ -n "$3" ]; then
+    DEPLOY_JAR_NAME="$3"
+    echo "Deploying custom JAR: $DEPLOY_JAR_NAME"
+  else
+    DEPLOY_JAR_NAME="${JAR_NAME}.jar"
+    echo "Deploying default JAR: $DEPLOY_JAR_NAME"
+  fi
+  
+  if [ ! -f "$APP_HOME/$DEPLOY_JAR_NAME" ]; then
+    echo -e "\033[31mError: Deployment target does not exist: $APP_HOME/$DEPLOY_JAR_NAME\033[0m" >&2
     echo "Use '$PROG_NAME d --help' for deploy command help."
     exit 10
   fi
   echo "Do deploy. Stop first."
   stop
-  echo "Replace $JAR_PATH with $APP_HOME/${JAR_NAME}.jar"
+  echo "Replace $JAR_PATH with $APP_HOME/$DEPLOY_JAR_NAME"
   cp "$JAR_PATH" "${JAR_PATH}.bak"
   echo "Backup to ${JAR_PATH}.bak"
-  cp "$APP_HOME/${JAR_NAME}.jar" "$JAR_PATH"
+  cp "$APP_HOME/$DEPLOY_JAR_NAME" "$JAR_PATH"
   echo "Wait 1 second."
-  rm "$APP_HOME/${JAR_NAME}.jar"
-  echo "Removed $APP_HOME/${JAR_NAME}.jar"
+  rm "$APP_HOME/$DEPLOY_JAR_NAME"
+  echo "Removed $APP_HOME/$DEPLOY_JAR_NAME"
   sleep 1
   echo "Startup..."
   start
