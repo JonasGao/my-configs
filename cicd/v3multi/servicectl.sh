@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CD application control script.
-# Version 4.0
+# Version 4.1
 #
 # # Install
 #
@@ -299,6 +299,50 @@ stop() {
   stop-application
 }
 
+# 新增deploy函数
+deploy() {
+  # 检查是否提供了第三个参数（jar包名称）
+  if [ -n "$3" ]; then
+    DEPLOY_JAR_PATH="$3"
+    # 检查是否为绝对路径或相对路径（包含/字符）
+    if [[ "$DEPLOY_JAR_PATH" == */* ]]; then
+      # 如果是相对路径或绝对路径，则直接使用
+      DEPLOY_JAR_ABS_PATH="$DEPLOY_JAR_PATH"
+      DEPLOY_JAR_NAME=$(basename "$DEPLOY_JAR_PATH")
+    else
+      # 如果只是文件名，则基于APP_HOME
+      DEPLOY_JAR_ABS_PATH="$APP_HOME/$DEPLOY_JAR_PATH"
+      DEPLOY_JAR_NAME="$DEPLOY_JAR_PATH"
+    fi
+    echo "Deploying custom JAR: $DEPLOY_JAR_NAME from $DEPLOY_JAR_ABS_PATH"
+  else
+    DEPLOY_JAR_NAME="${JAR_NAME}.jar"
+    DEPLOY_JAR_ABS_PATH="$APP_HOME/$DEPLOY_JAR_NAME"
+    echo "Deploying default JAR: $DEPLOY_JAR_NAME"
+  fi
+  
+  if [ ! -f "$DEPLOY_JAR_ABS_PATH" ]; then
+    echo -e "\033[31mError: Deployment target does not exist: $DEPLOY_JAR_ABS_PATH\033[0m" >&2
+    echo "Use '$PROG_NAME d --help' for deploy command help."
+    exit 10
+  fi
+  echo "Do deploy. Stop first."
+  stop
+  echo "Replace $JAR_PATH with $DEPLOY_JAR_ABS_PATH"
+  cp "$JAR_PATH" "${JAR_PATH}.bak"
+  echo "Backup to ${JAR_PATH}.bak"
+  cp "$DEPLOY_JAR_ABS_PATH" "$JAR_PATH"
+  # 只有当源文件在APP_HOME目录下时才删除
+  if [[ "$DEPLOY_JAR_ABS_PATH" == "$APP_HOME"* ]]; then
+    echo "Wait 1 second."
+    rm "$DEPLOY_JAR_ABS_PATH"
+    echo "Removed $DEPLOY_JAR_ABS_PATH"
+  fi
+  sleep 1
+  echo "Startup..."
+  start
+}
+
 init-dirs() {
   echo "Initializing required directories..."
   # 创建出相关目录
@@ -476,32 +520,7 @@ echo "Using APP_HOME: $APP_HOME"
 
 case "$ACTION" in
 d|deploy)
-  # 检查是否提供了第三个参数（jar包名称）
-  if [ -n "$3" ]; then
-    DEPLOY_JAR_NAME="$3"
-    echo "Deploying custom JAR: $DEPLOY_JAR_NAME"
-  else
-    DEPLOY_JAR_NAME="${JAR_NAME}.jar"
-    echo "Deploying default JAR: $DEPLOY_JAR_NAME"
-  fi
-  
-  if [ ! -f "$APP_HOME/$DEPLOY_JAR_NAME" ]; then
-    echo -e "\033[31mError: Deployment target does not exist: $APP_HOME/$DEPLOY_JAR_NAME\033[0m" >&2
-    echo "Use '$PROG_NAME d --help' for deploy command help."
-    exit 10
-  fi
-  echo "Do deploy. Stop first."
-  stop
-  echo "Replace $JAR_PATH with $APP_HOME/$DEPLOY_JAR_NAME"
-  cp "$JAR_PATH" "${JAR_PATH}.bak"
-  echo "Backup to ${JAR_PATH}.bak"
-  cp "$APP_HOME/$DEPLOY_JAR_NAME" "$JAR_PATH"
-  echo "Wait 1 second."
-  rm "$APP_HOME/$DEPLOY_JAR_NAME"
-  echo "Removed $APP_HOME/$DEPLOY_JAR_NAME"
-  sleep 1
-  echo "Startup..."
-  start
+  deploy "$@"
   ;;
 s|start)
   start
