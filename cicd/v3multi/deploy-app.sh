@@ -46,11 +46,13 @@ if [[ "${STAGING:-}" == "是" ]]; then
     export SPRING_APPLICATION_JSON='{"spring.profiles.active":"staging"}'
 fi
 
-# Check if servicectl exists and is executable
+# Check if servicectl exists and is executable (local or global)
 if [[ -x "./servicectl" ]]; then
     ./servicectl d "${APP_NAME}"
+elif command -v servicectl &> /dev/null && [[ -x "$(command -v servicectl)" ]]; then
+    servicectl d "${APP_NAME}"
 else
-    echo "Error: servicectl not found or not executable"
+    echo "Error: servicectl not found or not executable (neither local nor global)"
     exit 1
 fi
 
