@@ -58,9 +58,6 @@ PGREP=$(which pgrep 2>/dev/null)
 # 环境配置文件名
 SET_ENV_FILENAME="setenv.sh"
 
-# 环境备份文件路径
-ENV_BACKUP_FILE="/tmp/servicectl_env_backup.$$"
-
 # 添加调试模式标志
 [ -z "$SETENV_DEBUG" ] && SETENV_DEBUG=false
 
