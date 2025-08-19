@@ -269,7 +269,7 @@ deploy() {
 init-dirs() {
   echo "Initializing required directories..."
   # 创建出相关目录
-  for d in ${INIT_DIRS[@]}; do
+  for d in "${INIT_DIRS[@]}"; do
     if [ ! -d "$d" ]; then
       echo "Creating directory: $d"
       mkdir -p "$d"
