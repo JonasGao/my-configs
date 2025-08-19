@@ -273,13 +273,14 @@ health-check() {
 }
 
 print-info() {
-  echo -e "\033[1;36mWorking Directory:\033[0m $(pwd)"
-  echo -e "\033[1;33mUsing:\033[0m"
-  echo -e "  \033[1;32mnohup:\033[0m $NOHUP"
-  echo -e "  \033[1;32mjava:\033[0m  $JAVA"
-  echo -e "  \033[1;32mopts:\033[0m  ${JVM_OPTS}"
-  echo -e "  \033[1;32mjar:\033[0m   ${JAR_PATH}"
-  echo -e "  \033[1;32margs:\033[0m  ${JAR_ARGS}"
+  # 输出到文件时去除颜色代码
+  echo "Working Directory: $(pwd)"
+  echo "Using:"
+  echo "  nohup: $NOHUP"
+  echo "  java:  $JAVA"
+  echo "  opts:  ${JVM_OPTS}"
+  echo "  jar:   ${JAR_PATH}"
+  echo "  args:  ${JAR_ARGS}"
 }
 
 start-application() {
