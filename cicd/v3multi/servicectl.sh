@@ -315,7 +315,25 @@ init-dirs() {
 }
 
 update-self() {
-  [ -n "$GHPROXY" ] && echo "Will use GHPROXY: $GHPROXY"
+  # 检查是否设置了GHPROXY，并提供相关信息
+  if [ -n "$GHPROXY" ]; then
+    # 确保GHPROXY以/结尾
+    case "$GHPROXY" in
+      */)
+        # 已经以/结尾，无需处理
+        ;;
+      *)
+        # 添加结尾的/
+        GHPROXY="${GHPROXY}/"
+        ;;
+    esac
+    echo "Using GHPROXY: $GHPROXY"
+  else
+    echo "No GHPROXY set. Using direct connection to GitHub."
+    echo "If you're behind a firewall, you can set GHPROXY to improve connectivity."
+    echo "Example: export GHPROXY=https://ghproxy.com/"
+  fi
+  
   echo "Update location: $PROG_NAME"
   
   # 创建临时文件用于下载
@@ -325,10 +343,14 @@ update-self() {
     exit 1
   fi
   
+  # 构建下载URL
+  local download_url="${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"
+  echo "Downloading from: $download_url"
+  
   # 下载新版本
   echo "Downloading update..."
-  if ! curl -o "$tmp_file" "${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"; then
-    echo -e "\033[31mError: Failed to download update\033[0m" >&2
+  if ! curl -f -s -o "$tmp_file" "$download_url"; then
+    echo -e "\033[31mError: Failed to download update from $download_url\033[0m" >&2
     rm -f "$tmp_file"
     exit 1
   fi
@@ -338,6 +360,13 @@ update-self() {
     echo -e "\033[31mError: Downloaded update file is empty\033[0m" >&2
     rm -f "$tmp_file"
     exit 1
+  fi
+  
+  # 简单验证下载的文件是否为有效的shell脚本
+  if ! head -n 1 "$tmp_file" | grep -q "^#!.*bash"; then
+    echo -e "\033[31mWarning: Downloaded file may not be a valid bash script\033[0m" >&2
+    echo "First few lines of downloaded file:"
+    head -n 3 "$tmp_file"
   fi
   
   # 备份当前版本
