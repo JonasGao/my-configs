@@ -34,54 +34,6 @@ APP_HOME=$(cd "$2" && pwd)
 # 应用目录名称
 APP_NAME=$(basename "$WD/$APP_NAME")
 
-# 日志输出目录
-LOG_HOME="${APP_HOME}/logs"
-
-# 程序库目录
-LIB_HOME="${APP_HOME}/lib"
-
-# 配置目录
-CONF_HOME="${APP_HOME}/conf"
-
-# 应用名称
-[ -z "$JAR_NAME" ] && JAR_NAME="app"
-
-# 应用启动的端口
-[ -z "$APP_PORT" ] && APP_PORT=8080
-
-# JVM 配置参数
-[ -z "$JVM_OPTS" ] && JVM_OPTS="-server -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_HOME/logs/"
-
-# JAR 包启动的时候传递的参数
-JAR_ARGS="--server.port=${APP_PORT}"
-
-# 进程启动等待时间
-[ -z "$PROC_START_TIMEOUT" ] && PROC_START_TIMEOUT=3
-
-# 等待应用启动的时间
-[ -z "$APP_START_TIMEOUT" ] && APP_START_TIMEOUT=150
-
-# 应用健康检查URL
-HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
-
-# 健康的HTTP代码
-HEALTH_HTTP_CODE=(200 404 403 405)
-
-# JAR 包的绝对路径
-JAR_PATH="${LIB_HOME}/${JAR_NAME}.jar"
-
-# 应用的控制台输出
-STD_OUT="${LOG_HOME}/std.out"
-
-# 应用的日志文件
-APP_LOG=${STD_OUT}
-
-# PID 位置
-PID_PATH="${CONF_HOME}/pid"
-
-# 需要初始化的目录
-INIT_DIRS=("$APP_HOME" "$LOG_HOME" "$CONF_HOME" "$LIB_HOME")
-
 # 准备相关工具
 JAVA=$(which java 2>/dev/null)
 NOHUP=$(which nohup 2>/dev/null)
@@ -95,119 +47,6 @@ ENV_BACKUP_FILE="/tmp/servicectl_env_backup.$$"
 
 # 添加调试模式标志
 [ -z "$SETENV_DEBUG" ] && SETENV_DEBUG=false
-
-# 备份当前环境变量
-backup_env() {
-  if [ "$SETENV_DEBUG" = true ]; then
-    echo "Backing up current environment variables to $ENV_BACKUP_FILE"
-  fi
-  env > "$ENV_BACKUP_FILE"
-}
-
-# 恢复环境变量
-restore_env() {
-  if [ -f "$ENV_BACKUP_FILE" ]; then
-    if [ "$SETENV_DEBUG" = true ]; then
-      echo "Restoring environment variables from $ENV_BACKUP_FILE"
-    fi
-    
-    # 清除当前环境变量
-    # 注意：在实际脚本中，完全清除环境变量可能不安全，这里仅作演示
-    # 实际使用时需要更精细的处理
-    
-    # 恢复备份的环境变量
-    source "$ENV_BACKUP_FILE" 2>/dev/null
-    rm -f "$ENV_BACKUP_FILE"
-  else
-    echo "No environment backup found at $ENV_BACKUP_FILE" >&2
-  fi
-}
-
-# 改进的环境文件加载函数
-load_env_file() {
-  local env_file_path=$1
-  local env_file_desc=$2
-  
-  if [ -f "$env_file_path" ]; then
-    if [ "$SETENV_DEBUG" = true ]; then
-      echo "Loading $env_file_desc: $env_file_path"
-    fi
-    
-    # 验证文件是否为有效的shell脚本（仅在调试模式下）
-    if [ "$SETENV_DEBUG" = true ]; then
-      if ! (head -n 1 "$env_file_path" | grep -q "^#!.*sh" || file "$env_file_path" 2>/dev/null | grep -q "shell script"); then
-        echo "Warning: $env_file_path may not be a valid shell script" >&2
-      fi
-    fi
-    
-    # 记录加载前的环境变量状态（仅在调试模式下）
-    if [ "$SETENV_DEBUG" = true ]; then
-      echo "Environment variables before loading $env_file_desc:"
-      env > /tmp/env_before.txt
-    fi
-    
-    # 尝试加载环境文件
-    if source "$env_file_path" 2>/dev/null; then
-      if [ "$SETENV_DEBUG" = true ]; then
-        echo "Successfully loaded $env_file_desc"
-        # 显示加载后新增或更改的环境变量
-        echo "Environment changes after loading $env_file_desc:"
-        env > /tmp/env_after.txt
-        diff /tmp/env_before.txt /tmp/env_after.txt 2>/dev/null | grep "^>" | sed 's/^> //'
-        rm -f /tmp/env_before.txt /tmp/env_after.txt
-      fi
-    else
-      echo "Error: Failed to source $env_file_desc ($env_file_path)" >&2
-      return 1
-    fi
-  elif [ "$SETENV_DEBUG" = true ]; then
-    echo "Environment file not found: $env_file_path"
-  fi
-  return 0
-}
-
-# 使用顶层 env 脚本
-WDIR_SET_ENV=$(readlink -f "$WD/$SET_ENV_FILENAME" 2>/dev/null)
-load_env_file "$WDIR_SET_ENV" "workspace setenv.sh"
-
-# 使用各级应用 env 脚本
-APP_HOME_SET_ENV="$APP_HOME/conf/$SET_ENV_FILENAME"
-if [ "$APP_HOME_SET_ENV" != "$WDIR_SET_ENV" ]; then
-  load_env_file "$APP_HOME_SET_ENV" "application setenv.sh"
-else
-  if [ -f "$APP_HOME_SET_ENV" ]; then
-    echo "WARN: APP_HOME_SET_ENV same with WDIR_SET_ENV is '$APP_HOME_SET_ENV'"
-  fi
-fi
-
-# 环境变量验证函数
-validate_env_vars() {
-  local missing_vars=()
-  
-  # 检查关键环境变量
-  [ -z "$JAR_NAME" ] && missing_vars+=("JAR_NAME")
-  [ -z "$APP_PORT" ] && missing_vars+=("APP_PORT")
-  [ -z "$JVM_OPTS" ] && missing_vars+=("JVM_OPTS")
-  
-  # 如果有缺失的变量，输出警告
-  if [ ${#missing_vars[@]} -gt 0 ]; then
-    echo "Warning: The following environment variables are not set or empty: ${missing_vars[*]}" >&2
-  fi
-}
-
-# 验证环境变量
-validate_env_vars
-
-# 执行后置函数
-if [ -n "$POST_FUNC" ]; then
-  echo "Running POST_FUNC: $POST_FUNC"
-  $POST_FUNC
-  unset POST_FUNC
-fi
-
-# 全局变量
-CURR_PID=
-OTHER_RUNNING=false
 
 if [[ "$TERM" == xterm* ]]; then
   print-step()  { printf "\r%s" "$1"; }
@@ -712,8 +551,55 @@ if [ ! -d "$APP_HOME" ]; then
   exit 9
 fi
 
-# 创建出相关目录
-echo "Using APP_HOME: $APP_HOME"
+# 加载环境配置文件
+if [ -f "$APP_HOME/conf/$SET_ENV_FILENAME" ]; then
+  if [ "$SETENV_DEBUG" = true ]; then
+    echo "Loading environment from $APP_HOME/conf/$SET_ENV_FILENAME"
+  fi
+  source "$APP_HOME/conf/$SET_ENV_FILENAME"
+elif [ -f "$WD/$SET_ENV_FILENAME" ]; then
+  if [ "$SETENV_DEBUG" = true ]; then
+    echo "Loading environment from $WD/$SET_ENV_FILENAME"
+  fi
+  source "$WD/$SET_ENV_FILENAME"
+fi
+
+# 在环境变量加载后重新定义依赖这些变量的变量
+# 日志输出目录
+LOG_HOME="${APP_HOME}/logs"
+
+# 程序库目录
+LIB_HOME="${APP_HOME}/lib"
+
+# 配置目录
+CONF_HOME="${APP_HOME}/conf"
+
+# 应用名称
+[ -z "$JAR_NAME" ] && JAR_NAME="app"
+
+# 应用启动的端口
+[ -z "$APP_PORT" ] && APP_PORT=8080
+
+# JVM 配置参数
+[ -z "$JVM_OPTS" ] && JVM_OPTS="-server -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_HOME/logs/"
+
+# JAR 包启动的时候传递的参数
+JAR_ARGS="--server.port=${APP_PORT}"
+
+# JAR 包的绝对路径
+JAR_PATH="${LIB_HOME}/${JAR_NAME}.jar"
+
+# 应用的控制台输出
+STD_OUT="${LOG_HOME}/std.out"
+
+# 应用的日志文件
+APP_LOG=${STD_OUT}
+
+# PID 位置
+PID_PATH="${CONF_HOME}/pid"
+
+# 需要初始化的目录
+INIT_DIRS=("$APP_HOME" "$LOG_HOME" "$CONF_HOME" "$LIB_HOME")
 
 case "$ACTION" in
 d|deploy)
