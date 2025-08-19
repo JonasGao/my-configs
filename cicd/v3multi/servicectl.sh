@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CD application control script.
-# Version 4.2
+# Version 4.3
 
 # Install
 #
@@ -26,7 +26,7 @@ PROG_NAME=$0
 ACTION="$1"
 
 # 脚本版本号
-VERSION="4.2"
+VERSION="4.3"
 
 # 应用的工作目录
 APP_HOME=$(cd "$2" && pwd)
@@ -397,16 +397,9 @@ deploy() {
   # 检查是否提供了第三个参数（jar包名称）
   if [ -n "$3" ]; then
     DEPLOY_JAR_PATH="$3"
-    # 检查是否为绝对路径或相对路径（包含/字符）
-    if [[ "$DEPLOY_JAR_PATH" == */* ]]; then
-      # 如果是相对路径或绝对路径，则直接使用
-      DEPLOY_JAR_ABS_PATH="$DEPLOY_JAR_PATH"
-      DEPLOY_JAR_NAME=$(basename "$DEPLOY_JAR_PATH")
-    else
-      # 如果只是文件名，则基于APP_HOME
-      DEPLOY_JAR_ABS_PATH="$APP_HOME/$DEPLOY_JAR_PATH"
-      DEPLOY_JAR_NAME="$DEPLOY_JAR_PATH"
-    fi
+    # 完全按照当前运行目录来处理指定的jar包路径
+    DEPLOY_JAR_ABS_PATH="$(pwd)/$DEPLOY_JAR_PATH"
+    DEPLOY_JAR_NAME=$(basename "$DEPLOY_JAR_PATH")
     echo "Deploying custom JAR: $DEPLOY_JAR_NAME from $DEPLOY_JAR_ABS_PATH"
   else
     DEPLOY_JAR_NAME="${JAR_NAME}.jar"
@@ -425,13 +418,11 @@ deploy() {
   cp "$JAR_PATH" "${JAR_PATH}.bak"
   echo "Backup to ${JAR_PATH}.bak"
   cp "$DEPLOY_JAR_ABS_PATH" "$JAR_PATH"
-  # 只有当源文件在APP_HOME目录下时才删除
-  if [[ "$DEPLOY_JAR_ABS_PATH" == "$APP_HOME"* ]]; then
-    echo "Wait 1 second."
-    rm "$DEPLOY_JAR_ABS_PATH"
-    echo "Removed $DEPLOY_JAR_ABS_PATH"
-  fi
+  echo "Wait 1 second."
   sleep 1
+  # 部署成功后删除指定的jar包
+  rm "$DEPLOY_JAR_ABS_PATH"
+  echo "Removed $DEPLOY_JAR_ABS_PATH"
   echo "Startup..."
   start
 }
