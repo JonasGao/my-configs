@@ -53,21 +53,21 @@ CURR_PID=
 OTHER_RUNNING=false
 
 if [[ "$TERM" == xterm* ]]; then
-  print-step()  { printf "\r%s" "$1"; }
-  start-step()  { printf "\r%s" "$1"; }
+  print-step() { printf "\r%s" "$1"; }
+  start-step() { printf "\r%s" "$1"; }
   append-step() { printf "%s" "$1"; }
   finish-step() { printf "\r%s\n" "$1"; }
 else
-  print-step()  { printf "%s\n" "$1"; }
-  start-step()  { printf "%s" "$1"; }
+  print-step() { printf "%s\n" "$1"; }
+  start-step() { printf "%s" "$1"; }
   append-step() { printf "%s\n" "$1"; }
   finish-step() { printf "%s\n" "$1"; }
 fi
 
 curlerr() {
   case $1 in
-    7) printf "Failed to connect() to host or proxy." ;;
-    *) printf "CURL return %s" "$1" ;;
+  7) printf "Failed to connect() to host or proxy." ;;
+  *) printf "CURL return %s" "$1" ;;
   esac
 }
 
@@ -82,8 +82,7 @@ health-check() {
     start-step "$exp_time."
     if status_code=$(/usr/bin/curl -L -o /dev/null --connect-timeout 5 -s -w "%{http_code}" "${HEALTH_CHECK_URL}"); then
       append-step " Http respond $status_code"
-      for code in "${HEALTH_HTTP_CODE[@]}"
-      do
+      for code in "${HEALTH_HTTP_CODE[@]}"; do
         if [ "$status_code" == "$code" ]; then
           # break 2, finish health check.
           break 2
@@ -128,8 +127,7 @@ print-info() {
 
 start-application() {
   query-java-pid
-  if [ "$CURR_PID" = "" ]
-  then
+  if [ "$CURR_PID" = "" ]; then
     if [ ! -f "$JAR_PATH" ]; then
       echo "There is no file \"$JAR_PATH\"" >&2
       exit 5
@@ -142,7 +140,7 @@ start-application() {
     local RET=99
     if [ "$NOHUP_RET" = "0" ]; then
       echo "Run nohup succeed (NOHUP RETURN: $NOHUP_RET, APP PID: $PID)"
-      echo "$PID" > "$PID_PATH"
+      echo "$PID" >"$PID_PATH"
       echo "Wait $PROC_START_TIMEOUT second."
       sleep "$PROC_START_TIMEOUT"
       if [ ! -d "/proc/$PID" ]; then
@@ -166,8 +164,7 @@ query-java-pid() {
   if [ -f "$PID_PATH" ]; then
     local pid
     pid=$(cat "$PID_PATH")
-    if ps "$pid" > /dev/null 2>&1
-    then
+    if ps "$pid" >/dev/null 2>&1; then
       CURR_PID="$pid"
       echo "Got pid ($pid) from \"$PID_PATH\""
     else
@@ -175,11 +172,11 @@ query-java-pid() {
       rm -f "$PID_PATH"
     fi
   fi
-  
+
   if [ -z "$CURR_PID" ] && [ -x "$PGREP" ]; then
     # 使用pgrep更精确地查找java进程，排除当前shell进程
     CURR_PID=$($PGREP -f "java.*$(basename "$JAR_PATH")" -v -p "$$" 2>/dev/null)
-    
+
     # 如果找到多个进程，尝试更精确匹配
     local pid_count
     pid_count=$(echo "$CURR_PID" | wc -l)
@@ -188,10 +185,10 @@ query-java-pid() {
       CURR_PID=$($PGREP -f "java.*-jar.*$(basename "$JAR_PATH")" -v -p "$$" 2>/dev/null)
     fi
   fi
-  
+
   # 最后的验证，确保进程确实存在
   if [ -n "$CURR_PID" ]; then
-    if ! ps $CURR_PID > /dev/null 2>&1; then
+    if ! ps $CURR_PID >/dev/null 2>&1; then
       CURR_PID=
     fi
   fi
@@ -210,13 +207,12 @@ stop-application() {
   for e in $(seq $times); do
     sleep 1
     COST_TIME=$((times - e))
-    if ps "$CURR_PID" > /dev/null
-    then
+    if ps "$CURR_PID" >/dev/null; then
       kill "$CURR_PID"
       print-step "Stopping java lasts $COST_TIME seconds."
     else
       finish-step "Java process has exited. Remove PID \"$PID_PATH\""
-      rm "$PID_PATH" > /dev/null
+      rm "$PID_PATH" >/dev/null
       return
     fi
   done
@@ -226,8 +222,7 @@ stop-application() {
 
 start() {
   start-application
-  if [ "$OTHER_RUNNING" = false ]
-  then
+  if [ "$OTHER_RUNNING" = false ]; then
     health-check
   fi
 }
@@ -250,7 +245,7 @@ deploy() {
     DEPLOY_JAR_ABS_PATH="$APP_HOME/$DEPLOY_JAR_NAME"
     echo "Deploying default JAR: $DEPLOY_JAR_NAME"
   fi
-  
+
   if [ ! -f "$DEPLOY_JAR_ABS_PATH" ]; then
     echo -e "\033[31mError: Deployment target does not exist: $DEPLOY_JAR_ABS_PATH\033[0m" >&2
     echo "Use '$PROG_NAME d --help' for deploy command help."
@@ -274,8 +269,7 @@ deploy() {
 init-dirs() {
   echo "Initializing required directories..."
   # 创建出相关目录
-  for d in ${INIT_DIRS[@]}
-  do
+  for d in ${INIT_DIRS[@]}; do
     if [ ! -d "$d" ]; then
       echo "Creating directory: $d"
       mkdir -p "$d"
@@ -291,13 +285,13 @@ update-self() {
   if [ -n "$GHPROXY" ]; then
     # 确保GHPROXY以/结尾
     case "$GHPROXY" in
-      */)
-        # 已经以/结尾，无需处理
-        ;;
-      *)
-        # 添加结尾的/
-        GHPROXY="${GHPROXY}/"
-        ;;
+    */)
+      # 已经以/结尾，无需处理
+      ;;
+    *)
+      # 添加结尾的/
+      GHPROXY="${GHPROXY}/"
+      ;;
     esac
     echo "Using GHPROXY: $GHPROXY"
   else
@@ -305,20 +299,20 @@ update-self() {
     echo "If you're behind a firewall, you can set GHPROXY to improve connectivity."
     echo "Example: export GHPROXY=https://ghproxy.com/"
   fi
-  
+
   echo "Update location: $PROG_NAME"
-  
+
   # 创建临时文件用于下载
   local tmp_file=$(mktemp)
   if [ $? -ne 0 ]; then
     echo -e "\033[31mError: Failed to create temporary file for update\033[0m" >&2
     exit 1
   fi
-  
+
   # 构建下载URL
   local download_url="${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"
   echo "Downloading from: $download_url"
-  
+
   # 下载新版本
   echo "Downloading update..."
   if ! curl -f -s -o "$tmp_file" "$download_url"; then
@@ -326,21 +320,21 @@ update-self() {
     rm -f "$tmp_file"
     exit 1
   fi
-  
+
   # 检查下载的文件是否为空
   if [ ! -s "$tmp_file" ]; then
     echo -e "\033[31mError: Downloaded update file is empty\033[0m" >&2
     rm -f "$tmp_file"
     exit 1
   fi
-  
+
   # 简单验证下载的文件是否为有效的shell脚本
   if ! head -n 1 "$tmp_file" | grep -q "^#!.*bash"; then
     echo -e "\033[31mWarning: Downloaded file may not be a valid bash script\033[0m" >&2
     echo "First few lines of downloaded file:"
     head -n 3 "$tmp_file"
   fi
-  
+
   # 备份当前版本
   local backup_file="${PROG_NAME}.bak"
   echo "Backing up current version to $backup_file"
@@ -349,7 +343,7 @@ update-self() {
     rm -f "$tmp_file"
     exit 1
   fi
-  
+
   # 应用更新
   echo "Applying update..."
   if ! mv "$tmp_file" "$PROG_NAME"; then
@@ -358,13 +352,13 @@ update-self() {
     rm -f "$tmp_file"
     exit 1
   fi
-  
+
   # 设置执行权限
   chmod u+x "$PROG_NAME"
-  
+
   # 删除备份文件（更新成功）
   rm -f "$backup_file"
-  
+
   echo -e "\e[32mSuccessfully updated $PROG_NAME\e[0m"
 }
 
@@ -388,18 +382,18 @@ Version: %s
 generate_env_template() {
   local target_dir="${1:-$APP_HOME/conf}"
   local template_file="$target_dir/$SET_ENV_FILENAME"
-  
+
   if [ ! -d "$target_dir" ]; then
     echo "Error: Target directory does not exist: $target_dir" >&2
     return 1
   fi
-  
+
   if [ -f "$template_file" ]; then
     echo "Warning: $template_file already exists. Skipping generation." >&2
     return 0
   fi
-  
-  cat > "$template_file" << 'EOF'
+
+  cat >"$template_file" <<'EOF'
 #!/bin/bash
 # Environment configuration file for servicectl
 # This file is automatically sourced by servicectl if it exists
@@ -440,14 +434,14 @@ generate_env_template() {
 
 echo "Custom environment loaded from $0"
 EOF
-  
+
   chmod +x "$template_file"
   echo "Generated setenv.sh template at $template_file"
 }
 
 # 部署命令帮助函数
 deploy-help() {
-  cat << 'EOF'
+  cat <<'EOF'
 
 Deploy command:
   The deploy command will:
@@ -473,7 +467,7 @@ EOF
 
 # 环境配置文件帮助函数
 env-help() {
-  cat << 'EOF'
+  cat <<'EOF'
 
 Environment Configuration:
   The servicectl script supports environment configuration through setenv.sh files.
@@ -549,16 +543,16 @@ if [ -z "$ACTION" ]; then
 fi
 
 case "$ACTION" in
-u|update)
+u | update)
   # Ignore #2 validation
   update-self
   exit 0
   ;;
-g|generate-env)
+g | generate-env)
   generate_env_template "$2"
   exit 0
   ;;
-d|deploy)
+d | deploy)
   # Deploy command can have help parameters without service name
   if [ "$2" = "-h" ] || [ "$2" = "--help" ]; then
     deploy-help
@@ -569,7 +563,7 @@ d|deploy)
     exit 2
   fi
   ;;
-h|help|--help)
+h | help | --help)
   # Help command doesn't require service name
   usage
   echo
@@ -644,16 +638,16 @@ HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}"
 HEALTH_HTTP_CODE=(200 404 403 405)
 
 case "$ACTION" in
-d|deploy)
+d | deploy)
   deploy "$@"
   ;;
-s|start)
+s | start)
   start
   ;;
-t|stop)
+t | stop)
   stop
   ;;
-r|restart)
+r | restart)
   echo "Do restart. Stop first."
   stop
   echo "Wait 1 second."
@@ -661,15 +655,15 @@ r|restart)
   echo "Startup..."
   start
   ;;
-p|pid)
+p | pid)
   query-java-pid
   echo "Current running in $CURR_PID"
   ;;
-c|check)
+c | check)
   print-info
   health-check
   ;;
-i|init)
+i | init)
   init-dirs
   ;;
 *)
