@@ -361,8 +361,11 @@ update-self() {
   
   # 设置执行权限
   chmod u+x "$PROG_NAME"
+  
+  # 删除备份文件（更新成功）
+  rm -f "$backup_file"
+  
   echo -e "\e[32mSuccessfully updated $PROG_NAME\e[0m"
-  echo -e "\e[33mBackup saved as $backup_file\e[0m"
 }
 
 usage() {
