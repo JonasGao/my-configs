@@ -317,9 +317,51 @@ init-dirs() {
 update-self() {
   [ -n "$GHPROXY" ] && echo "Will use GHPROXY: $GHPROXY"
   echo "Update location: $PROG_NAME"
-  curl -o "$PROG_NAME" "${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"
+  
+  # 创建临时文件用于下载
+  local tmp_file=$(mktemp)
+  if [ $? -ne 0 ]; then
+    echo -e "\033[31mError: Failed to create temporary file for update\033[0m" >&2
+    exit 1
+  fi
+  
+  # 下载新版本
+  echo "Downloading update..."
+  if ! curl -o "$tmp_file" "${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"; then
+    echo -e "\033[31mError: Failed to download update\033[0m" >&2
+    rm -f "$tmp_file"
+    exit 1
+  fi
+  
+  # 检查下载的文件是否为空
+  if [ ! -s "$tmp_file" ]; then
+    echo -e "\033[31mError: Downloaded update file is empty\033[0m" >&2
+    rm -f "$tmp_file"
+    exit 1
+  fi
+  
+  # 备份当前版本
+  local backup_file="${PROG_NAME}.bak"
+  echo "Backing up current version to $backup_file"
+  if ! cp "$PROG_NAME" "$backup_file"; then
+    echo -e "\033[31mError: Failed to backup current version\033[0m" >&2
+    rm -f "$tmp_file"
+    exit 1
+  fi
+  
+  # 应用更新
+  echo "Applying update..."
+  if ! mv "$tmp_file" "$PROG_NAME"; then
+    echo -e "\033[31mError: Failed to apply update. Restoring from backup.\033[0m" >&2
+    mv "$backup_file" "$PROG_NAME"
+    rm -f "$tmp_file"
+    exit 1
+  fi
+  
+  # 设置执行权限
   chmod u+x "$PROG_NAME"
-  echo -e "\e[32mSucceed update $PROG_NAME\e[0m"
+  echo -e "\e[32mSuccessfully updated $PROG_NAME\e[0m"
+  echo -e "\e[33mBackup saved as $backup_file\e[0m"
 }
 
 usage() {
