@@ -48,6 +48,10 @@ ENV_BACKUP_FILE="/tmp/servicectl_env_backup.$$"
 # 添加调试模式标志
 [ -z "$SETENV_DEBUG" ] && SETENV_DEBUG=false
 
+# 全局变量
+CURR_PID=
+OTHER_RUNNING=false
+
 if [[ "$TERM" == xterm* ]]; then
   print-step()  { printf "\r%s" "$1"; }
   start-step()  { printf "\r%s" "$1"; }
