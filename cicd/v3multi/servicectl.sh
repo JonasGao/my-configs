@@ -370,6 +370,17 @@ u|update)
   update-self
   exit 0
   ;;
+d|deploy)
+  # Deploy command can have help parameters without service name
+  if [ "$2" = "-h" ] || [ "$2" = "--help" ]; then
+    deploy-help
+    exit 0
+  elif [ -z "$2" ]; then
+    echo -e "\033[31mError: Missing argument 'service or dir name' at position 2.\033[0m" >&2
+    usage
+    exit 2
+  fi
+  ;;
 *)
   if [ -z "$2" ]; then
     echo -e "\033[31mError: Missing argument 'service or dir name' at position 2.\033[0m" >&2
@@ -390,10 +401,6 @@ echo "Using APP_HOME: $APP_HOME"
 
 case "$ACTION" in
 d|deploy)
-  if [ "$2" = "-h" ] || [ "$2" = "--help" ]; then
-    deploy-help
-    exit 0
-  fi
   echo "Using APP_HOME: $APP_HOME"
   if [ ! -f "$APP_HOME/${JAR_NAME}.jar" ]; then
     echo -e "\033[31mError: Deployment target does not exist: $APP_HOME/${JAR_NAME}.jar\033[0m" >&2
