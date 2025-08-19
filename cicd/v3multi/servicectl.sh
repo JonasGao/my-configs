@@ -354,7 +354,7 @@ update-self() {
   fi
 
   # 设置执行权限
-  chmod u+x "$PROG_NAME"
+  chmod +x "$PROG_NAME"
 
   # 删除备份文件（更新成功）
   rm -f "$backup_file"
