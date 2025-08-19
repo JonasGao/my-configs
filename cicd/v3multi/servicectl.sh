@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # CD application control script.
+# Version 4.2
 
 # Install
 #
@@ -25,7 +26,7 @@ PROG_NAME=$0
 ACTION="$1"
 
 # 脚本版本号
-VERSION="4.1"
+VERSION="4.2"
 
 # 应用的工作目录
 APP_HOME=$(cd "$2" && pwd)
@@ -89,23 +90,113 @@ PGREP=$(which pgrep 2>/dev/null)
 # 环境配置文件名
 SET_ENV_FILENAME="setenv.sh"
 
+# 环境备份文件路径
+ENV_BACKUP_FILE="/tmp/servicectl_env_backup.$$"
+
+# 添加调试模式标志
+[ -z "$SETENV_DEBUG" ] && SETENV_DEBUG=false
+
+# 备份当前环境变量
+backup_env() {
+  if [ "$SETENV_DEBUG" = true ]; then
+    echo "Backing up current environment variables to $ENV_BACKUP_FILE"
+  fi
+  env > "$ENV_BACKUP_FILE"
+}
+
+# 恢复环境变量
+restore_env() {
+  if [ -f "$ENV_BACKUP_FILE" ]; then
+    if [ "$SETENV_DEBUG" = true ]; then
+      echo "Restoring environment variables from $ENV_BACKUP_FILE"
+    fi
+    
+    # 清除当前环境变量
+    # 注意：在实际脚本中，完全清除环境变量可能不安全，这里仅作演示
+    # 实际使用时需要更精细的处理
+    
+    # 恢复备份的环境变量
+    source "$ENV_BACKUP_FILE" 2>/dev/null
+    rm -f "$ENV_BACKUP_FILE"
+  else
+    echo "No environment backup found at $ENV_BACKUP_FILE" >&2
+  fi
+}
+
+# 改进的环境文件加载函数
+load_env_file() {
+  local env_file_path=$1
+  local env_file_desc=$2
+  
+  if [ -f "$env_file_path" ]; then
+    if [ "$SETENV_DEBUG" = true ]; then
+      echo "Loading $env_file_desc: $env_file_path"
+    fi
+    
+    # 验证文件是否为有效的shell脚本（仅在调试模式下）
+    if [ "$SETENV_DEBUG" = true ]; then
+      if ! (head -n 1 "$env_file_path" | grep -q "^#!.*sh" || file "$env_file_path" 2>/dev/null | grep -q "shell script"); then
+        echo "Warning: $env_file_path may not be a valid shell script" >&2
+      fi
+    fi
+    
+    # 记录加载前的环境变量状态（仅在调试模式下）
+    if [ "$SETENV_DEBUG" = true ]; then
+      echo "Environment variables before loading $env_file_desc:"
+      env > /tmp/env_before.txt
+    fi
+    
+    # 尝试加载环境文件
+    if source "$env_file_path" 2>/dev/null; then
+      if [ "$SETENV_DEBUG" = true ]; then
+        echo "Successfully loaded $env_file_desc"
+        # 显示加载后新增或更改的环境变量
+        echo "Environment changes after loading $env_file_desc:"
+        env > /tmp/env_after.txt
+        diff /tmp/env_before.txt /tmp/env_after.txt 2>/dev/null | grep "^>" | sed 's/^> //'
+        rm -f /tmp/env_before.txt /tmp/env_after.txt
+      fi
+    else
+      echo "Error: Failed to source $env_file_desc ($env_file_path)" >&2
+      return 1
+    fi
+  elif [ "$SETENV_DEBUG" = true ]; then
+    echo "Environment file not found: $env_file_path"
+  fi
+  return 0
+}
+
 # 使用顶层 env 脚本
-WDIR_SET_ENV=$(readlink -f "$WD/$SET_ENV_FILENAME")
-if [ -f "$WDIR_SET_ENV" ]; then
-  echo "Overwrite with $WDIR_SET_ENV"
-  source "$WDIR_SET_ENV"
-fi
+WDIR_SET_ENV=$(readlink -f "$WD/$SET_ENV_FILENAME" 2>/dev/null)
+load_env_file "$WDIR_SET_ENV" "workspace setenv.sh"
 
 # 使用各级应用 env 脚本
 APP_HOME_SET_ENV="$APP_HOME/conf/$SET_ENV_FILENAME"
-if [ -f "$APP_HOME_SET_ENV" ]; then
-  if [ "$APP_HOME_SET_ENV" != "$WDIR_SET_ENV" ]; then
-    echo "Overwrite with $APP_HOME_SET_ENV"
-    source "$APP_HOME_SET_ENV"
-  else
+if [ "$APP_HOME_SET_ENV" != "$WDIR_SET_ENV" ]; then
+  load_env_file "$APP_HOME_SET_ENV" "application setenv.sh"
+else
+  if [ -f "$APP_HOME_SET_ENV" ]; then
     echo "WARN: APP_HOME_SET_ENV same with WDIR_SET_ENV is '$APP_HOME_SET_ENV'"
   fi
 fi
+
+# 环境变量验证函数
+validate_env_vars() {
+  local missing_vars=()
+  
+  # 检查关键环境变量
+  [ -z "$JAR_NAME" ] && missing_vars+=("JAR_NAME")
+  [ -z "$APP_PORT" ] && missing_vars+=("APP_PORT")
+  [ -z "$JVM_OPTS" ] && missing_vars+=("JVM_OPTS")
+  
+  # 如果有缺失的变量，输出警告
+  if [ ${#missing_vars[@]} -gt 0 ]; then
+    echo "Warning: The following environment variables are not set or empty: ${missing_vars[*]}" >&2
+  fi
+}
+
+# 验证环境变量
+validate_env_vars
 
 # 执行后置函数
 if [ -n "$POST_FUNC" ]; then
@@ -450,10 +541,73 @@ There are some commands:
   p, pid
   c, check
   u, update
+  g, generate-env  Generate setenv.sh template
 Version: %s
 """ "$PROG_NAME" "$VERSION"
 }
 
+# 生成环境配置文件模板的函数
+generate_env_template() {
+  local target_dir="${1:-$APP_HOME/conf}"
+  local template_file="$target_dir/$SET_ENV_FILENAME"
+  
+  if [ ! -d "$target_dir" ]; then
+    echo "Error: Target directory does not exist: $target_dir" >&2
+    return 1
+  fi
+  
+  if [ -f "$template_file" ]; then
+    echo "Warning: $template_file already exists. Skipping generation." >&2
+    return 0
+  fi
+  
+  cat > "$template_file" << 'EOF'
+#!/bin/bash
+# Environment configuration file for servicectl
+# This file is automatically sourced by servicectl if it exists
+
+# Application name (default: app)
+# JAR_NAME="myapp"
+
+# Application port (default: 8080)
+# APP_PORT=8080
+
+# JVM options (default: "-server -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_HOME/logs/")
+# JVM_OPTS="-server -Xmx1g -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_HOME/logs/"
+
+# JAR arguments (default: "--server.port=${APP_PORT}")
+# JAR_ARGS="--server.port=${APP_PORT} --spring.profiles.active=prod"
+
+# Process start timeout in seconds (default: 3)
+# PROC_START_TIMEOUT=3
+
+# Application start timeout in seconds (default: 150)
+# APP_START_TIMEOUT=150
+
+# Health check URL (default: "http://127.0.0.1:${APP_PORT}")
+# HEALTH_CHECK_URL="http://127.0.0.1:${APP_PORT}/actuator/health"
+
+# Disable health check (default: not set)
+# HEALTH_CHECK=1
+
+# Debug mode for setenv (default: false)
+# SETENV_DEBUG=true
+
+# Example of computed values
+# LOG_HOME="$APP_HOME/logs"
+# CUSTOM_VAR="some value"
+
+# Example of variable interpolation
+# DATABASE_URL="jdbc:mysql://localhost:3306/${JAR_NAME}_db"
+
+echo "Custom environment loaded from $0"
+EOF
+  
+  chmod +x "$template_file"
+  echo "Generated setenv.sh template at $template_file"
+}
+
+# 部署命令帮助函数
 deploy-help() {
   cat << 'EOF'
 
@@ -479,6 +633,43 @@ Deploy command:
 EOF
 }
 
+# 环境配置文件帮助函数
+env-help() {
+  cat << 'EOF'
+
+Environment Configuration:
+  The servicectl script supports environment configuration through setenv.sh files.
+  These files are sourced automatically if they exist in the following locations:
+  
+  1. Workspace directory (current directory): ./setenv.sh
+  2. Application conf directory: <app-home>/conf/setenv.sh
+  
+  The application conf setenv.sh takes precedence over the workspace setenv.sh.
+
+Environment Variables:
+  You can configure the following variables in setenv.sh:
+  
+  - JAR_NAME: Application JAR name (default: app)
+  - APP_PORT: Port on which the application runs (default: 8080)
+  - JVM_OPTS: JVM options (default: "-server -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$APP_HOME/logs/")
+  - JAR_ARGS: Arguments passed to the JAR file (default: "--server.port=${APP_PORT}")
+  - PROC_START_TIMEOUT: Process start timeout in seconds (default: 3)
+  - APP_START_TIMEOUT: Application start timeout in seconds (default: 150)
+  - HEALTH_CHECK_URL: Health check URL (default: "http://127.0.0.1:${APP_PORT}")
+  - HEALTH_CHECK: Set to 1 to disable health check
+  - SETENV_DEBUG: Set to true to enable environment loading debug output
+
+Generate Template:
+  To generate a template setenv.sh file, use:
+    %s g [target-directory]
+    
+  Examples:
+    %s g
+    %s g /path/to/app/conf
+
+EOF
+}
+
 # 检查参数
 if [ -z "$ACTION" ]; then
   echo -e "\033[31mError: Missing argument 'command' at position 1.\033[0m" >&2
@@ -490,6 +681,10 @@ case "$ACTION" in
 u|update)
   # Ignore #2 validation
   update-self
+  exit 0
+  ;;
+g|generate-env)
+  generate_env_template "$2"
   exit 0
   ;;
 d|deploy)
@@ -552,6 +747,12 @@ i|init)
   ;;
 u|update)
   update-self
+  ;;
+h|help|--help)
+  usage
+  echo
+  env-help
+  exit 0
   ;;
 *)
   echo -e "\033[31mError: Unknown command '$ACTION'\033[0m" >&2
