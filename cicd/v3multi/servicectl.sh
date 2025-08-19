@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # CD application control script.
-# Version 4.1
+
+# Install
 #
-# # Install
-#
-# ## Project local install
+## Project local install
 # curl -o servicectl https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh
 #
-# ## Global install
+## Global install
 # curl -o appctl https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh
 # install appctl /usr/local/bin
 # rm appctl
@@ -24,6 +23,9 @@ PROG_NAME=$0
 
 # 当前脚本的操作参数
 ACTION="$1"
+
+# 脚本版本号
+VERSION="4.1"
 
 # 应用的工作目录
 APP_HOME=$(cd "$2" && pwd)
@@ -448,7 +450,8 @@ There are some commands:
   p, pid
   c, check
   u, update
-""" "$PROG_NAME"
+Version: %s
+""" "$PROG_NAME" "$VERSION"
 }
 
 deploy-help() {
