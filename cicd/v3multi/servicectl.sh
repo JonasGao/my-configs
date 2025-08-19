@@ -311,12 +311,15 @@ update-self() {
 
   # 构建下载URL
   local download_url="${GHPROXY}https://raw.githubusercontent.com/JonasGao/my-configs/master/cicd/v3multi/servicectl.sh"
-  echo "Downloading from: $download_url"
+  # 通过时间戳禁用 HTTP 缓存
+  local no_cache_ts=$(date +%s)
+  local download_url_nc="${download_url}?_ts=${no_cache_ts}"
+  echo "Downloading from: $download_url_nc"
 
   # 下载新版本
   echo "Downloading update..."
-  if ! curl -f -s -o "$tmp_file" "$download_url"; then
-    echo -e "\033[31mError: Failed to download update from $download_url\033[0m" >&2
+  if ! curl -f -s -H "Cache-Control: no-cache" -H "Pragma: no-cache" -o "$tmp_file" "$download_url_nc"; then
+    echo -e "\033[31mError: Failed to download update from $download_url_nc\033[0m" >&2
     rm -f "$tmp_file"
     exit 1
   fi
