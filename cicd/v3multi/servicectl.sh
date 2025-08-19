@@ -690,6 +690,13 @@ d|deploy)
     exit 2
   fi
   ;;
+h|help|--help)
+  # Help command doesn't require service name
+  usage
+  echo
+  env-help
+  exit 0
+  ;;
 *)
   if [ -z "$2" ]; then
     echo -e "\033[31mError: Missing argument 'service or dir name' at position 2.\033[0m" >&2
@@ -736,15 +743,6 @@ c|check)
   ;;
 i|init)
   init-dirs
-  ;;
-u|update)
-  update-self
-  ;;
-h|help|--help)
-  usage
-  echo
-  env-help
-  exit 0
   ;;
 *)
   echo -e "\033[31mError: Unknown command '$ACTION'\033[0m" >&2
