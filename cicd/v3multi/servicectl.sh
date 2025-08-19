@@ -401,7 +401,6 @@ echo "Using APP_HOME: $APP_HOME"
 
 case "$ACTION" in
 d|deploy)
-  echo "Using APP_HOME: $APP_HOME"
   if [ ! -f "$APP_HOME/${JAR_NAME}.jar" ]; then
     echo -e "\033[31mError: Deployment target does not exist: $APP_HOME/${JAR_NAME}.jar\033[0m" >&2
     echo "Use '$PROG_NAME d --help' for deploy command help."
