@@ -476,10 +476,12 @@ Environment Configuration:
   The servicectl script supports environment configuration through setenv.sh files.
   These files are sourced automatically if they exist in the following locations:
   
-  1. Workspace directory (current directory): ./setenv.sh
-  2. Application conf directory: <app-home>/conf/setenv.sh
+  1. Application conf directory: <app-home>/conf/setenv.sh
+  2. Parent directory of APP_HOME: <app-home-parent>/setenv.sh
+  3. User home directory: ~/setenv.sh
   
-  The application conf setenv.sh takes precedence over the workspace setenv.sh.
+  The application conf setenv.sh takes precedence over the parent directory setenv.sh,
+  which takes precedence over the user home directory setenv.sh.
 
 Environment Variables:
   You can configure the following variables in setenv.sh:
@@ -503,6 +505,37 @@ Generate Template:
     %s g /path/to/app/conf
 
 EOF
+}
+
+# 加载环境配置文件的专用函数
+load-environment() {
+  # Check for setenv.sh in APP_HOME/conf directory (highest precedence)
+  if [ -f "$APP_HOME/conf/$SET_ENV_FILENAME" ]; then
+    if [ "$SETENV_DEBUG" = true ]; then
+      echo "Loading environment from $APP_HOME/conf/$SET_ENV_FILENAME"
+    fi
+    source "$APP_HOME/conf/$SET_ENV_FILENAME"
+    return
+  fi
+
+  # Check for setenv.sh in parent directory of APP_HOME
+  local parent_dir=$(dirname "$APP_HOME")
+  if [ -f "$parent_dir/$SET_ENV_FILENAME" ]; then
+    if [ "$SETENV_DEBUG" = true ]; then
+      echo "Loading environment from $parent_dir/$SET_ENV_FILENAME"
+    fi
+    source "$parent_dir/$SET_ENV_FILENAME"
+    return
+  fi
+
+  # Check for setenv.sh in user's HOME directory (lowest precedence)
+  if [ -f "$HOME/$SET_ENV_FILENAME" ]; then
+    if [ "$SETENV_DEBUG" = true ]; then
+      echo "Loading environment from $HOME/$SET_ENV_FILENAME"
+    fi
+    source "$HOME/$SET_ENV_FILENAME"
+    return
+  fi
 }
 
 # 检查参数
@@ -556,17 +589,7 @@ if [ ! -d "$APP_HOME" ]; then
 fi
 
 # 加载环境配置文件
-if [ -f "$APP_HOME/conf/$SET_ENV_FILENAME" ]; then
-  if [ "$SETENV_DEBUG" = true ]; then
-    echo "Loading environment from $APP_HOME/conf/$SET_ENV_FILENAME"
-  fi
-  source "$APP_HOME/conf/$SET_ENV_FILENAME"
-elif [ -f "$WD/$SET_ENV_FILENAME" ]; then
-  if [ "$SETENV_DEBUG" = true ]; then
-    echo "Loading environment from $WD/$SET_ENV_FILENAME"
-  fi
-  source "$WD/$SET_ENV_FILENAME"
-fi
+load-environment
 
 # 在环境变量加载后重新定义依赖这些变量的变量
 # 日志输出目录
