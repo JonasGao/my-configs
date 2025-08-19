@@ -515,7 +515,6 @@ load-environment() {
       echo "Loading environment from $APP_HOME/conf/$SET_ENV_FILENAME"
     fi
     source "$APP_HOME/conf/$SET_ENV_FILENAME"
-    return
   fi
 
   # Check for setenv.sh in parent directory of APP_HOME
@@ -525,7 +524,6 @@ load-environment() {
       echo "Loading environment from $parent_dir/$SET_ENV_FILENAME"
     fi
     source "$parent_dir/$SET_ENV_FILENAME"
-    return
   fi
 
   # Check for setenv.sh in user's HOME directory (lowest precedence)
@@ -534,7 +532,6 @@ load-environment() {
       echo "Loading environment from $HOME/$SET_ENV_FILENAME"
     fi
     source "$HOME/$SET_ENV_FILENAME"
-    return
   fi
 }
 
