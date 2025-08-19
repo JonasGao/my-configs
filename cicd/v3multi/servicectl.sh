@@ -336,6 +336,27 @@ There are some commands:
 """ "$PROG_NAME"
 }
 
+deploy-help() {
+  cat << 'EOF'
+
+Deploy command:
+  The deploy command will:
+  1. Stop the currently running application
+  2. Backup the current JAR file
+  3. Replace it with the new JAR file from the service directory
+  4. Start the application with the new JAR file
+
+  Requirements:
+  - A JAR file must exist in the service directory with the name ${JAR_NAME}.jar
+  - The application must be initialized (directories created) before deploying
+  - The service directory must be specified as the second argument
+
+  Example:
+    %s d my-service
+
+EOF
+}
+
 # 检查参数
 if [ -z "$ACTION" ]; then
   echo -e "\033[31mError: Missing argument 'command' at position 1.\033[0m" >&2
@@ -369,8 +390,14 @@ echo "Using APP_HOME: $APP_HOME"
 
 case "$ACTION" in
 d|deploy)
+  if [ "$2" = "-h" ] || [ "$2" = "--help" ]; then
+    deploy-help
+    exit 0
+  fi
+  echo "Using APP_HOME: $APP_HOME"
   if [ ! -f "$APP_HOME/${JAR_NAME}.jar" ]; then
     echo -e "\033[31mError: Deployment target does not exist: $APP_HOME/${JAR_NAME}.jar\033[0m" >&2
+    echo "Use '$PROG_NAME d --help' for deploy command help."
     exit 10
   fi
   echo "Do deploy. Stop first."
