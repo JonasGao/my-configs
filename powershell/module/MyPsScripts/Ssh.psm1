@@ -17,8 +17,8 @@ function New-SshProxy
   Copies SSH public key to remote host's authorized_keys file.
   Supports interactive selection when multiple keys are found.
  
- .Parameter Host
-  Remote host in format "username@hostname" or "hostname".
+ .Parameter RemoteHosts
+  One or more remote hosts in format "username@hostname" or "hostname".
 
  .Parameter IdentityFile
   Path to the public key file to copy. If not specified, will search for available keys.
@@ -47,6 +47,9 @@ function New-SshProxy
  .Example
   Copy-Sshid some_one@10.0.0.2 -Force -Backup
 
+ .Example
+  Copy-Sshid user@host1,user@host2 -ContinueOnError
+
  .Returns
   Returns $true if successful, throws exception on failure.
 #>
@@ -54,11 +57,11 @@ function Copy-Sshid
 {
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact='Medium')]
   param(
-    [parameter(Mandatory=$true, Position=0)]
+    [parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
     [ValidateNotNullOrEmpty()]
     [ValidatePattern('^[^@]+@[^@]+$|^[^@]+$')]
-    [string] 
-    $RemoteHost, 
+    [string[]] 
+    $RemoteHosts, 
     
     [parameter(Position=1)]
     [ValidateNotNullOrEmpty()]
@@ -69,7 +72,13 @@ function Copy-Sshid
     $Force,
     
     [switch]
-    $Backup
+    $Backup,
+
+    [switch]
+    $ContinueOnError,
+
+    [switch]
+    $Parallel
   )
  
   # 内部函数：搜索可用的SSH公钥文件
@@ -276,64 +285,114 @@ fi
     
     # 读取公钥内容
     $publicKeyContent = Get-Content $IdentityFile -Raw -ErrorAction Stop
+
+    # 计算指纹（用于去重与检测）
+    $keyFingerprint = $null
+    try { $keyFingerprint = ssh-keygen -lf $IdentityFile 2>$null | Select-String -Pattern 'SHA256:([A-Za-z0-9+/=]+)' | ForEach-Object { $_.Matches[0].Groups[1].Value } } catch {}
+
+    # 预处理目标主机列表
+    $targets = @()
+    foreach ($h in $RemoteHosts) { if ($h -and $h.Trim()) { $targets += $h.Trim() } }
+    $targets = $targets | Select-Object -Unique
+    if ($targets.Count -eq 0) { throw "未提供有效的目标主机" }
+
+    $results = @()
     
-    # 检查远程主机是否已存在该公钥
-    $keyExists = Test-RemoteKeyExists $RemoteHost $publicKeyContent
-    if ($keyExists -and !$Force)
+    foreach ($target in $targets)
     {
-      $confirmation = Read-Host "该公钥已存在于远程主机，是否继续添加？(y/N)"
-      if ($confirmation -notmatch '^[Yy]')
+      try
       {
-        Write-Host "操作已取消" -ForegroundColor Yellow
-        return $false
+        # 检查远程主机是否已存在该公钥
+        $exists = $false
+        if ($keyFingerprint)
+        {
+          $checkCmd = "grep -q '$keyFingerprint' ~/.ssh/authorized_keys 2>/dev/null || echo 'NOT_FOUND'"
+          $checkResult = ssh $target $checkCmd 2>$null
+          if ($checkResult -and $checkResult.Trim() -ne 'NOT_FOUND') { $exists = $true }
+        }
+        else
+        {
+          $escaped = ($publicKeyContent -replace "'", "'\\''")
+          $checkCmd2 = "grep -Fqx '$escaped' ~/.ssh/authorized_keys 2>/dev/null || echo 'NOT_FOUND'"
+          $checkResult2 = ssh $target $checkCmd2 2>$null
+          if ($checkResult2 -and $checkResult2.Trim() -ne 'NOT_FOUND') { $exists = $true }
+        }
+
+        if ($exists -and -not $Force)
+        {
+          $confirmation = Read-Host "[$target] 该公钥已存在，是否继续添加？(y/N)"
+          if ($confirmation -notmatch '^[Yy]')
+          {
+            Write-Host "[$target] 已跳过" -ForegroundColor Yellow
+            $results += [pscustomobject]@{ Host=$target; Success=$true; Message='Skipped (already exists)' }
+            continue
+          }
+        }
+
+        # 显示操作信息并确认
+        $operationDescription = "复制公钥文件 '$IdentityFile' 到主机 '$target'" + ($(if($Backup){' (包含备份)'} else {''}))
+        if ($WhatIfPreference)
+        {
+          Write-Host "WhatIf: $operationDescription" -ForegroundColor Cyan
+          $results += [pscustomobject]@{ Host=$target; Success=$true; Message='WhatIf' }
+          continue
+        }
+        if (!$Force -and !$PSCmdlet.ShouldProcess($target, $operationDescription))
+        {
+          Write-Host "[$target] 操作已取消" -ForegroundColor Yellow
+          $results += [pscustomobject]@{ Host=$target; Success=$false; Message='Cancelled' }
+          if (-not $ContinueOnError) { break }
+          continue
+        }
+
+        Write-Host "正在复制公钥到 '$target'..." -ForegroundColor Green
+        
+        # 备份远程文件（如果指定）
+        if ($Backup) { Backup-RemoteAuthorizedKeys $target | Out-Null }
+        
+        # 执行复制操作
+        $cmds = @(
+          "[ -d .ssh ] || mkdir -p .ssh && chmod 700 .ssh",
+          "[ -f .ssh/authorized_keys ] || touch .ssh/authorized_keys && chmod 600 .ssh/authorized_keys",
+          "cat >> .ssh/authorized_keys"
+        )
+        $sshResult = $publicKeyContent | ssh $target ($cmds -join "; ") 2>&1
+        if ($LASTEXITCODE -eq 0)
+        {
+          Write-Host "[$target] 公钥复制成功！" -ForegroundColor Green
+          $results += [pscustomobject]@{ Host=$target; Success=$true; Message='OK' }
+        }
+        else
+        {
+          $msg = "SSH操作失败，退出代码: $LASTEXITCODE; $sshResult"
+          Write-Warning "[$target] $msg"
+          $results += [pscustomobject]@{ Host=$target; Success=$false; Message=$msg }
+          if (-not $ContinueOnError) { throw $msg }
+        }
+      }
+      catch
+      {
+        $emsg = $_.Exception.Message
+        Write-Error "[$target] 失败: $emsg"
+        $results += [pscustomobject]@{ Host=$target; Success=$false; Message=$emsg }
+        if (-not $ContinueOnError) { throw }
       }
     }
-    
-    # 显示操作信息
-    $operationDescription = "复制公钥文件 '$IdentityFile' 到主机 '$RemoteHost'"
-    if ($Backup)
+
+    # 输出总结
+    Write-Host "---------- 结果汇总 ----------" -ForegroundColor Cyan
+    foreach ($r in $results)
     {
-      $operationDescription += " (包含备份)"
+      $status = if ($r.Success) { 'Success' } else { 'Failed' }
+      Write-Host ("{0,-24}  {1,-7}  {2}" -f $r.Host, $status, $r.Message)
     }
-    
-    if ($WhatIfPreference)
+    if ($results.Where({$_.Success}).Count -gt 0 -and $results.Where({-not $_.Success}).Count -eq 0)
     {
-      Write-Host "WhatIf: $operationDescription" -ForegroundColor Cyan
-      return $true
-    }
-    
-    if (!$Force -and !$PSCmdlet.ShouldProcess($RemoteHost, $operationDescription))
-    {
-      Write-Host "操作已取消" -ForegroundColor Yellow
-      return $false
-    }
-    
-    Write-Host "正在复制公钥到 '$RemoteHost'..." -ForegroundColor Green
-    
-    # 备份远程文件（如果指定）
-    if ($Backup)
-    {
-      Backup-RemoteAuthorizedKeys $RemoteHost
-    }
-    
-    # 执行复制操作
-    $cmds = @(
-      "[ -d .ssh ] || mkdir -p .ssh && chmod 700 .ssh",
-      "[ -f .ssh/authorized_keys ] || touch .ssh/authorized_keys && chmod 600 .ssh/authorized_keys",
-      "cat >> .ssh/authorized_keys"
-    )
-    
-    $sshResult = $publicKeyContent | ssh $RemoteHost ($cmds -join "; ") 2>&1
-    
-    if ($LASTEXITCODE -eq 0)
-    {
-      Write-Host "公钥复制成功！" -ForegroundColor Green
-      Write-Host "现在可以使用SSH密钥登录到 '$RemoteHost'" -ForegroundColor Cyan
       return $true
     }
     else
     {
-      throw "SSH操作失败，退出代码: $LASTEXITCODE`n错误信息: $sshResult"
+      return $false
     }
   }
   catch
