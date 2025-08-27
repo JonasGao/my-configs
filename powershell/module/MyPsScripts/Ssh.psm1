@@ -58,7 +58,7 @@ function Copy-Sshid
     [ValidateNotNullOrEmpty()]
     [ValidatePattern('^[^@]+@[^@]+$|^[^@]+$')]
     [string] 
-    $Host, 
+    $RemoteHost, 
     
     [parameter(Position=1)]
     [ValidateNotNullOrEmpty()]
@@ -179,7 +179,7 @@ function Copy-Sshid
   function Test-RemoteKeyExists
   {
     [CmdletBinding()]
-    param([string]$Host, [string]$PublicKeyContent)
+    param([string]$RemoteHost, [string]$PublicKeyContent)
     
     try
     {
@@ -188,7 +188,7 @@ function Copy-Sshid
       if ($keyFingerprint)
       {
         $checkCmd = "grep -q '$keyFingerprint' ~/.ssh/authorized_keys 2>/dev/null || echo 'NOT_FOUND'"
-        $result = ssh $Host $checkCmd 2>$null
+        $result = ssh $RemoteHost $checkCmd 2>$null
         
         if ($result -and $result.Trim() -ne 'NOT_FOUND')
         {
@@ -209,20 +209,20 @@ function Copy-Sshid
   function Backup-RemoteAuthorizedKeys
   {
     [CmdletBinding()]
-    param([string]$Host)
+    param([string]$RemoteHost)
     
     try
     {
       $backupCmd = @"
 if [ -f ~/.ssh/authorized_keys ]; then
-  cp ~/.ssh/authorized_keys ~/.ssh/authorized_keys.backup.$(date +%Y%m%d_%H%M%S)
+  cp ~/.ssh/authorized_keys ~/.ssh/authorized_keys.backup.$(Get-date -Format "yyyyMMdd_HHmmss")
   echo "BACKUP_CREATED"
 else
   echo "NO_FILE"
 fi
 "@
       
-      $result = ssh $Host $backupCmd 2>$null
+      $result = ssh $RemoteHost $backupCmd 2>$null
       
       if ($result -and $result.Trim() -eq 'BACKUP_CREATED')
       {
@@ -278,7 +278,7 @@ fi
     $publicKeyContent = Get-Content $IdentityFile -Raw -ErrorAction Stop
     
     # 检查远程主机是否已存在该公钥
-    $keyExists = Test-RemoteKeyExists $Host $publicKeyContent
+    $keyExists = Test-RemoteKeyExists $RemoteHost $publicKeyContent
     if ($keyExists -and !$Force)
     {
       $confirmation = Read-Host "该公钥已存在于远程主机，是否继续添加？(y/N)"
@@ -290,7 +290,7 @@ fi
     }
     
     # 显示操作信息
-    $operationDescription = "复制公钥文件 '$IdentityFile' 到主机 '$Host'"
+    $operationDescription = "复制公钥文件 '$IdentityFile' 到主机 '$RemoteHost'"
     if ($Backup)
     {
       $operationDescription += " (包含备份)"
@@ -302,18 +302,18 @@ fi
       return $true
     }
     
-    if (!$Force -and !$PSCmdlet.ShouldProcess($Host, $operationDescription))
+    if (!$Force -and !$PSCmdlet.ShouldProcess($RemoteHost, $operationDescription))
     {
       Write-Host "操作已取消" -ForegroundColor Yellow
       return $false
     }
     
-    Write-Host "正在复制公钥到 '$Host'..." -ForegroundColor Green
+    Write-Host "正在复制公钥到 '$RemoteHost'..." -ForegroundColor Green
     
     # 备份远程文件（如果指定）
     if ($Backup)
     {
-      Backup-RemoteAuthorizedKeys $Host
+      Backup-RemoteAuthorizedKeys $RemoteHost
     }
     
     # 执行复制操作
@@ -323,12 +323,12 @@ fi
       "cat >> .ssh/authorized_keys"
     )
     
-    $sshResult = $publicKeyContent | ssh $Host ($cmds -join "; ") 2>&1
+    $sshResult = $publicKeyContent | ssh $RemoteHost ($cmds -join "; ") 2>&1
     
     if ($LASTEXITCODE -eq 0)
     {
       Write-Host "公钥复制成功！" -ForegroundColor Green
-      Write-Host "现在可以使用SSH密钥登录到 '$Host'" -ForegroundColor Cyan
+      Write-Host "现在可以使用SSH密钥登录到 '$RemoteHost'" -ForegroundColor Cyan
       return $true
     }
     else
