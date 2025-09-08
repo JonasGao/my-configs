@@ -86,3 +86,47 @@ $MY_SCRIPT_SOURCE_HOME = "$env:MY_CONFIG_HOME\powershell\module\MyPsScripts"
 Export-ModuleMember -Function Get-StrHash
 Export-ModuleMember -Function Update-Pwsh
 Export-ModuleMember -Variable MY_SCRIPT_SOURCE_HOME
+
+<#
+ .Synopsis
+  Create a unique temporary file, similar to Linux 'mktemp'.
+ .Parameter Prefix
+  Optional prefix for the temp file name.
+#>
+function New-TempFile {
+  param (
+    [string]$Prefix = "tmp"
+  )
+  $tempDir = [System.IO.Path]::GetTempPath()
+  $fileName = [System.IO.Path]::GetRandomFileName()
+  if ($Prefix) {
+    $fileName = "$Prefix-$fileName"
+  }
+  $tempFile = Join-Path $tempDir $fileName
+  New-Item -ItemType File -Path $tempFile -Force | Out-Null
+  return $tempFile
+}
+
+Export-ModuleMember -Function New-TempFile
+
+<#
+ .Synopsis
+  Create a unique temporary directory, similar to Linux 'mktemp -d'.
+ .Parameter Prefix
+  Optional prefix for the temp directory name.
+#>
+function New-TempDirectory {
+  param (
+    [string]$Prefix = "tmp"
+  )
+  $tempDir = [System.IO.Path]::GetTempPath()
+  $dirName = [System.IO.Path]::GetRandomFileName()
+  if ($Prefix) {
+    $dirName = "$Prefix-$dirName"
+  }
+  $tempDirectory = Join-Path $tempDir $dirName
+  New-Item -ItemType Directory -Path $tempDirectory -Force | Out-Null
+  return $tempDirectory
+}
+
+Export-ModuleMember -Function New-TempDirectory
