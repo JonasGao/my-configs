@@ -1,5 +1,5 @@
 [core]
-  editor = nvim
+  editor = nvim -u NONE -U NONE -N -i NONE
   pager = delta
   autocrlf = false
 [filter "lfs"]
