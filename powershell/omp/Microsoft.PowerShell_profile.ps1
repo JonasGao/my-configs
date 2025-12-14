@@ -2,19 +2,15 @@ $env:PROFILE_HOME = (Get-Item $PROFILE).Directory
 $env:ENV_FILENAME = "Env.ps1"
 $env:ENV_FILE = "$env:PROFILE_HOME/$env:ENV_FILENAME"
 $env:NVIM_CONF = "$env:LOCALAPPDATA\nvim"
-$env:NVIM_HOME = "$env:NVIM_HOME"
 
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
-Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
+# Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
 
 Set-Alias -Name vim -Value nvim
 Set-Alias -Name lg -Value lazygit
 Set-Alias -Name ar -Value aria2c
+Set-Alias -Name ls -Value eza
 function ll
-{
-  eza -l $args
-}
-function ls
 {
   eza -l $args
 }
@@ -31,22 +27,18 @@ $env:PATH = "$env:MAVEN_HOME\bin;$env:PATH"
 $env:PATH = "$env:NVIM_HOME\bin;$env:PATH"
 
 Import-Module posh-git
-Import-Module PSFzf
+# Import-Module Terminal-Icons
 Import-Module "$env:MY_CONFIG_HOME\powershell\module\MyPsScripts"
 
-# Source local custom function
-if (Test-Path -Path "$HOME\function.ps1")
-{
-  . "$HOME\function.ps1"
-}
-
-oh-my-posh init pwsh --config $env:POSH_CONFIG | Invoke-Expression
+# oh-my-posh init pwsh --config $env:POSH_CONFIG | Invoke-Expression
 
 # Import zoxide
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
 
 # Setup PSFzf
+Import-Module PSFzf
 Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
+Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 
 # Custom ssh completion
 Register-ArgumentCompleter -CommandName ssh -Native -ScriptBlock {
@@ -57,3 +49,7 @@ Register-ArgumentCompleter -CommandName ssh -Native -ScriptBlock {
   | Where-Object { $_ -like "${wordToComplete}*" } `
   | Sort-Object -Unique
 }
+
+# Source local custom function
+. "$HOME\function.ps1"
+
