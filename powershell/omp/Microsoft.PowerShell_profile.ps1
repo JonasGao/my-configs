@@ -51,5 +51,5 @@ Register-ArgumentCompleter -CommandName ssh -Native -ScriptBlock {
 }
 
 # Source local custom function
-. "$HOME\function.ps1"
+. "$HOME\.func.ps1"
 
