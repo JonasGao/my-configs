@@ -2,6 +2,9 @@
   editor = nvim -u NONE -U NONE -N -i NONE
   pager = delta
   autocrlf = false
+  quotepath = false
+  commitEncoding = utf-8
+  logOutputEncoding = utf-8
 [filter "lfs"]
   process = git-lfs filter-process
   required = true
@@ -11,13 +14,58 @@
   name = Jonas Gao
   email = gaopinsong@live.cn
 [alias]
+  # 提交相关
   cam = commit -a -m
   cm = commit -m
+  ca = commit -a
+  amend = commit --amend
+  amen = commit --amend --no-edit
+  
+  # 分支相关
   c = checkout
+  co = checkout
+  cob = checkout -b
   b = branch
   br = branch
+  bd = branch -d
+  bD = branch -D
+  
+  # 拉取推送
   pr = pull -r
+  p = push
+  pf = push --force-with-lease
+  pl = pull
+  f = fetch
+  fa = fetch --all
+  
+  # 状态和差异
   st = status
+  s = status -s
+  d = diff
+  dc = diff --cached
+  ds = diff --stat
+  
+  # 日志查看
+  lg = log --graph --oneline --decorate --all
+  ll = log --pretty=format:'%C(yellow)%h%Cred%d %Creset%s%Cblue [%cn]' --decorate
+  ls = log --pretty=format:'%C(yellow)%h %C(cyan)%ad %Cred%d %Creset%s%Cblue [%cn]' --decorate --date=short
+  last = log -1 HEAD
+  
+  # 撤销相关
+  unstage = reset HEAD --
+  undo = reset --soft HEAD~1
+  discard = checkout --
+  
+  # Stash 相关
+  sl = stash list
+  sp = stash pop
+  ss = stash save
+  
+  # 其他实用别名
+  aliases = config --get-regexp alias
+  contributors = shortlog --summary --numbered
+  tags = tag -l
+  remotes = remote -v
 [interactive]
   diffFilter = delta --color-only --features=interactive
 [delta]
