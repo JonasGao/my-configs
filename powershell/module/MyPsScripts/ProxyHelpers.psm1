@@ -2,7 +2,7 @@
  .Synopsis
   Setup http proxy env
 #>
-function Set-HttpProxy ([string]$Url, [switch]$Reset)
+function Set-EnvProxy ([string]$Url, [switch]$Reset)
 {
 
   if ($Reset)
@@ -40,7 +40,7 @@ function Set-HttpProxy ([string]$Url, [switch]$Reset)
 
 }
 
-function Set-Proxy
+function Set-DotNetProxy
 {
   param (
     $Proxy
@@ -48,11 +48,32 @@ function Set-Proxy
   [net.webrequest]::DefaultWebProxy = New-Object net.webproxy $Proxy
 }
 
-function Get-Proxy
+function Get-DotNetProxy
 {
-  [net.webrequest]::DefaultWebProxy
+  $proxy = [net.webrequest]::DefaultWebProxy
+  if ($proxy -and $proxy.Address)
+  {
+    return $proxy.Address.ToString()
+  }
+  return $null
 }
 
-Export-ModuleMember -Function Set-HttpProxy
-Export-ModuleMember -Function Set-Proxy
-Export-ModuleMember -Function Get-Proxy
+function Get-EnvProxy
+{
+  $httpProxy = if (Test-Path Env:HTTP_PROXY) { $Env:HTTP_PROXY } else { $null }
+  $httpsProxy = if (Test-Path Env:HTTPS_PROXY) { $Env:HTTPS_PROXY } else { $null }
+  
+  if ($httpProxy -or $httpsProxy)
+  {
+    return [PSCustomObject]@{
+      HTTP_PROXY = $httpProxy
+      HTTPS_PROXY = $httpsProxy
+    }
+  }
+  return $null
+}
+
+Export-ModuleMember -Function Set-EnvProxy
+Export-ModuleMember -Function Get-EnvProxy
+Export-ModuleMember -Function Set-DotNetProxy
+Export-ModuleMember -Function Get-DotNetProxy
