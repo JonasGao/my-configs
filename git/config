@@ -62,14 +62,14 @@
   ss = stash save
   
   # Worktree 相关
-  wt = worktree
-  wtl = worktree list
-  wta = worktree add
-  wtr = worktree remove
-  wtp = worktree prune
-  wtm = worktree move
-  wtlk = worktree lock
-  wtul = worktree unlock
+  wt = worktree                    # worktree 子命令（默认输出帮助）
+  wtl = worktree list              # 列出工作树
+  wta = worktree add               # 添加工作树
+  wtr = worktree remove            # 移除工作树
+  wtp = worktree prune             # 清理失效登记
+  wtm = worktree move              # 移动工作树目录
+  wtlk = worktree lock             # 锁定工作树（避免被 prune）
+  wtul = worktree unlock           # 解锁工作树
   
   # 其他实用别名
   aliases = config --get-regexp alias
