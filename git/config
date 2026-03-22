@@ -61,6 +61,16 @@
   sp = stash pop
   ss = stash save
   
+  # Worktree 相关
+  wt = worktree
+  wtl = worktree list
+  wta = worktree add
+  wtr = worktree remove
+  wtp = worktree prune
+  wtm = worktree move
+  wtlk = worktree lock
+  wtul = worktree unlock
+  
   # 其他实用别名
   aliases = config --get-regexp alias
   contributors = shortlog --summary --numbered
