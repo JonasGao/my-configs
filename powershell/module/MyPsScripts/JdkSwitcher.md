@@ -102,12 +102,15 @@ Use-JavaHome -Path "D:\SDK\jdk-17"
 
 ```powershell
 Search-JavaHome -Path "D:\SDKs" -Depth 4
+Search-JavaHome -Path "D:\SDKs" -Depth 4 -Save
 ```
 
 说明：
 
 - 会检查根目录本身和子目录
 - 返回识别到的 JDK 根路径
+- 增加 `-Save` 后，会将搜索到的 JDK 自动写入本地映射
+- `-Save` 自动生成 `Key`（基于目录名），冲突时自动追加序号（如 `jdk-21-2`）
 
 ## `Clear-JavaHome`
 
@@ -174,6 +177,7 @@ Use-JavaHome -Key jdk21
 
 ```powershell
 Search-JavaHome -Path "C:\Program Files\Java" -Depth 2
+Search-JavaHome -Path "C:\Program Files\Java" -Depth 2 -Save
 Set-JavaHome -Key jdk21 -Path "C:\Program Files\Java\jdk-21"
 Set-JavaHome -Key jdk17 -Path "D:\SDK\jdk-17"
 ```

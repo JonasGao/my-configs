@@ -145,6 +145,29 @@ function New-JdkId {
   return "jdk-" + $hash.Substring(0, 16)
 }
 
+function New-JdkKeyFromPath {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$JavaHome,
+    [Parameter(Mandatory = $true)]
+    [hashtable]$ExistingJdks
+  )
+
+  $leaf = Split-Path -Path $JavaHome -Leaf
+  $base = ($leaf -replace '[^a-zA-Z0-9._-]', '-').Trim('-').ToLowerInvariant()
+  if ([string]::IsNullOrWhiteSpace($base)) {
+    $base = "jdk"
+  }
+
+  $key = $base
+  $index = 2
+  while ($ExistingJdks.ContainsKey($key) -and $ExistingJdks[$key].Path -ne $JavaHome) {
+    $key = "$base-$index"
+    $index++
+  }
+  return $key
+}
+
 function Backup-FileForMigration {
   param(
     [Parameter(Mandatory = $true)]
@@ -442,8 +465,15 @@ Root directory to search.
 .Parameter Depth
 Max recursion depth. Default is 3.
 
+.Parameter Save
+When specified, discovered JDK homes will be auto-saved into local mapping store.
+Generated keys are based on directory name and made unique when conflicts exist.
+
 .Example
 Search-JavaHome -Path "D:\SDKs" -Depth 4
+
+.Example
+Search-JavaHome -Path "D:\SDKs" -Depth 4 -Save
 #>
 function Search-JavaHome {
   [CmdletBinding()]
@@ -452,18 +482,47 @@ function Search-JavaHome {
     [ValidateNotNullOrEmpty()]
     [ValidateScript({ Test-Path -Path $_ -PathType Container })]
     [string]$Path,
-    [int]$Depth = 3
+    [int]$Depth = 3,
+    [switch]$Save
   )
 
   $roots = @((Resolve-Path -Path $Path -ErrorAction Stop).Path)
   $items = Get-ChildItem -Path $roots -Depth $Depth -Directory -ErrorAction SilentlyContinue
   $allDirs = @($roots) + ($items | Select-Object -ExpandProperty FullName)
+  $found = @()
 
   foreach ($dir in ($allDirs | Sort-Object -Unique)) {
     if (Test-IsJavaHome -Path $dir) {
-      Write-Output $dir
+      $found += $dir
     }
   }
+
+  if ($Save -and $found.Count -gt 0) {
+    $jdks = Read-Jdks
+    $changed = $false
+    foreach ($jdkHome in $found) {
+      $fullName = Resolve-JavaHomePath -Path $jdkHome
+      $key = New-JdkKeyFromPath -JavaHome $fullName -ExistingJdks $jdks
+      $id = New-JdkId -JavaHome $fullName
+
+      if ($jdks.ContainsKey($key) -and $jdks[$key].Path -eq $fullName -and $jdks[$key].Id -eq $id) {
+        continue
+      }
+
+      $jdks[$key] = @{
+        Id   = $id
+        Path = $fullName
+      }
+      $changed = $true
+      Write-Verbose "Saved discovered JDK '$key' (Id: $id) => '$fullName'"
+    }
+
+    if ($changed) {
+      Save-Jdks -Table $jdks
+    }
+  }
+
+  Write-Output $found
 }
 
 <#
