@@ -176,7 +176,7 @@ function Resolve-JavaHomeInputPath {
 
   $trimmed = $Path.Trim()
   # Strip accidental surrounding single/double quotes from legacy records.
-  return ($trimmed -replace "^[`"']+", "" -replace "[`"']+$", "")
+  return $trimmed.Trim('"', "'")
 }
 
 function Backup-FileForMigration {
