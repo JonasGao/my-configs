@@ -5,6 +5,7 @@ JDK local registry and environment switcher for PowerShell.
 .Description
 Provides commands to register local JDK homes, query them, search disk for candidates,
 switch current session JAVA_HOME/PATH, and clear persisted mappings.
+Legacy store migration is manual; run Convert-JavaHomeStore when needed.
 
 .Notes
 Data file: $HOME\.jdks\javahome.csv
@@ -33,13 +34,24 @@ function Convert-JdkContentToTable {
   $trimmed = $RawContent.TrimStart([char]0xFEFF).Trim()
 
   # Current format (v2): CSV with Id/Key/Path header.
-  if ($trimmed -match '^(?i)"?Id"?\s*,\s*"?Key"?\s*,\s*"?Path"?\s*$') {
+  $firstLine = ($trimmed -split "[\r\n]+")[0]
+  if ($firstLine -match '^(?i)"?Id"?\s*,\s*"?Key"?\s*,\s*"?Path"?\s*$') {
     $csvRows = $trimmed | ConvertFrom-Csv
     foreach ($row in $csvRows) {
-      if ($row.Key -and $row.Path) {
-        $table[$row.Key.Trim()] = @{
-          Id   = if ($row.Id) { $row.Id.Trim() } else { $null }
-          Path = Resolve-JavaHomeInputPath -Path $row.Path
+      $id = if ($row.Id) { $row.Id.Trim() } else { $null }
+      $key = if ($row.Key) { $row.Key.Trim() } else { $null }
+      $path = if ($row.Path) { Resolve-JavaHomeInputPath -Path $row.Path } else { $null }
+
+      # Skip corrupted records.
+      if (-not (Test-IsValidJdkRecord -Id $id -Key $key -Path $path)) {
+        Write-Verbose "Skipping corrupted record: Id='$id', Key='$key', Path='$path'"
+        continue
+      }
+
+      if ($key -and $path) {
+        $table[$key] = @{
+          Id   = $id
+          Path = $path
         }
       }
     }
@@ -47,13 +59,22 @@ function Convert-JdkContentToTable {
   }
 
   # Previous format (v1): CSV with Key/Value header.
-  if ($trimmed -match '^(?i)"?Key"?\s*,\s*"?Value"?\s*$') {
+  if ($firstLine -match '^(?i)"?Key"?\s*,\s*"?Value"?\s*$') {
     $csvRows = $trimmed | ConvertFrom-Csv
     foreach ($row in $csvRows) {
-      if ($row.Key -and $row.Value) {
-        $table[$row.Key.Trim()] = @{
+      $key = if ($row.Key) { $row.Key.Trim() } else { $null }
+      $path = if ($row.Value) { Resolve-JavaHomeInputPath -Path $row.Value } else { $null }
+
+      # Skip corrupted records (Id is null for v1 format).
+      if (-not (Test-IsValidJdkRecord -Id $null -Key $key -Path $path)) {
+        Write-Verbose "Skipping corrupted record: Key='$key', Path='$path'"
+        continue
+      }
+
+      if ($key -and $path) {
+        $table[$key] = @{
           Id   = $null
-          Path = Resolve-JavaHomeInputPath -Path $row.Value
+          Path = $path
         }
       }
     }
@@ -82,9 +103,18 @@ function Convert-JdkContentToTable {
     }
 
     if ($key -and $value) {
-      $table[$key.Trim()] = @{
+      $key = $key.Trim()
+      $path = Resolve-JavaHomeInputPath -Path $value
+
+      # Skip corrupted records.
+      if (-not (Test-IsValidJdkRecord -Id $null -Key $key -Path $path)) {
+        Write-Verbose "Skipping corrupted record: Key='$key', Path='$path'"
+        continue
+      }
+
+      $table[$key] = @{
         Id   = $null
-        Path = Resolve-JavaHomeInputPath -Path $value
+        Path = $path
       }
     }
   }
@@ -179,6 +209,44 @@ function Resolve-JavaHomeInputPath {
   return $trimmed.Trim('"', "'")
 }
 
+function Test-IsValidJdkRecord {
+  param(
+    [string]$Id,
+    [string]$Key,
+    [string]$Path
+  )
+
+  # Validate Id: should be "jdk-" followed by 16 hex characters (or empty for legacy).
+  if ($Id -and $Id -notmatch '^jdk-[0-9a-f]{16}$') {
+    Write-Verbose "Invalid Id: '$Id'"
+    return $false
+  }
+
+  # Validate Key: should not contain CSV delimiters, excessive quotes, or path separators.
+  if ($Key -match '["'',]' -or $Key -match '[\\/:]') {
+    Write-Verbose "Invalid Key: '$Key'"
+    return $false
+  }
+
+  # Validate Path: should look like a valid file path.
+  # Must start with drive letter (Windows), / (Unix), ~ (home), or be a valid path.
+  if ($Path -notmatch '^[A-Za-z]:[\\/]') {
+    # Check for Unix-style paths or home directory
+    if ($Path -notmatch '^[/~]') {
+      Write-Verbose "Invalid Path (no drive letter): '$Path'"
+      return $false
+    }
+  }
+
+  # Path should not contain excessive quotes or look like CSV row data.
+  if ($Path -match '""{3,}' -or $Path -match '^[",]') {
+    Write-Verbose "Invalid Path (excessive quotes): '$Path'"
+    return $false
+  }
+
+  return $true
+}
+
 function Backup-FileForMigration {
   param(
     [Parameter(Mandatory = $true)]
@@ -232,6 +300,25 @@ function Initialize-JdkStore {
   if (-not (Test-Path -Path $script:JAVA_HOME_LIST_FILE -PathType Leaf)) {
     New-Item -ItemType File -Path $script:JAVA_HOME_LIST_FILE -Force | Out-Null
   }
+}
+
+<#
+.Synopsis
+Manually migrate legacy JDK mapping files to current csv format.
+
+.Description
+Performs one-time migration by normalizing current javahome.csv or importing from
+known legacy files (javahome.txt/javahome.properties/jdk.csv). Migration is no
+longer automatic during normal command execution.
+
+.Example
+Convert-JavaHomeStore
+#>
+function Convert-JavaHomeStore {
+  [CmdletBinding()]
+  param()
+
+  Initialize-JdkStore
   Invoke-JdkStoreMigration
 }
 
@@ -287,6 +374,22 @@ function Read-Jdks {
   $table = Convert-JdkContentToTable -RawContent $raw
 
   $needsSave = $false
+
+  # Check if the file has content but no valid records were parsed.
+  # This indicates corrupted data that needs cleanup.
+  $trimmed = $raw.TrimStart([char]0xFEFF).Trim()
+  $firstLine = ($trimmed -split "[\r\n]+")[0]
+  if ($firstLine -match '^(?i)"?Id"?\s*,\s*"?Key"?\s*,\s*"?Path"?\s*$') {
+    $csvRows = @($trimmed | ConvertFrom-Csv)
+    if ($csvRows.Count -gt 0 -and $table.Count -eq 0) {
+      $needsSave = $true
+      Write-Verbose "All $($csvRows.Count) records were corrupted, will clean up file."
+    } elseif ($csvRows.Count -gt $table.Count) {
+      $needsSave = $true
+      Write-Verbose "Detected $($csvRows.Count - $table.Count) corrupted records, will clean up file."
+    }
+  }
+
   foreach ($key in @($table.Keys)) {
     $record = $table[$key]
     if ($record -isnot [hashtable]) {
@@ -327,6 +430,12 @@ function Save-Jdks {
   }
   if (-not (Test-Path -Path $script:JAVA_HOME_LIST_FILE -PathType Leaf)) {
     New-Item -ItemType File -Path $script:JAVA_HOME_LIST_FILE -Force | Out-Null
+  }
+
+  # Handle empty table: write just the header.
+  if ($Table.Count -eq 0) {
+    '"Id","Key","Path"' | Set-Content -Path $script:JAVA_HOME_LIST_FILE -Encoding UTF8
+    return
   }
 
   $rows = foreach ($item in ($Table.GetEnumerator() | Sort-Object Key)) {
@@ -654,3 +763,4 @@ Export-ModuleMember -Function Get-JavaHome
 Export-ModuleMember -Function Use-JavaHome
 Export-ModuleMember -Function Search-JavaHome
 Export-ModuleMember -Function Clear-JavaHome
+Export-ModuleMember -Function Convert-JavaHomeStore
