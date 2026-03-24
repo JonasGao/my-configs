@@ -39,7 +39,7 @@ function Convert-JdkContentToTable {
       if ($row.Key -and $row.Path) {
         $table[$row.Key.Trim()] = @{
           Id   = if ($row.Id) { $row.Id.Trim() } else { $null }
-          Path = $row.Path.Trim()
+          Path = Resolve-JavaHomeInputPath -Path $row.Path
         }
       }
     }
@@ -53,7 +53,7 @@ function Convert-JdkContentToTable {
       if ($row.Key -and $row.Value) {
         $table[$row.Key.Trim()] = @{
           Id   = $null
-          Path = $row.Value.Trim()
+          Path = Resolve-JavaHomeInputPath -Path $row.Value
         }
       }
     }
@@ -84,7 +84,7 @@ function Convert-JdkContentToTable {
     if ($key -and $value) {
       $table[$key.Trim()] = @{
         Id   = $null
-        Path = $value.Trim()
+        Path = Resolve-JavaHomeInputPath -Path $value
       }
     }
   }
@@ -166,6 +166,17 @@ function New-JdkKeyFromPath {
     $index++
   }
   return $key
+}
+
+function Resolve-JavaHomeInputPath {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path
+  )
+
+  $trimmed = $Path.Trim()
+  # Strip accidental surrounding single/double quotes from legacy records.
+  return ($trimmed -replace "^[`"']+", "" -replace "[`"']+$", "")
 }
 
 function Backup-FileForMigration {
@@ -250,7 +261,11 @@ function Resolve-JavaHomePath {
     [string]$Path
   )
 
-  $resolved = (Resolve-Path -Path $Path -ErrorAction Stop).Path
+  $normalizedPath = Resolve-JavaHomeInputPath -Path $Path
+  if ([string]::IsNullOrWhiteSpace($normalizedPath)) {
+    throw "Java home path is empty after normalization."
+  }
+  $resolved = (Resolve-Path -Path $normalizedPath -ErrorAction Stop).Path
   if (-not (Test-IsJavaHome -Path $resolved)) {
     throw "Path '$resolved' is not a valid JDK home (missing bin/java or bin/javac)."
   }
@@ -277,9 +292,14 @@ function Read-Jdks {
     if ($record -isnot [hashtable]) {
       $table[$key] = @{
         Id   = $null
-        Path = [string]$record
+        Path = Resolve-JavaHomeInputPath -Path ([string]$record)
       }
       $record = $table[$key]
+      $needsSave = $true
+    }
+    $normalizedRecordPath = Resolve-JavaHomeInputPath -Path ([string]$record.Path)
+    if ($normalizedRecordPath -ne $record.Path) {
+      $record.Path = $normalizedRecordPath
       $needsSave = $true
     }
     if (-not $record.ContainsKey("Id") -or [string]::IsNullOrWhiteSpace($record.Id)) {
