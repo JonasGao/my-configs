@@ -32,15 +32,11 @@ function Add-GitWorktree
     [string]$MainRepo = $PWD
   )
 
-  if (-not $env:WORKTREES)
-  {
-    throw "Environment variable WORKTREES is not set."
-  }
-
-  $worktreesRoot = $env:WORKTREES
+  $worktreesRoot = if ($env:WORKTREES) { $env:WORKTREES } else { Join-Path $HOME "worktrees" }
   if (-not (Test-Path -Path $worktreesRoot -PathType Container))
   {
-    throw "WORKTREES directory does not exist: $worktreesRoot"
+    New-Item -ItemType Directory -Path $worktreesRoot -Force | Out-Null
+    Write-Host "Created default worktrees directory: $worktreesRoot"
   }
 
   $resolvedMain = Resolve-Path -Path $MainRepo -ErrorAction SilentlyContinue
