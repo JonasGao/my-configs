@@ -7,14 +7,12 @@ $script:_git_worktree_path = $null
 
  .Description
   Creates a git worktree under $env:WORKTREES using naming pattern "repoName_branchName".
+  If the branch does not exist locally, it is automatically created from the current HEAD.
   After creation, switches to the new worktree directory and updates internal state
   so Switch-GitWorktreeMain can jump back to the main repository.
 
  .Parameter Branch
   The branch to checkout in the new worktree.
-
- .Parameter NewBranch
-  When specified, creates a new branch based on the current HEAD of the main repository.
 
  .Parameter MainRepo
   Path to the main git repository. Defaults to the current directory.
@@ -26,8 +24,6 @@ function Add-GitWorktree
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [string]$Branch,
-
-    [switch]$NewBranch,
 
     [string]$MainRepo = $PWD
   )
@@ -54,23 +50,30 @@ function Add-GitWorktree
   $repoRoot = $repoRoot | Convert-Path
 
   $repoName = Split-Path -Path $repoRoot -Leaf
-  $worktreeName = "${repoName}_${Branch}"
+  $safeBranch = $Branch -replace '[\/]', '_'
+  $worktreeName = "${repoName}_${safeBranch}"
   $worktreePath = Join-Path $worktreesRoot $worktreeName
 
   if (Test-Path -Path $worktreePath)
   {
-    throw "Worktree path already exists: $worktreePath"
+    $script:_git_worktree_main = $repoRoot
+    $script:_git_worktree_path = (Resolve-Path -Path $worktreePath).Path
+    Set-Location $script:_git_worktree_path
+    Write-Host "Worktree already exists, switched to: $script:_git_worktree_path"
+    return
   }
+
+  $branchExists = & git -C $repoRoot branch --list $Branch 2>$null
 
   Push-Location $repoRoot
   try
   {
-    if ($NewBranch)
-    {
-      git worktree add -b $Branch $worktreePath
-    } else
+    if ($branchExists)
     {
       git worktree add $worktreePath $Branch
+    } else
+    {
+      git worktree add -b $Branch $worktreePath
     }
     if ($LASTEXITCODE -ne 0)
     {
