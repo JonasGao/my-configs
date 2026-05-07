@@ -63,15 +63,21 @@ function Add-GitWorktree
     return
   }
 
-  $branchExists = & git -C $repoRoot branch --list $Branch 2>$null
+  $localBranch = & git -C $repoRoot branch --list $Branch 2>$null
+  $remoteBranch = & git -C $repoRoot branch -r --list "origin/$Branch" 2>$null
 
   Push-Location $repoRoot
   try
   {
-    if ($branchExists)
+    if ($localBranch)
     {
       git worktree add $worktreePath $Branch
-    } else
+    }
+    elseif ($remoteBranch)
+    {
+      git worktree add -b $Branch $worktreePath origin/$Branch
+    }
+    else
     {
       git worktree add -b $Branch $worktreePath
     }
