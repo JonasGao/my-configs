@@ -150,5 +150,30 @@ function Switch-GitWorktreeMain
   throw "Not in a tracked git worktree or main repository. Use Add-GitWorktree first."
 }
 
+Register-ArgumentCompleter -CommandName Add-GitWorktree -ParameterName Branch -ScriptBlock {
+  param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+  $repoPath = if ($fakeBoundParameters.ContainsKey('MainRepo')) {
+    $fakeBoundParameters['MainRepo']
+  } else {
+    $PWD
+  }
+
+  $repoRoot = & git -C $repoPath rev-parse --show-toplevel 2>$null
+  if (-not $repoRoot) { return }
+
+  $branches = & git -C $repoRoot branch -a --format='%(refname:short)' 2>$null |
+    ForEach-Object { $_ -replace '^remotes/origin/', '' } |
+    Sort-Object -Unique
+
+  foreach ($branch in $branches)
+  {
+    if ($branch -like "$wordToComplete*")
+    {
+      [System.Management.Automation.CompletionResult]::new($branch, $branch, 'ParameterValue', $branch)
+    }
+  }
+}
+
 Export-ModuleMember -Function Add-GitWorktree
 Export-ModuleMember -Function Switch-GitWorktreeMain
