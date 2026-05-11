@@ -159,6 +159,60 @@ function Switch-GitWorktreeMain
   throw "Not in a tracked git worktree or main repository. Use Add-GitWorktree first."
 }
 
+<#
+ .Synopsis
+  Remove the current git worktree and switch back to the main repository.
+
+ .Description
+  Must be run inside a git worktree (not the main repository).
+  Removes the current worktree via 'git worktree remove' and then switches
+  to the main repository. Fails if there are uncommitted changes unless -Force is used.
+
+ .Parameter Force
+  Force removal even if the worktree has uncommitted changes or untracked files.
+#>
+function Remove-GitWorktree
+{
+  [CmdletBinding()]
+  param(
+    [switch]$Force
+  )
+
+  $topLevel = & git rev-parse --show-toplevel 2>$null
+  if (-not $topLevel)
+  {
+    throw "Not a git repository."
+  }
+  $topLevel = $topLevel | Convert-Path
+
+  $gitDir = & git rev-parse --git-dir 2>$null | Convert-Path
+  $gitCommonDir = & git rev-parse --git-common-dir 2>$null | Convert-Path
+
+  if ($gitDir -eq $gitCommonDir)
+  {
+    throw "This command must be run inside a worktree, not the main repository."
+  }
+
+  $mainRepo = Split-Path -Parent $gitCommonDir
+
+  if ($Force)
+  {
+    git worktree remove --force $topLevel
+  } else
+  {
+    git worktree remove $topLevel
+  }
+  if ($LASTEXITCODE -ne 0)
+  {
+    throw "Failed to remove worktree: $topLevel"
+  }
+
+  $script:_git_worktree_main = $mainRepo
+  $script:_git_worktree_path = $null
+  Set-Location $mainRepo
+  Write-Host "Removed worktree and switched to main repository: $mainRepo"
+}
+
 Register-ArgumentCompleter -CommandName Add-GitWorktree -ParameterName Branch -ScriptBlock {
   param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
 
@@ -186,3 +240,4 @@ Register-ArgumentCompleter -CommandName Add-GitWorktree -ParameterName Branch -S
 
 Export-ModuleMember -Function Add-GitWorktree
 Export-ModuleMember -Function Switch-GitWorktreeMain
+Export-ModuleMember -Function Remove-GitWorktree
