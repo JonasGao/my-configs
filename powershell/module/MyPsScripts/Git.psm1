@@ -50,7 +50,11 @@ function Add-GitWorktree
   $repoRoot = $repoRoot | Convert-Path
 
   $repoName = Split-Path -Path $repoRoot -Leaf
-  $safeBranch = $Branch -replace '[\/]', '_'
+
+  $isRemoteRef = $Branch -match '^origin/'
+  $branchForGit = $Branch
+  $branchName = if ($isRemoteRef) { $Branch -replace '^origin/', '' } else { $Branch }
+  $safeBranch = $branchName -replace '[\/]', '_'
   $worktreeName = "${repoName}_${safeBranch}"
   $worktreePath = Join-Path $worktreesRoot $worktreeName
 
@@ -63,23 +67,23 @@ function Add-GitWorktree
     return
   }
 
-  $localBranch = & git -C $repoRoot branch --list $Branch 2>$null
-  $remoteBranch = & git -C $repoRoot branch -r --list "origin/$Branch" 2>$null
+  $localBranch = & git -C $repoRoot branch --list $branchName 2>$null
+  $remoteBranch = & git -C $repoRoot branch -r --list $branchForGit 2>$null
 
   Push-Location $repoRoot
   try
   {
     if ($localBranch)
     {
-      git worktree add $worktreePath $Branch
+      git worktree add $worktreePath $branchName
     }
     elseif ($remoteBranch)
     {
-      git worktree add -b $Branch $worktreePath origin/$Branch
+      git worktree add $worktreePath $branchForGit
     }
     else
     {
-      git worktree add -b $Branch $worktreePath
+      git worktree add -b $branchName $worktreePath
     }
     if ($LASTEXITCODE -ne 0)
     {
@@ -195,6 +199,9 @@ function Remove-GitWorktree
 
   $mainRepo = Split-Path -Parent $gitCommonDir
 
+  # Switch out of the worktree first so Windows does not lock the directory.
+  Set-Location $mainRepo
+
   if ($Force)
   {
     git worktree remove --force $topLevel
@@ -204,12 +211,18 @@ function Remove-GitWorktree
   }
   if ($LASTEXITCODE -ne 0)
   {
-    throw "Failed to remove worktree: $topLevel"
+    if (-not (Test-Path -Path $topLevel))
+    {
+      git worktree prune
+      Write-Warning "Worktree directory was already removed; pruned stale worktree record."
+    } else
+    {
+      throw "Failed to remove worktree: $topLevel"
+    }
   }
 
   $script:_git_worktree_main = $mainRepo
   $script:_git_worktree_path = $null
-  Set-Location $mainRepo
   Write-Host "Removed worktree and switched to main repository: $mainRepo"
 }
 
