@@ -79,7 +79,7 @@ function Add-GitWorktree
     }
     elseif ($remoteBranch)
     {
-      git worktree add $worktreePath $branchForGit
+      git worktree add -b $branchName $worktreePath $branchForGit
     }
     else
     {
