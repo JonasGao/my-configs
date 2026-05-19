@@ -1,0 +1,119 @@
+#!/bin/bash
+
+# 快速设置/清除/查看 HTTP(S)_PROXY 环境变量 + 代理执行命令（函数名：px，别名：ppp）
+# 使用方式：
+#   px                  → 自动设置默认代理
+#   px -c               → 清除所有代理变量
+#   px -v               → 查看当前代理配置
+#   px -s <地址>        → 设置自定义代理
+#   px <命令> [参数..]   → 使用默认代理运行命令
+#   px -s <地址> <命令>  → 使用指定代理运行命令
+px() {
+    local DEFAULT_PROXY="http://xx.my:7890"
+
+    info()  { echo -e "\033[32m[INFO] $1\033[0m"; }
+    error() { echo -e "\033[31m[ERROR] $1\033[0m"; }
+    tip()   { echo -e "\033[36m[TIP] $1\033[0m"; }
+
+    # ========== 无参数：自动设置默认代理 ==========
+    if [ $# -eq 0 ]; then
+        export HTTP_PROXY="$DEFAULT_PROXY"
+        export HTTPS_PROXY="$DEFAULT_PROXY"
+        export http_proxy="$DEFAULT_PROXY"
+        export https_proxy="$DEFAULT_PROXY"
+        info "已自动设置默认代理：$DEFAULT_PROXY"
+        tip "执行 px -v 可查看当前配置"
+        return 0
+    fi
+
+    # ========== -c：清除代理 ==========
+    if [ "$1" = "-c" ]; then
+        unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy
+        info "已清除所有 HTTP(S)_PROXY 环境变量"
+        return 0
+    fi
+
+    # ========== -v：查看当前配置 ==========
+    if [ "$1" = "-v" ]; then
+        info "当前 HTTP(S)_PROXY 配置："
+        echo "  HTTP_PROXY:  ${HTTP_PROXY:-未设置}"
+        echo "  HTTPS_PROXY: ${HTTPS_PROXY:-未设置}"
+        echo "  http_proxy:  ${http_proxy:-未设置}"
+        echo "  https_proxy: ${https_proxy:-未设置}"
+        return 0
+    fi
+
+    # ========== -s：设置自定义代理或运行命令 ==========
+    if [ "$1" = "-s" ]; then
+        if [ $# -lt 2 ]; then
+            error "使用错误！px -s 后必须跟代理地址，示例：px -s http://127.0.0.1:7891"
+            return 1
+        fi
+
+        local proxy_addr="$2"
+        if [[ ! "$proxy_addr" =~ ^(http|https|socks5)://.+:[0-9]+$ ]]; then
+            error "代理地址格式错误！示例：http://127.0.0.1:7890 或 socks5://127.0.0.1:7891"
+            return 1
+        fi
+
+        # 有第三个参数 → 使用指定代理运行命令
+        if [ $# -ge 3 ]; then
+            shift 2
+            info "使用代理 $proxy_addr 运行: $*"
+            HTTP_PROXY="$proxy_addr" HTTPS_PROXY="$proxy_addr" \
+                http_proxy="$proxy_addr" https_proxy="$proxy_addr" \
+                "$@"
+            return $?
+        fi
+
+        # 否则设置到当前 shell
+        export HTTP_PROXY="$proxy_addr"
+        export HTTPS_PROXY="$proxy_addr"
+        export http_proxy="$proxy_addr"
+        export https_proxy="$proxy_addr"
+        info "已设置自定义代理：$proxy_addr"
+        tip "执行 px -v 可查看当前配置"
+        return 0
+    fi
+
+    # ========== 其他参数：作为命令运行（使用当前或默认代理） ==========
+    local proxy="${HTTP_PROXY:-$DEFAULT_PROXY}"
+    info "使用代理 $proxy 运行: $*"
+    HTTP_PROXY="$proxy" HTTPS_PROXY="$proxy" \
+        http_proxy="$proxy" https_proxy="$proxy" \
+        "$@"
+    return $?
+}
+
+alias ppp=px
+
+# ========== bash completion for px / ppp ==========
+_px_completion() {
+    local cur cmd
+    cur="${COMP_WORDS[COMP_CWORD]}"
+
+    # 第一参数：flags + PATH 命令混排
+    if [ $COMP_CWORD -eq 1 ]; then
+        COMPREPLY=($(compgen -W '-c -v -s' -- "$cur"))
+        COMPREPLY+=($(compgen -c -- "$cur"))
+        return
+    fi
+
+    # 第一参数是 -s：第二个是代理地址（不补全），之后是命令
+    if [ "${COMP_WORDS[1]}" = "-s" ]; then
+        if [ $COMP_CWORD -eq 2 ]; then
+            COMPREPLY=()
+            return
+        else
+            COMPREPLY=($(compgen -c -- "$cur"))
+            return
+        fi
+    fi
+
+    # 第一参数不是 flag → 是命令，后续补全命令 + 文件
+    COMPREPLY=($(compgen -c -- "$cur"))
+    COMPREPLY+=($(compgen -f -- "$cur"))
+}
+
+complete -F _px_completion px
+complete -F _px_completion ppp
