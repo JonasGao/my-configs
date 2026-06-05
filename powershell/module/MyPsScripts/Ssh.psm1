@@ -73,6 +73,68 @@ fi
   return $script
 }
 
+# 内部函数：测试SSH连接
+function Test-SshConnection
+{
+  [CmdletBinding()]
+  param(
+    [string]$Target,
+    [int]$Timeout = 10
+  )
+  
+  try
+  {
+    $result = ssh -o ConnectTimeout=$Timeout -o BatchMode=yes $Target "echo CONNECTION_OK" 2>&1
+    if ($result -match 'CONNECTION_OK')
+    {
+      return [pscustomobject]@{
+        Success = $true
+        Message = "Connection established"
+      }
+    }
+    else
+    {
+      $errorMsg = $result | Out-String
+      return [pscustomobject]@{
+        Success = $false
+        Message = $errorMsg.Trim()
+      }
+    }
+  }
+  catch
+  {
+    return [pscustomobject]@{
+      Success = $false
+      Message = $_.Exception.Message
+    }
+  }
+}
+
+# 内部函数：查找可用端口
+function Find-AvailablePort
+{
+  [CmdletBinding()]
+  param([int]$StartPort = 1080)
+  
+  for ($port = $StartPort; $port -lt 65535; $port++)
+  {
+    try
+    {
+      $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $port)
+      $listener.Start()
+      $listener.Stop()
+      return $port
+    }
+    catch
+    {
+      # 端口被占用，继续尝试下一个
+      continue
+    }
+  }
+  
+  throw "未找到可用端口"
+}
+
 # 内部函数：处理单个主机的SSH密钥复制
 function Process-SingleHost {
   param($Target, $PublicKeyContent, $Backup, $Force, $UseControlMaster, $ControlPersistSeconds, $ConnectionTimeout, $RetryCount, $RetryDelaySeconds)
