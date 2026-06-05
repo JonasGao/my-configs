@@ -32,10 +32,15 @@ KEY_CONTENT='$escapedKey'
 KEY_FP=\$(echo "\$KEY_CONTENT" | ssh-keygen -lf - 2>/dev/null | grep -o 'SHA256:[A-Za-z0-9+/=]+' || true)
 
 if [ -n "\$KEY_FP" ]; then
-  if grep -q "\$KEY_FP" ~/.ssh/authorized_keys 2>/dev/null; then
-    echo "ALREADY_EXISTS"
-    exit 0
-  fi
+  # Iterate through each existing key and compare fingerprints
+  while IFS= read -r line; do
+    [ -z "\$line" ] && continue
+    existing_fp=\$(echo "\$line" | ssh-keygen -lf - 2>/dev/null | grep -o 'SHA256:[A-Za-z0-9+/=]+' || true)
+    if [ "\$existing_fp" = "\$KEY_FP" ]; then
+      echo "ALREADY_EXISTS"
+      exit 0
+    fi
+  done < ~/.ssh/authorized_keys
 fi
 
 # 2. 备份（如果指定）
