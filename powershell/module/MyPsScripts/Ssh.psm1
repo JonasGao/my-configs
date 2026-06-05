@@ -9,6 +9,65 @@ function New-SshProxy
   }.GetNewClosure()
 }
 
+# 内部函数：生成远程执行脚本
+function New-RemoteCopyScript {
+  [CmdletBinding()]
+  param(
+    [string]$PublicKeyContent,
+    [switch]$Backup,
+    [string]$BackupTimestamp
+  )
+  
+  # 转义公钥内容中的特殊字符
+  $escapedKey = $PublicKeyContent -replace "'", "'\\''" -replace "`n", "\\n"
+  
+  # 构建bash脚本
+  $script = @"
+set -e
+
+# 接收公钥内容作为环境变量
+KEY_CONTENT='$escapedKey'
+
+# 1. 计算指纹并检查是否已存在
+KEY_FP=\$(echo "\$KEY_CONTENT" | ssh-keygen -lf - 2>/dev/null | grep -o 'SHA256:[A-Za-z0-9+/=]+' || true)
+
+if [ -n "\$KEY_FP" ]; then
+  if grep -q "\$KEY_FP" ~/.ssh/authorized_keys 2>/dev/null; then
+    echo "ALREADY_EXISTS"
+    exit 0
+  fi
+fi
+
+# 2. 备份（如果指定）
+if [ '$Backup' = 'True' ]; then
+  if [ -f ~/.ssh/authorized_keys ]; then
+    BACKUP_FILE=~/.ssh/authorized_keys.backup.$BackupTimestamp
+    cp ~/.ssh/authorized_keys "\$BACKUP_FILE" 2>/dev/null || true
+    echo "BACKUP_CREATED:\$BACKUP_FILE"
+  fi
+fi
+
+# 3. 确保目录和权限正确
+[ -d ~/.ssh ] || mkdir -p ~/.ssh
+chmod 700 ~/.ssh 2>/dev/null || true
+[ -f ~/.ssh/authorized_keys ] || touch ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys 2>/dev/null || true
+
+# 4. 添加公钥
+echo "\$KEY_CONTENT" >> ~/.ssh/authorized_keys
+
+# 5. 验证添加成功
+if grep -qF "\$KEY_CONTENT" ~/.ssh/authorized_keys; then
+  echo "SUCCESS"
+else
+  echo "ERROR:Failed to verify key addition"
+  exit 1
+fi
+"@
+  
+  return $script
+}
+
 <#
  .Synopsis
   Just like linux/unix "ssh-copyid xxxxx".
