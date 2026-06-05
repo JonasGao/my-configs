@@ -142,7 +142,26 @@ function Copy-Sshid
     $ContinueOnError,
 
     [switch]
-    $Parallel
+    $Parallel,
+    
+    [ValidateSet("Auto","Jobs","Runspaces","PS7Parallel")]
+    [string]
+    $ParallelMode = "Auto",
+    
+    [switch]
+    $UseControlMaster,
+    
+    [int]
+    $ControlPersistSeconds = 60,
+    
+    [int]
+    $ConnectionTimeout = 30,
+    
+    [int]
+    $RetryCount = 0,
+    
+    [int]
+    $RetryDelaySeconds = 5
   )
  
   # 内部函数：搜索可用的SSH公钥文件
@@ -248,77 +267,6 @@ function Copy-Sshid
     }
   }
 
-  # 内部函数：检查远程主机是否已存在该公钥
-  function Test-RemoteKeyExists
-  {
-    [CmdletBinding()]
-    param([string]$RemoteHost, [string]$PublicKeyContent)
-    
-    try
-    {
-      $keyFingerprint = ssh-keygen -lf $IdentityFile 2>$null | Select-String -Pattern 'SHA256:([A-Za-z0-9+/=]+)' | ForEach-Object { $_.Matches[0].Groups[1].Value }
-      
-      if ($keyFingerprint)
-      {
-        $checkCmd = "grep -q '$keyFingerprint' ~/.ssh/authorized_keys 2>/dev/null || echo 'NOT_FOUND'"
-        $result = ssh $RemoteHost $checkCmd 2>$null
-        
-        if ($result -and $result.Trim() -ne 'NOT_FOUND')
-        {
-          return $true
-        }
-      }
-      
-      return $false
-    }
-    catch
-    {
-      Write-Verbose "无法检查远程公钥存在性: $($_.Exception.Message)"
-      return $false
-    }
-  }
-
-  # 内部函数：备份远程authorized_keys文件
-  function Backup-RemoteAuthorizedKeys
-  {
-    [CmdletBinding()]
-    param([string]$RemoteHost)
-    
-    try
-    {
-      $backupCmd = @"
-if [ -f ~/.ssh/authorized_keys ]; then
-  cp ~/.ssh/authorized_keys ~/.ssh/authorized_keys.backup.$(Get-date -Format "yyyyMMdd_HHmmss")
-  echo "BACKUP_CREATED"
-else
-  echo "NO_FILE"
-fi
-"@
-      
-      $result = ssh $RemoteHost $backupCmd 2>$null
-      
-      if ($result -and $result.Trim() -eq 'BACKUP_CREATED')
-      {
-        Write-Host "已创建远程authorized_keys备份" -ForegroundColor Green
-        return $true
-      }
-      elseif ($result -and $result.Trim() -eq 'NO_FILE')
-      {
-        Write-Host "远程authorized_keys文件不存在，无需备份" -ForegroundColor Yellow
-        return $true
-      }
-      else
-      {
-        Write-Warning "无法创建远程备份"
-        return $false
-      }
-    }
-    catch
-    {
-      Write-Warning "备份远程文件时出错: $($_.Exception.Message)"
-      return $false
-    }
-  }
 
   # 主函数逻辑开始
   try
@@ -349,11 +297,7 @@ fi
     
     # 读取公钥内容
     $publicKeyContent = Get-Content $IdentityFile -Raw -ErrorAction Stop
-
-    # 计算指纹（用于去重与检测）
-    $keyFingerprint = $null
-    try { $keyFingerprint = ssh-keygen -lf $IdentityFile 2>$null | Select-String -Pattern 'SHA256:([A-Za-z0-9+/=]+)' | ForEach-Object { $_.Matches[0].Groups[1].Value } } catch {}
-
+    
     # 预处理目标主机列表
     $targets = @()
     foreach ($h in $RemoteHosts) { if ($h -and $h.Trim()) { $targets += $h.Trim() } }
@@ -362,102 +306,213 @@ fi
 
     $results = @()
     
-    foreach ($target in $targets)
-    {
-      try
-      {
-        # 检查远程主机是否已存在该公钥
-        $exists = $false
-        if ($keyFingerprint)
-        {
-          $checkCmd = "grep -q '$keyFingerprint' ~/.ssh/authorized_keys 2>/dev/null || echo 'NOT_FOUND'"
-          $checkResult = ssh $target $checkCmd 2>$null
-          if ($checkResult -and $checkResult.Trim() -ne 'NOT_FOUND') { $exists = $true }
+    # 定义单主机处理函数
+    function Process-SingleHost {
+      param($Target, $PublicKeyContent, $Backup, $Force, $UseControlMaster, $ControlPersistSeconds, $ConnectionTimeout, $RetryCount, $RetryDelaySeconds)
+      
+      $startTime = Get-Date
+      $result = [pscustomobject]@{
+        Host = $Target
+        Success = $false
+        Message = ""
+        Duration = [timespan]::Zero
+        BackupCreated = $false
+        KeyAlreadyExists = $false
+        ControlMasterUsed = $false
+        Timestamp = Get-Date
+      }
+      
+      try {
+        # 生成远程脚本
+        $backupTimestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+        $remoteScript = New-RemoteCopyScript -PublicKeyContent $PublicKeyContent -Backup:$Backup -BackupTimestamp $backupTimestamp
+        
+        # 配置SSH选项
+        $sshArgs = @()
+        if ($UseControlMaster) {
+          $tempDir = if ($IsWindows) { $env:TEMP } else { "/tmp" }
+          $controlPath = Join-Path $tempDir "ssh-control-%r@%h:%p"
+          $sshArgs += @("-o", "ControlMaster=auto", "-o", "ControlPath=$controlPath", "-o", "ControlPersist=$ControlPersistSeconds")
+          $result.ControlMasterUsed = $true
         }
-        else
-        {
-          $escaped = ($publicKeyContent -replace "'", "'\\''")
-          $checkCmd2 = "grep -Fqx '$escaped' ~/.ssh/authorized_keys 2>/dev/null || echo 'NOT_FOUND'"
-          $checkResult2 = ssh $target $checkCmd2 2>$null
-          if ($checkResult2 -and $checkResult2.Trim() -ne 'NOT_FOUND') { $exists = $true }
+        if ($ConnectionTimeout -gt 0) {
+          $sshArgs += @("-o", "ConnectTimeout=$ConnectionTimeout")
         }
-
-        if ($exists -and -not $Force)
-        {
-          $confirmation = Read-Host "[$target] 该公钥已存在，是否继续添加？(y/N)"
-          if ($confirmation -notmatch '^[Yy]')
-          {
-            Write-Host "[$target] 已跳过" -ForegroundColor Yellow
-            $results += [pscustomobject]@{ Host=$target; Success=$true; Message='Skipped (already exists)' }
-            continue
+        
+        # 执行远程脚本（带重试）
+        $sshOutput = $null
+        for ($retry = 0; $retry -le $RetryCount; $retry++) {
+          try {
+            $sshOutput = ssh $sshArgs $Target "bash -c '$remoteScript'" 2>&1
+            if ($LASTEXITCODE -eq 0) { break }
+            if ($retry -lt $RetryCount -and $LASTEXITCODE -ne 0) {
+              Write-Verbose "[$Target] 尝试 $retry/$RetryCount 失败，等待 $RetryDelaySeconds 秒后重试"
+              Start-Sleep -Seconds $RetryDelaySeconds
+            }
+          }
+          catch {
+            if ($retry -lt $RetryCount) {
+              Write-Verbose "[$Target] 连接异常，重试中..."
+              Start-Sleep -Seconds $RetryDelaySeconds
+            }
           }
         }
-
-        # 显示操作信息并确认
-        $operationDescription = "复制公钥文件 '$IdentityFile' 到主机 '$target'" + ($(if($Backup){' (包含备份)'} else {''}))
-        if ($WhatIfPreference)
-        {
-          Write-Host "WhatIf: $operationDescription" -ForegroundColor Cyan
-          $results += [pscustomobject]@{ Host=$target; Success=$true; Message='WhatIf' }
-          continue
-        }
-        if (!$Force -and !$PSCmdlet.ShouldProcess($target, $operationDescription))
-        {
-          Write-Host "[$target] 操作已取消" -ForegroundColor Yellow
-          $results += [pscustomobject]@{ Host=$target; Success=$false; Message='Cancelled' }
-          if (-not $ContinueOnError) { break }
-          continue
-        }
-
-        Write-Host "正在复制公钥到 '$target'..." -ForegroundColor Green
         
-        # 备份远程文件（如果指定）
-        if ($Backup) { Backup-RemoteAuthorizedKeys $target | Out-Null }
+        # 解析返回状态
+        if ($sshOutput -match 'SUCCESS') {
+          $result.Success = $true
+          $result.Message = "Key copied successfully"
+          Write-Host "[$Target] 公钥复制成功！" -ForegroundColor Green
+        }
+        elseif ($sshOutput -match 'ALREADY_EXISTS') {
+          $result.KeyAlreadyExists = $true
+          if (-not $Force) {
+            $result.Success = $true
+            $result.Message = "Key already exists (skipped)"
+            Write-Host "[$Target] 公钥已存在，已跳过" -ForegroundColor Yellow
+          }
+          else {
+            # Force模式下，强制添加（脚本已继续执行）
+            $result.Success = $true
+            $result.Message = "Key added (forced overwrite)"
+            Write-Host "[$Target] 公钥已强制添加" -ForegroundColor Yellow
+          }
+        }
+        elseif ($sshOutput -match 'BACKUP_CREATED:([^\s]+)') {
+          $result.BackupCreated = $true
+          $backupFile = $Matches[1]
+          Write-Verbose "[$Target] 已创建备份: $backupFile"
+          # 继续检查后续状态
+          if ($sshOutput -match 'SUCCESS') {
+            $result.Success = $true
+            $result.Message = "Key copied with backup"
+          }
+        }
+        elseif ($sshOutput -match 'ERROR:(.+)' -or $LASTEXITCODE -ne 0) {
+          $errorMsg = if ($sshOutput -match 'ERROR:(.+)') { $Matches[1] } else { "SSH failed with exit code $LASTEXITCODE" }
+          
+          # 错误诊断
+          if ($sshOutput -match 'Connection refused') {
+            $errorMsg += " (SSH service not running or firewall blocking)"
+          }
+          elseif ($sshOutput -match 'Permission denied') {
+            $errorMsg += " (Invalid username or no SSH access)"
+          }
+          elseif ($sshOutput -match 'No space left') {
+            $errorMsg += " (Remote disk full)"
+          }
+          elseif ($sshOutput -match 'Network is unreachable') {
+            $errorMsg += " (Network connectivity issue)"
+          }
+          
+          $result.Message = $errorMsg
+          Write-Error "[$Target] 失败: $errorMsg"
+        }
         
-        # 执行复制操作
-        $cmds = @(
-          "[ -d .ssh ] || mkdir -p .ssh && chmod 700 .ssh",
-          "[ -f .ssh/authorized_keys ] || touch .ssh/authorized_keys && chmod 600 .ssh/authorized_keys",
-          "cat >> .ssh/authorized_keys"
-        )
-        $sshResult = $publicKeyContent | ssh $target ($cmds -join "; ") 2>&1
-        if ($LASTEXITCODE -eq 0)
-        {
-          Write-Host "[$target] 公钥复制成功！" -ForegroundColor Green
-          $results += [pscustomobject]@{ Host=$target; Success=$true; Message='OK' }
-        }
-        else
-        {
-          $msg = "SSH操作失败，退出代码: $LASTEXITCODE; $sshResult"
-          Write-Warning "[$target] $msg"
-          $results += [pscustomobject]@{ Host=$target; Success=$false; Message=$msg }
-          if (-not $ContinueOnError) { throw $msg }
-        }
+        # 计算执行时长
+        $endTime = Get-Date
+        $result.Duration = $endTime - $startTime
       }
-      catch
-      {
-        $emsg = $_.Exception.Message
-        Write-Error "[$target] 失败: $emsg"
-        $results += [pscustomobject]@{ Host=$target; Success=$false; Message=$emsg }
-        if (-not $ContinueOnError) { throw }
+      catch {
+        $result.Message = $_.Exception.Message
+        Write-Error "[$Target] 异常: $($_.Exception.Message)"
+      }
+      
+      return $result
+    }
+    
+    # 根据Parallel参数选择执行模式
+    if ($Parallel) {
+      Write-Verbose "使用并行模式: $ParallelMode"
+      
+      # 确定实际并行模式
+      $actualMode = $ParallelMode
+      if ($ParallelMode -eq "Auto") {
+        $actualMode = if ($PSVersionTable.PSVersion.Major -ge 7) { "PS7Parallel" } else { "Jobs" }
+      }
+      
+      switch ($actualMode) {
+        "PS7Parallel" {
+          # PowerShell 7+ ForEach-Object -Parallel
+          $results = $targets | ForEach-Object -Parallel {
+            Process-SingleHost -Target $_ -PublicKeyContent $using:publicKeyContent -Backup:$using:Backup -Force:$using:Force -UseControlMaster:$using:UseControlMaster -ControlPersistSeconds $using:ControlPersistSeconds -ConnectionTimeout $using:ConnectionTimeout -RetryCount $using:RetryCount -RetryDelaySeconds $using:RetryDelaySeconds
+          } -ThrottleLimit 10
+        }
+        
+        "Jobs" {
+          # PowerShell Jobs
+          $jobs = @()
+          foreach ($target in $targets) {
+            $job = Start-Job -ScriptBlock {
+              param($t, $pk, $b, $f, $cm, $cps, $ct, $rc, $rd)
+              Process-SingleHost -Target $t -PublicKeyContent $pk -Backup:$b -Force:$f -UseControlMaster:$cm -ControlPersistSeconds $cps -ConnectionTimeout $ct -RetryCount $rc -RetryDelaySeconds $rd
+            } -ArgumentList $target, $publicKeyContent, $Backup, $Force, $UseControlMaster, $ControlPersistSeconds, $ConnectionTimeout, $RetryCount, $RetryDelaySeconds
+            $jobs += $job
+          }
+          
+          # 等待所有Job完成
+          Wait-Job -Job $jobs | Out-Null
+          $results = $jobs | Receive-Job
+          $jobs | Remove-Job
+        }
+        
+        "Runspaces" {
+          # Runspaces (更轻量)
+          $runspacePool = [runspacefactory]::CreateRunspacePool(1, 10)
+          $runspacePool.Open()
+          
+          $runspaces = @()
+          foreach ($target in $targets) {
+            $powershell = [powershell]::Create()
+            $powershell.RunspacePool = $runspacePool
+            $powershell.AddScript({
+              param($t, $pk, $b, $f, $cm, $cps, $ct, $rc, $rd)
+              Process-SingleHost -Target $t -PublicKeyContent $pk -Backup:$b -Force:$f -UseControlMaster:$cm -ControlPersistSeconds $cps -ConnectionTimeout $ct -RetryCount $rc -RetryDelaySeconds $rd
+            }).AddArgument($target).AddArgument($publicKeyContent).AddArgument($Backup).AddArgument($Force).AddArgument($UseControlMaster).AddArgument($ControlPersistSeconds).AddArgument($ConnectionTimeout).AddArgument($RetryCount).AddArgument($RetryDelaySeconds)
+            
+            $runspace = [powershell]::BeginInvoke($powershell)
+            $runspaces += [pscustomobject]@{ PowerShell = $powershell; Runspace = $runspace }
+          }
+          
+          # 收集结果
+          foreach ($rs in $runspaces) {
+            $result = $rs.PowerShell.EndInvoke($rs.Runspace)
+            $results += $result
+            $rs.PowerShell.Dispose()
+          }
+          
+          $runspacePool.Close()
+          $runspacePool.Dispose()
+        }
       }
     }
-
+    else {
+      # 串行执行
+      foreach ($target in $targets) {
+        $result = Process-SingleHost -Target $target -PublicKeyContent $publicKeyContent -Backup:$Backup -Force:$Force -UseControlMaster:$UseControlMaster -ControlPersistSeconds $ControlPersistSeconds -ConnectionTimeout $ConnectionTimeout -RetryCount $RetryCount -RetryDelaySeconds $RetryDelaySeconds
+        $results += $result
+        
+        if (-not $result.Success -and -not $ContinueOnError) {
+          Write-Error "[$target] 失败，停止后续操作"
+          break
+        }
+      }
+    }
+    
     # 输出总结
-    Write-Host "---------- 结果汇总 ----------" -ForegroundColor Cyan
-    foreach ($r in $results)
-    {
+    Write-Host "`n---------- 结果汇总 ----------" -ForegroundColor Cyan
+    $successCount = ($results | Where-Object { $_.Success }).Count
+    $failedCount = ($results | Where-Object { -not $_.Success }).Count
+    Write-Host ("总计: {0} 成功, {1} 失败" -f $successCount, $failedCount) -ForegroundColor $(if ($failedCount -eq 0) { 'Green' } else { 'Yellow' })
+    
+    foreach ($r in $results) {
       $status = if ($r.Success) { 'Success' } else { 'Failed' }
-      Write-Host ("{0,-24}  {1,-7}  {2}" -f $r.Host, $status, $r.Message)
+      $durationStr = "{0:N1}s" -f $r.Duration.TotalSeconds
+      Write-Host ("{0,-24}  {1,-7}  {2,6}  {3}" -f $r.Host, $status, $durationStr, $r.Message)
     }
-    if ($results.Where({$_.Success}).Count -gt 0 -and $results.Where({-not $_.Success}).Count -eq 0)
-    {
-      return $true
-    }
-    else
-    {
-      return $false
-    }
+    
+    # 返回结果数组
+    return $results
   }
   catch
   {
