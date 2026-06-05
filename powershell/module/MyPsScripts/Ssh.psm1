@@ -646,5 +646,236 @@ function Copy-Sshid
   }
 }
 
+<#
+.SYNOPSIS
+    Enables SSH connection reuse via ControlMaster configuration.
+
+.DESCRIPTION
+    Adds ControlMaster configuration to ~/.ssh/config to enable SSH connection multiplexing,
+    which allows multiple SSH sessions to share a single connection, improving performance
+    for frequent SSH operations.
+
+.PARAMETER PersistMinutes
+    Number of minutes to keep the master connection open after the last session ends.
+    Default is 10 minutes.
+
+.PARAMETER Force
+    Force overwrite existing ControlMaster configuration if it already exists.
+
+.EXAMPLE
+    Enable-SshConnectionReuse
+    
+    Enables connection reuse with default 10-minute persistence.
+
+.EXAMPLE
+    Enable-SshConnectionReuse -PersistMinutes 30
+    
+    Enables connection reuse with 30-minute persistence.
+
+.EXAMPLE
+    Enable-SshConnectionReuse -Force
+    
+    Enables connection reuse and overwrites any existing configuration.
+
+.NOTES
+    Creates ~/.ssh/sockets directory for storing control socket files.
+    Works on both Windows ($env:USERPROFILE\.ssh) and Linux/Mac ($env:HOME/.ssh).
+#>
+function Enable-SshConnectionReuse
+{
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact='Low')]
+    param(
+        [Parameter(Mandatory=$false)]
+        [ValidateRange(1, 1440)]
+        [int]$PersistMinutes = 10,
+        
+        [switch]$Force
+    )
+    
+    # Determine SSH directory based on platform
+    if ($IsWindows -or $PSVersionTable.Platform -eq "Win32NT") {
+        $sshDir = Join-Path $env:USERPROFILE ".ssh"
+    } else {
+        $sshDir = Join-Path $env:HOME ".ssh"
+    }
+    
+    $socketsDir = Join-Path $sshDir "sockets"
+    $configFile = Join-Path $sshDir "config"
+    
+    # Create .ssh directory if it doesn't exist
+    if (-not (Test-Path $sshDir)) {
+        if ($PSCmdlet.ShouldProcess($sshDir, "Create SSH directory")) {
+            New-Item -Path $sshDir -ItemType Directory -Force | Out-Null
+            Write-Verbose "Created SSH directory: $sshDir"
+        }
+    }
+    
+    # Create sockets directory for control files
+    if (-not (Test-Path $socketsDir)) {
+        if ($PSCmdlet.ShouldProcess($socketsDir, "Create sockets directory")) {
+            New-Item -Path $socketsDir -ItemType Directory -Force | Out-Null
+            Write-Verbose "Created sockets directory: $socketsDir"
+        }
+    }
+    
+    # Determine ControlPath format based on platform
+    if ($IsWindows -or $PSVersionTable.Platform -eq "Win32NT") {
+        $controlPath = "~\.ssh\sockets\%r@%h-%p"
+    } else {
+        $controlPath = "~/.ssh/sockets/%r@%h-%p"
+    }
+    
+    # Build ControlMaster configuration
+    $controlMasterConfig = @"
+Host *
+    ControlMaster auto
+    ControlPath $controlPath
+    ControlPersist ${PersistMinutes}m
+"@
+    
+    # Check if config file exists
+    $configExists = Test-Path $configFile
+    $existingConfig = if ($configExists) { Get-Content $configFile -Raw } else { "" }
+    
+    # Check if ControlMaster config already exists
+    $hasControlMaster = $existingConfig -match '(?s)Host\s+\*\s+ControlMaster\s+auto'
+    
+    if ($hasControlMaster) {
+        if ($Force) {
+            # Remove existing ControlMaster block
+            # Pattern matches from "Host *" to the next Host block or end of file
+            $updatedConfig = $existingConfig -replace '(?s)(Host\s+\*\s+(?:ControlMaster\s+auto\s+|ControlPath\s+[^\s]+\s+|ControlPersist\s+[^\s]+\s+)+)', ''
+            
+            # Clean up extra blank lines
+            $updatedConfig = $updatedConfig -replace '(\r?\n){3,}', "`n`n"
+            $updatedConfig = $updatedConfig.TrimEnd() + "`n`n"
+            
+            # Add new config
+            $updatedConfig += $controlMasterConfig + "`n"
+            
+            if ($PSCmdlet.ShouldProcess($configFile, "Update SSH config with ControlMaster settings")) {
+                Set-Content -Path $configFile -Value $updatedConfig -Encoding UTF8 -NoNewline
+                Write-Host "Updated existing ControlMaster configuration in: $configFile" -ForegroundColor Green
+            }
+        } else {
+            Write-Host "ControlMaster configuration already exists. Use -Force to overwrite." -ForegroundColor Yellow
+            Write-Host "Config file: $configFile" -ForegroundColor Gray
+        }
+    } else {
+        # Add new ControlMaster config
+        if ($configExists -and $existingConfig.Trim().Length -gt 0) {
+            # Append to existing config
+            $newConfig = $existingConfig.TrimEnd() + "`n`n" + $controlMasterConfig + "`n"
+        } else {
+            # Create new config
+            $newConfig = $controlMasterConfig + "`n"
+        }
+        
+        if ($PSCmdlet.ShouldProcess($configFile, "Add ControlMaster configuration to SSH config")) {
+            Set-Content -Path $configFile -Value $newConfig -Encoding UTF8 -NoNewline
+            Write-Host "Added ControlMaster configuration to: $configFile" -ForegroundColor Green
+        }
+    }
+    
+    Write-Host "SSH connection reuse enabled with ${PersistMinutes} minute persistence." -ForegroundColor Cyan
+    Write-Host "Socket directory: $socketsDir" -ForegroundColor Gray
+}
+
+<#
+.SYNOPSIS
+    Disables SSH connection reuse by removing ControlMaster configuration.
+
+.DESCRIPTION
+    Removes ControlMaster configuration from ~/.ssh/config and optionally cleans up
+    control socket files.
+
+.PARAMETER RemoveSockets
+    Remove socket files from ~/.ssh/sockets directory after disabling configuration.
+
+.EXAMPLE
+    Disable-SshConnectionReuse
+    
+    Removes ControlMaster configuration but leaves socket files intact.
+
+.EXAMPLE
+    Disable-SshConnectionReuse -RemoveSockets
+    
+    Removes ControlMaster configuration and cleans up socket files.
+
+.NOTES
+    Preserves other SSH configuration settings.
+    Works on both Windows ($env:USERPROFILE\.ssh) and Linux/Mac ($env:HOME/.ssh).
+#>
+function Disable-SshConnectionReuse
+{
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact='Low')]
+    param(
+        [switch]$RemoveSockets
+    )
+    
+    # Determine SSH directory based on platform
+    if ($IsWindows -or $PSVersionTable.Platform -eq "Win32NT") {
+        $sshDir = Join-Path $env:USERPROFILE ".ssh"
+    } else {
+        $sshDir = Join-Path $env:HOME ".ssh"
+    }
+    
+    $socketsDir = Join-Path $sshDir "sockets"
+    $configFile = Join-Path $sshDir "config"
+    
+    # Remove ControlMaster config from SSH config file
+    if (Test-Path $configFile) {
+        $existingConfig = Get-Content $configFile -Raw
+        
+        # Check if ControlMaster config exists
+        if ($existingConfig -match '(?s)Host\s+\*\s+ControlMaster\s+auto') {
+            # Remove the ControlMaster block (Host * with ControlMaster, ControlPath, ControlPersist)
+            $updatedConfig = $existingConfig -replace '(?s)(Host\s+\*\s+(?:ControlMaster\s+auto\s+|ControlPath\s+[^\s]+\s+|ControlPersist\s+[^\s]+\s+)+)', ''
+            
+            # Clean up extra blank lines
+            $updatedConfig = $updatedConfig -replace '(\r?\n){3,}', "`n`n"
+            $updatedConfig = $updatedConfig.TrimEnd()
+            
+            if ($PSCmdlet.ShouldProcess($configFile, "Remove ControlMaster configuration")) {
+                if ($updatedConfig.Trim().Length -gt 0) {
+                    Set-Content -Path $configFile -Value ($updatedConfig + "`n") -Encoding UTF8 -NoNewline
+                    Write-Host "Removed ControlMaster configuration from: $configFile" -ForegroundColor Green
+                } else {
+                    # File is now empty, remove it
+                    Remove-Item -Path $configFile -Force
+                    Write-Host "Removed empty SSH config file: $configFile" -ForegroundColor Green
+                }
+            }
+        } else {
+            Write-Host "No ControlMaster configuration found in: $configFile" -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "SSH config file does not exist: $configFile" -ForegroundColor Yellow
+    }
+    
+    # Optionally remove socket files
+    if ($RemoveSockets -and (Test-Path $socketsDir)) {
+        if ($PSCmdlet.ShouldProcess($socketsDir, "Remove socket files")) {
+            # Remove all socket files
+            $socketFiles = Get-ChildItem -Path $socketsDir -File -ErrorAction SilentlyContinue
+            if ($socketFiles) {
+                $socketFiles | Remove-Item -Force
+                Write-Host "Removed $($socketFiles.Count) socket file(s) from: $socketsDir" -ForegroundColor Green
+            }
+            
+            # Remove the sockets directory if it's empty
+            $remainingFiles = Get-ChildItem -Path $socketsDir -ErrorAction SilentlyContinue
+            if (-not $remainingFiles) {
+                Remove-Item -Path $socketsDir -Force
+                Write-Host "Removed empty sockets directory: $socketsDir" -ForegroundColor Green
+            }
+        }
+    }
+    
+    Write-Host "SSH connection reuse disabled." -ForegroundColor Cyan
+}
+
 Export-ModuleMember -Function New-SshProxy
 Export-ModuleMember -Function Copy-Sshid
+Export-ModuleMember -Function Enable-SshConnectionReuse
+Export-ModuleMember -Function Disable-SshConnectionReuse
