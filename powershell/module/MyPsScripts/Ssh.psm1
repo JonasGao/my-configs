@@ -270,15 +270,15 @@ function New-RemoteCopyScript {
     [string]$BackupTimestamp
   )
   
-  # 转义公钥内容中的特殊字符
-  $escapedKey = $PublicKeyContent -replace "'", "'\\''" -replace "`n", "\\n"
+  # 使用 base64 编码防止命令注入
+  $encodedKey = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($PublicKeyContent))
   
   # 构建bash脚本
   $script = @"
 set -e
 
-# 接收公钥内容作为环境变量
-KEY_CONTENT='$escapedKey'
+# 解码 base64 编码的公钥内容
+KEY_CONTENT=\$(echo '$encodedKey' | base64 -d)
 
 # 1. 计算指纹并检查是否已存在
 KEY_FP=\$(echo "\$KEY_CONTENT" | ssh-keygen -lf - 2>/dev/null | grep -o 'SHA256:[A-Za-z0-9+/=]+' || true)
@@ -382,13 +382,19 @@ function Find-AvailablePort
     {
       $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $port)
       $listener.Start()
+      $listener.Stop()
+      $listener.Dispose()
       return $port
     }
-    finally
+    catch
     {
-      if ($listener -ne $null) {
-        $listener.Stop()
+      # 端口被占用，清理资源并继续
+      if ($listener -ne $null)
+      {
+        try { $listener.Stop() } catch {}
+        try { $listener.Dispose() } catch {}
       }
+      continue
     }
   }
   
