@@ -875,7 +875,302 @@ function Disable-SshConnectionReuse
     Write-Host "SSH connection reuse disabled." -ForegroundColor Cyan
 }
 
+<#
+.SYNOPSIS
+    Starts SSH agent and optionally loads SSH keys.
+
+.DESCRIPTION
+    Starts ssh-agent process, sets environment variables, optionally persists session
+    to file, and can auto-add keys from ~/.ssh directory.
+
+.PARAMETER AutoAddKeys
+    Automatically add all identity keys from ~/.ssh directory to the agent.
+
+.PARAMETER PersistSession
+    Persist agent session information to ~/.ssh/agent-session.json for later resumption.
+
+.PARAMETER Lifetime
+    Maximum lifetime in seconds for added keys (0 = unlimited).
+
+.EXAMPLE
+    Start-SshAgent
+    
+    Starts ssh-agent without loading keys.
+
+.EXAMPLE
+    Start-SshAgent -AutoAddKeys
+    
+    Starts ssh-agent and loads all keys from ~/.ssh.
+
+.EXAMPLE
+    Start-SshAgent -AutoAddKeys -PersistSession -Lifetime 3600
+    
+    Starts ssh-agent, loads keys with 1-hour lifetime, and persists session.
+
+.NOTES
+    Works on both Windows and Linux/Mac.
+#>
+function Start-SshAgent
+{
+    [CmdletBinding()]
+    param(
+        [switch]$AutoAddKeys,
+        [switch]$PersistSession,
+        [int]$Lifetime = 0
+    )
+    
+    # Platform-adapted SSH directory
+    $sshDir = if ($IsWindows) { Join-Path $env:USERPROFILE ".ssh" } else { Join-Path $env:HOME ".ssh" }
+    
+    # Start ssh-agent and parse output
+    $agentOutput = ssh-agent -s 2>&1 | Out-String
+    if ($agentOutput -match 'SSH_AUTH_SOCK=([^;]+);') { $socket = $Matches[1] }
+    if ($agentOutput -match 'SSH_AGENT_PID=(\d+);') { $pid = $Matches[1] }
+    
+    # Set environment variables
+    $env:SSH_AUTH_SOCK = $socket
+    $env:SSH_AGENT_PID = $pid
+    
+    # Persist session if requested
+    if ($PersistSession)
+    {
+        $sessionFile = Join-Path $sshDir "agent-session.json"
+        [pscustomobject]@{ PID=$pid; Socket=$socket; Timestamp=Get-Date } | ConvertTo-Json | Out-File $sessionFile -Encoding UTF8
+    }
+    
+    # Auto-add keys if requested
+    $loadedKeys = if ($AutoAddKeys) { Add-SshKey -All -Lifetime $Lifetime } else { @() }
+    
+    return [pscustomobject]@{ PID=$pid; Socket=$socket; Keys=$loadedKeys; Persisted=$PersistSession }
+}
+
+<#
+.SYNOPSIS
+    Adds SSH keys to the running ssh-agent.
+
+.DESCRIPTION
+    Adds specified SSH identity keys or all keys from ~/.ssh to the ssh-agent.
+
+.PARAMETER KeyPaths
+    Array of key file paths to add.
+
+.PARAMETER All
+    Add all identity keys from ~/.ssh directory (id_rsa, id_ed25519, etc).
+
+.PARAMETER Lifetime
+    Maximum lifetime in seconds for added keys (0 = unlimited).
+
+.EXAMPLE
+    Add-SshKey -KeyPaths ~/.ssh/id_rsa
+    
+    Adds a specific key to the agent.
+
+.EXAMPLE
+    Add-SshKey -All
+    
+    Adds all keys from ~/.ssh directory.
+
+.EXAMPLE
+    Add-SshKey -All -Lifetime 3600
+    
+    Adds all keys with 1-hour lifetime.
+
+.NOTES
+    Requires ssh-agent to be running.
+#>
+function Add-SshKey
+{
+    [CmdletBinding()]
+    param(
+        [string[]]$KeyPaths,
+        [switch]$All,
+        [int]$Lifetime = 0
+    )
+    
+    # Check agent running
+    $status = Get-SshAgentStatus
+    if (-not $status.IsRunning) { throw "ssh-agent未运行，请先执行 Start-SshAgent" }
+    
+    # Find keys if -All
+    if ($All)
+    {
+        $sshDir = if ($IsWindows) { Join-Path $env:USERPROFILE ".ssh" } else { Join-Path $env:HOME ".ssh" }
+        $KeyPaths = Get-ChildItem $sshDir -Filter "id_*" | Where-Object { $_.Name -notmatch '\.pub$|\.pem$' } | Select-Object -ExpandProperty FullName
+    }
+    
+    # Add each key
+    $addedKeys = @()
+    foreach ($keyPath in $KeyPaths)
+    {
+        if (Test-Path $keyPath)
+        {
+            $lifetimeArg = if ($Lifetime -gt 0) { "-t $Lifetime" } else { "" }
+            $result = ssh-add $lifetimeArg $keyPath 2>&1 | Out-String
+            if ($result -match 'Identity added') { $addedKeys += $keyPath }
+        }
+    }
+    
+    return $addedKeys
+}
+
+<#
+.SYNOPSIS
+    Checks ssh-agent status and lists loaded keys.
+
+.DESCRIPTION
+    Returns information about whether ssh-agent is running, its PID, socket path,
+    and details of all loaded keys including fingerprints and types.
+
+.EXAMPLE
+    Get-SshAgentStatus
+    
+    Returns agent status and loaded keys.
+
+.OUTPUTS
+    PSCustomObject with IsRunning, PID, Socket, Keys, and KeyCount properties.
+#>
+function Get-SshAgentStatus
+{
+    [CmdletBinding()]
+    param()
+    
+    $isRunning = $false
+    $keys = @()
+    
+    if ($env:SSH_AUTH_SOCK -and $env:SSH_AGENT_PID)
+    {
+        $testResult = ssh-add -l 2>&1 | Out-String
+        if ($testResult -match 'Could not open') { $isRunning = $false }
+        elseif ($testResult -match 'no identities') { $isRunning = $true }
+        else
+        {
+            $isRunning = $true
+            # Parse keys from output
+            $keys = $testResult -split "`n" | Where-Object { $_ -match '^\d+' } | ForEach-Object {
+                if ($_ -match '(\d+)\s+SHA256:([A-Za-z0-9+/=]+)\s+(.+)\s+\(([^)]+)\)')
+                {
+                    [pscustomobject]@{ Bits=[int]$Matches[1]; Fingerprint="SHA256:$($Matches[2])"; Comment=$Matches[3].Trim(); Type=$Matches[4] }
+                }
+            }
+        }
+    }
+    
+    return [pscustomobject]@{ IsRunning=$isRunning; PID=$env:SSH_AGENT_PID; Socket=$env:SSH_AUTH_SOCK; Keys=$keys; KeyCount=$keys.Count }
+}
+
+<#
+.SYNOPSIS
+    Stops ssh-agent and cleans up environment.
+
+.DESCRIPTION
+    Stops the running ssh-agent, removes environment variables, cleans up session
+    file, and optionally kills all ssh-agent processes.
+
+.PARAMETER KillAll
+    Kill all ssh-agent processes on the system (not just the current one).
+
+.EXAMPLE
+    Stop-SshAgent
+    
+    Stops the current ssh-agent.
+
+.EXAMPLE
+    Stop-SshAgent -KillAll
+    
+    Stops all ssh-agent processes on the system.
+
+.NOTES
+    Removes persisted session file if it exists.
+#>
+function Stop-SshAgent
+{
+    [CmdletBinding()]
+    param([switch]$KillAll)
+    
+    if ($env:SSH_AGENT_PID)
+    {
+        ssh-agent -k 2>&1 | Out-Null
+        Remove-Item env:SSH_AUTH_SOCK -ErrorAction SilentlyContinue
+        Remove-Item env:SSH_AGENT_PID -ErrorAction SilentlyContinue
+    }
+    
+    # Clean session file
+    $sshDir = if ($IsWindows) { Join-Path $env:USERPROFILE ".ssh" } else { Join-Path $env:HOME ".ssh" }
+    Remove-Item (Join-Path $sshDir "agent-session.json") -ErrorAction SilentlyContinue
+    
+    # Kill all agents if requested
+    if ($KillAll)
+    {
+        if ($IsWindows) { Get-Process ssh-agent -ErrorAction SilentlyContinue | Stop-Process -Force }
+        else { pkill ssh-agent 2>$null }
+    }
+    
+    return $true
+}
+
+<#
+.SYNOPSIS
+    Resumes a previously persisted ssh-agent session.
+
+.DESCRIPTION
+    Loads ssh-agent session information from ~/.ssh/agent-session.json, validates
+    that the socket and process are still available, and restores environment variables.
+
+.EXAMPLE
+    Resume-SshAgent
+    
+    Attempts to resume a persisted session.
+
+.OUTPUTS
+    PSCustomObject with agent status, or null if session cannot be resumed.
+#>
+function Resume-SshAgent
+{
+    [CmdletBinding()]
+    param()
+    
+    $sshDir = if ($IsWindows) { Join-Path $env:USERPROFILE ".ssh" } else { Join-Path $env:HOME ".ssh" }
+    $sessionFile = Join-Path $sshDir "agent-session.json"
+    
+    if (-not (Test-Path $sessionFile))
+    {
+        Write-Warning "未找到持久化的agent session文件"
+        return $null
+    }
+    
+    $session = Get-Content $sessionFile | ConvertFrom-Json
+    
+    # Verify socket and process exist
+    if (-not (Test-Path $session.Socket))
+    {
+        Write-Warning "Agent socket已失效"
+        Remove-Item $sessionFile -Force
+        return $null
+    }
+    
+    $processExists = if ($IsWindows) { Get-Process -Id $session.PID -ErrorAction SilentlyContinue }
+    else { ps -p $session.PID 2>$null }
+    
+    if (-not $processExists)
+    {
+        Write-Warning "Agent进程已终止"
+        Remove-Item $sessionFile -Force
+        return $null
+    }
+    
+    # Restore environment
+    $env:SSH_AUTH_SOCK = $session.Socket
+    $env:SSH_AGENT_PID = $session.PID
+    
+    return Get-SshAgentStatus
+}
+
 Export-ModuleMember -Function New-SshProxy
 Export-ModuleMember -Function Copy-Sshid
+Export-ModuleMember -Function Start-SshAgent
+Export-ModuleMember -Function Add-SshKey
+Export-ModuleMember -Function Get-SshAgentStatus
+Export-ModuleMember -Function Stop-SshAgent
+Export-ModuleMember -Function Resume-SshAgent
 Export-ModuleMember -Function Enable-SshConnectionReuse
 Export-ModuleMember -Function Disable-SshConnectionReuse
