@@ -72,24 +72,24 @@ function New-SshProxy
     if ($DynamicPort)
     {
         $Port = Find-AvailablePort -StartPort $StartPort
-        Write-Host "Auto-detected available port: $Port" -ForegroundColor Cyan
+        Write-Verbose "Auto-detected available port: $Port"
     }
     elseif ($Port -eq 0)
     {
         $Port = Find-AvailablePort -StartPort $StartPort
-        Write-Host "Auto-detected available port: $Port" -ForegroundColor Cyan
+        Write-Verbose "Auto-detected available port: $Port"
     }
     
     # Test connection if requested
     if ($TestConnection)
     {
-        Write-Host "Testing connection to $SshTarget..." -ForegroundColor Cyan
+        Write-Verbose "Testing connection to $SshTarget..."
         $connResult = Test-SshConnection -Target $SshTarget -Timeout $ConnectionTimeout
         if (-not $connResult.Success)
         {
             throw "Connection test failed: $($connResult.Message)"
         }
-        Write-Host "Connection test successful: $($connResult.Message)" -ForegroundColor Green
+        Write-Verbose "Connection test successful: $($connResult.Message)"
     }
     
     # Create function names
@@ -247,10 +247,10 @@ function New-SshProxy
     Set-Item -Path "function:global:$stopFunctionName" -Value $stopFunction
     Set-Item -Path "function:global:$statusFunctionName" -Value $statusFunction
     
-    Write-Host "Created SSH proxy management functions:" -ForegroundColor Green
-    Write-Host "  - $startFunctionName" -ForegroundColor Cyan
-    Write-Host "  - $stopFunctionName" -ForegroundColor Cyan
-    Write-Host "  - $statusFunctionName" -ForegroundColor Cyan
+    Write-Verbose "Created SSH proxy management functions:"
+    Write-Verbose "  - $startFunctionName"
+    Write-Verbose "  - $stopFunctionName"
+    Write-Verbose "  - $statusFunctionName"
     
     return [pscustomobject]@{
         StartFunction = $startFunctionName
