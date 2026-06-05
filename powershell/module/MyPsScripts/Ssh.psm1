@@ -1,12 +1,264 @@
+<#
+.SYNOPSIS
+    Creates SSH proxy (SOCKS) functions with auto port detection and connection testing.
+
+.DESCRIPTION
+    Creates a set of functions (Start/Stop/Status) to manage an SSH SOCKS proxy.
+    Supports automatic port detection, connection testing, and dynamic function generation.
+
+.PARAMETER Name
+    Name for the proxy functions (e.g., "MyProxy" creates Start-MyProxyProxy, Stop-MyProxyProxy, etc).
+
+.PARAMETER SshTarget
+    SSH target in format "user@host" or "host".
+
+.PARAMETER Port
+    Local port for SOCKS proxy (optional, auto-detected if DynamicPort is used).
+
+.PARAMETER DynamicPort
+    Automatically find an available port starting from the specified port number.
+
+.PARAMETER StartPort
+    Starting port for auto-detection when using DynamicPort (default: 1080).
+
+.PARAMETER TestConnection
+    Test SSH connection before creating proxy functions.
+
+.PARAMETER ConnectionTimeout
+    Timeout in seconds for connection test (default: 10).
+
+.EXAMPLE
+    New-SshProxy -Name "Work" -SshTarget "user@work.example.com" -Port 1080
+    
+    Creates Start-WorkProxy, Stop-WorkProxy, Get-WorkProxyStatus functions on port 1080.
+
+.EXAMPLE
+    New-SshProxy -Name "Work" -SshTarget "user@work.example.com" -DynamicPort -StartPort 1080
+    
+    Automatically finds available port starting from 1080.
+
+.EXAMPLE
+    New-SshProxy -Name "Work" -SshTarget "user@work.example.com" -Port 1080 -TestConnection
+    
+    Tests connection before creating proxy functions.
+
+.NOTES
+    Creates three global functions: Start-{Name}Proxy, Stop-{Name}Proxy, Get-{Name}ProxyStatus.
+#>
 function New-SshProxy
 {
-  param($Name, $Port, $SshTarget)
-  $FullName = "Start-${Name}Proxy"
-  Set-Item -Path function:global:$FullName -Value {
-    Write-Output "Startuping ssh @$Port"
-    ssh -CND 127.0.0.1:$Port $SshTarget
-    Write-Output "Finish"
-  }.GetNewClosure()
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name,
+        
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$SshTarget,
+        
+        [int]$Port,
+        
+        [switch]$DynamicPort,
+        
+        [int]$StartPort = 1080,
+        
+        [switch]$TestConnection,
+        
+        [int]$ConnectionTimeout = 10
+    )
+    
+    # Determine port
+    if ($DynamicPort)
+    {
+        $Port = Find-AvailablePort -StartPort $StartPort
+        Write-Host "Auto-detected available port: $Port" -ForegroundColor Cyan
+    }
+    elseif ($Port -eq 0)
+    {
+        $Port = Find-AvailablePort -StartPort $StartPort
+        Write-Host "Auto-detected available port: $Port" -ForegroundColor Cyan
+    }
+    
+    # Test connection if requested
+    if ($TestConnection)
+    {
+        Write-Host "Testing connection to $SshTarget..." -ForegroundColor Cyan
+        $connResult = Test-SshConnection -Target $SshTarget -Timeout $ConnectionTimeout
+        if (-not $connResult.Success)
+        {
+            throw "Connection test failed: $($connResult.Message)"
+        }
+        Write-Host "Connection test successful: $($connResult.Message)" -ForegroundColor Green
+    }
+    
+    # Create function names
+    $startFunctionName = "Start-${Name}Proxy"
+    $stopFunctionName = "Stop-${Name}Proxy"
+    $statusFunctionName = "Get-${Name}ProxyStatus"
+    
+    # Store proxy info in script-scoped variable for status tracking
+    $proxyInfo = @{
+        Name = $Name
+        Target = $SshTarget
+        Port = $Port
+        Status = "Stopped"
+        Process = $null
+        StartTime = $null
+    }
+    
+    # Create Start function
+    $startFunction = {
+        param(
+            [switch]$Background,
+            [switch]$Quiet
+        )
+        
+        # Access proxy info from parent scope
+        $proxyInfo = $using:proxyInfo
+        
+        # Check if already running
+        if ($proxyInfo.Status -eq "Running" -and $proxyInfo.Process -ne $null)
+        {
+            if (-not $Quiet)
+            {
+                Write-Warning "Proxy '$($proxyInfo.Name)' is already running on port $($proxyInfo.Port)"
+            }
+            return $proxyInfo.Process
+        }
+        
+        if (-not $Quiet)
+        {
+            Write-Host "Starting SSH proxy: $($proxyInfo.Target) on port $($proxyInfo.Port)" -ForegroundColor Cyan
+        }
+        
+        # Start SSH SOCKS proxy
+        $psi = @{
+            FilePath = "ssh"
+            ArgumentList = @("-CND", "127.0.0.1:$($proxyInfo.Port)", $proxyInfo.Target)
+            PassThru = $true
+        }
+        
+        if ($Background)
+        {
+            $psi.WindowStyle = "Hidden"
+        }
+        
+        $process = Start-Process @psi
+        
+        # Update proxy info
+        $proxyInfo.Process = $process
+        $proxyInfo.Status = "Running"
+        $proxyInfo.StartTime = Get-Date
+        
+        # Wait a moment to verify process started
+        Start-Sleep -Milliseconds 500
+        
+        if ($process.HasExited)
+        {
+            $proxyInfo.Status = "Error"
+            $proxyInfo.Process = $null
+            throw "Failed to start SSH proxy. Process exited immediately."
+        }
+        
+        if (-not $Quiet)
+        {
+            Write-Host "SSH proxy started successfully (PID: $($process.Id))" -ForegroundColor Green
+            Write-Host "SOCKS proxy: 127.0.0.1:$($proxyInfo.Port)" -ForegroundColor Gray
+        }
+        
+        return $process
+    }.GetNewClosure()
+    
+    # Create Stop function
+    $stopFunction = {
+        param([switch]$Force)
+        
+        # Access proxy info from parent scope
+        $proxyInfo = $using:proxyInfo
+        
+        if ($proxyInfo.Status -ne "Running" -or $proxyInfo.Process -eq $null)
+        {
+            Write-Host "Proxy '$($proxyInfo.Name)' is not running" -ForegroundColor Yellow
+            return $false
+        }
+        
+        Write-Host "Stopping SSH proxy: $($proxyInfo.Name)" -ForegroundColor Cyan
+        
+        # Stop the process
+        if ($Force)
+        {
+            Stop-Process -Id $proxyInfo.Process.Id -Force -ErrorAction SilentlyContinue
+        }
+        else
+        {
+            Stop-Process -Id $proxyInfo.Process.Id -ErrorAction SilentlyContinue
+        }
+        
+        # Update proxy info
+        $proxyInfo.Status = "Stopped"
+        $proxyInfo.Process = $null
+        $proxyInfo.StartTime = $null
+        
+        Write-Host "SSH proxy stopped" -ForegroundColor Green
+        return $true
+    }.GetNewClosure()
+    
+    # Create Status function
+    $statusFunction = {
+        param()
+        
+        # Access proxy info from parent scope
+        $proxyInfo = $using:proxyInfo
+        
+        # Check if process is still running
+        if ($proxyInfo.Process -ne $null)
+        {
+            $process = Get-Process -Id $proxyInfo.Process.Id -ErrorAction SilentlyContinue
+            if ($process -eq $null)
+            {
+                $proxyInfo.Status = "Stopped"
+                $proxyInfo.Process = $null
+            }
+        }
+        
+        $duration = if ($proxyInfo.StartTime -and $proxyInfo.Status -eq "Running")
+        {
+            (Get-Date) - $proxyInfo.StartTime
+        }
+        else
+        {
+            [timespan]::Zero
+        }
+        
+        return [pscustomobject]@{
+            Name = $proxyInfo.Name
+            Target = $proxyInfo.Target
+            Port = $proxyInfo.Port
+            Status = $proxyInfo.Status
+            PID = if ($proxyInfo.Process) { $proxyInfo.Process.Id } else { $null }
+            StartTime = $proxyInfo.StartTime
+            Duration = $duration
+        }
+    }.GetNewClosure()
+    
+    # Register functions globally
+    Set-Item -Path "function:global:$startFunctionName" -Value $startFunction
+    Set-Item -Path "function:global:$stopFunctionName" -Value $stopFunction
+    Set-Item -Path "function:global:$statusFunctionName" -Value $statusFunction
+    
+    Write-Host "Created SSH proxy management functions:" -ForegroundColor Green
+    Write-Host "  - $startFunctionName" -ForegroundColor Cyan
+    Write-Host "  - $stopFunctionName" -ForegroundColor Cyan
+    Write-Host "  - $statusFunctionName" -ForegroundColor Cyan
+    
+    return [pscustomobject]@{
+        StartFunction = $startFunctionName
+        StopFunction = $stopFunctionName
+        StatusFunction = $statusFunctionName
+        Port = $Port
+        Target = $SshTarget
+    }
 }
 
 # 内部函数：生成远程执行脚本
