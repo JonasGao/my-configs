@@ -78,7 +78,11 @@ function Test-SshConnection
 {
   [CmdletBinding()]
   param(
+    [Parameter(Mandatory=$true)]
+    [ValidateNotNullOrEmpty()]
     [string]$Target,
+    
+    [ValidateRange(1, 300)]
     [int]$Timeout = 10
   )
   
@@ -114,21 +118,25 @@ function Test-SshConnection
 function Find-AvailablePort
 {
   [CmdletBinding()]
-  param([int]$StartPort = 1080)
+  param(
+    [ValidateRange(1, 65534)]
+    [int]$StartPort = 1080
+  )
   
   for ($port = $StartPort; $port -lt 65535; $port++)
   {
+    $listener = $null
     try
     {
       $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $port)
       $listener.Start()
-      $listener.Stop()
       return $port
     }
-    catch
+    finally
     {
-      # 端口被占用，继续尝试下一个
-      continue
+      if ($listener -ne $null) {
+        $listener.Stop()
+      }
     }
   }
   
