@@ -65,7 +65,9 @@ function New-SshProxy
         
         [switch]$TestConnection,
         
-        [int]$ConnectionTimeout = 10
+        [int]$ConnectionTimeout = 10,
+        
+        [switch]$PassThru
     )
     
     # Determine port
@@ -252,12 +254,15 @@ function New-SshProxy
     Write-Verbose "  - $stopFunctionName"
     Write-Verbose "  - $statusFunctionName"
     
-    return [pscustomobject]@{
-        StartFunction = $startFunctionName
-        StopFunction = $stopFunctionName
-        StatusFunction = $statusFunctionName
-        Port = $Port
-        Target = $SshTarget
+    if ($PassThru)
+    {
+        return [pscustomobject]@{
+            StartFunction = $startFunctionName
+            StopFunction = $stopFunctionName
+            StatusFunction = $statusFunctionName
+            Port = $Port
+            Target = $SshTarget
+        }
     }
 }
 
