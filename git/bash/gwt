@@ -38,9 +38,9 @@ _gwt_codegraph_init_or_sync() {
 
     # Check if already initialized (has .codegraph/codegraph.db)
     if [[ -f ".codegraph/codegraph.db" ]]; then
-        codegraph sync &>/dev/null
+        codegraph sync
     else
-        codegraph init &>/dev/null
+        codegraph init
     fi
 }
 
