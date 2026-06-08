@@ -1,8 +1,11 @@
 #!/bin/bash
 # gwt - Git Worktree Manager
+# Version: 1.1.0
 # Usage: source gwt <branch-name>
 #        gwtb        # toggle between main repo and worktree
 #        gwtd        # remove current worktree (keep local branch)
+
+GWT_VERSION="1.1.0"
 
 # Must be sourced to affect the current shell session (cd)
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
@@ -44,6 +47,12 @@ _gwt_codegraph_init_or_sync() {
 # Main function: create or switch to a worktree for the given branch
 gwt() {
     local branch="$1"
+
+    # Version query
+    if [[ "$branch" == "--version" || "$branch" == "-v" ]]; then
+        echo "gwt version $GWT_VERSION"
+        return 0
+    fi
 
     if [[ -z "$branch" ]]; then
         echo "Usage: gwt <branch-name>"
