@@ -111,8 +111,8 @@ gwt() {
     repo_name=$(basename "$main_repo")
     branch_suffix="${branch##*/}"
     local worktree_path
-    worktree_path="${GWT_BASE_DIR}/${repo_name}_${branch_suffix}"
-    mkdir -p "$GWT_BASE_DIR"
+    worktree_path="${GWT_BASE_DIR}/${branch_suffix}/${repo_name}"
+    mkdir -p "${GWT_BASE_DIR}/${branch_suffix}"
 
     if [[ -e "$worktree_path" ]]; then
         echo "Error: Path '$worktree_path' already exists but is not a tracked worktree."
