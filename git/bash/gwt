@@ -133,7 +133,7 @@ gwt() {
 
     elif git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
         # Remote tracking branch exists
-        git -C "$main_repo" worktree add -b "$branch" "$worktree_path" "origin/$branch"
+        git -C "$main_repo" worktree add -b "$branch" --no-track "$worktree_path" "origin/$branch"
         export GWT_LAST_WORKTREE="$current_dir"
         cd "$worktree_path"
         echo "Created worktree from remote branch 'origin/$branch': $worktree_path"
@@ -160,7 +160,7 @@ gwt() {
             return 1
         fi
 
-        git -C "$main_repo" worktree add -b "$branch" "$worktree_path" "origin/$base_branch"
+        git -C "$main_repo" worktree add -b "$branch" --no-track "$worktree_path" "origin/$base_branch"
         export GWT_LAST_WORKTREE="$current_dir"
         cd "$worktree_path"
         echo "Created worktree from base branch '$base_branch' for new branch '$branch': $worktree_path"
