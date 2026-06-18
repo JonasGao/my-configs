@@ -164,6 +164,8 @@ gwt() {
         export GWT_LAST_WORKTREE="$current_dir"
         cd "$worktree_path"
         echo "Created worktree from base branch '$base_branch' for new branch '$branch': $worktree_path"
+        git push -u origin "$branch"
+        echo "Pushed branch '$branch' to origin and set up tracking."
         _gwt_codegraph_init_or_sync
     fi
 }
