@@ -20,7 +20,7 @@
   ca = commit -a
   amend = commit --amend
   amen = commit --amend --no-edit
-  
+
   # 分支相关
   c = checkout
   co = checkout
@@ -29,7 +29,7 @@
   br = branch
   bd = branch -d
   bD = branch -D
-  
+
   # 拉取推送
   pr = pull -r
   p = push
@@ -38,30 +38,30 @@
   f = fetch
   fa = fetch --all
   fp = fetch --prune
-  
+
   # 状态和差异
   st = status
   s = status -s
   d = diff
   dc = diff --cached
   ds = diff --stat
-  
+
   # 日志查看
   lg = log --graph --oneline --decorate --all
   ll = log --pretty=format:'%C(yellow)%h%Cred%d %Creset%s%Cblue [%cn]' --decorate
   ls = log --pretty=format:'%C(yellow)%h %C(cyan)%ad %Cred%d %Creset%s%Cblue [%cn]' --decorate --date=short
   last = log -1 HEAD
-  
+
   # 撤销相关
   unstage = reset HEAD --
   undo = reset --soft HEAD~1
   discard = checkout --
-  
+
   # Stash 相关
   sl = stash list
   sp = stash pop
   ss = stash save
-  
+
   # Worktree 相关
   wt = worktree                    # worktree 子命令（默认输出帮助）
   wtl = worktree list              # 列出工作树
@@ -71,33 +71,36 @@
   wtm = worktree move              # 移动工作树目录
   wtlk = worktree lock             # 锁定工作树（避免被 prune）
   wtul = worktree unlock           # 解锁工作树
-  
+
   # 其他实用别名
   aliases = config --get-regexp alias
   contributors = shortlog --summary --numbered
   tags = tag -l
   remotes = remote -v
-  [interactive]
+[interactive]
 	diffFilter = delta --color-only --features=interactive
 [delta]
-	features = decorations
+	features = decorations interactive
 	side-by-side = true
 	line-numbers = true
 [delta "interactive"]
 	keep-plus-minus-markers = false
 [delta "decorations"]
-	commit-decoration-style = blue ol
+	commit-decoration-style = bold yellow box ul
+	file-style = bold yellow ul
+	file-decoration-style = none
 	commit-style = raw
-	file-style = omit
-	hunk-header-decoration-style = blue box
+	hunk-header-decoration-style = yellow box
 	hunk-header-file-style = red
 	hunk-header-line-number-style = "#067a00"
 	hunk-header-style = file line-number syntax
 [http "https://github.com"]
-	proxy = http://xx.my:7890
+	proxy = http://proxy0.lan:7890
 [http "https://huggingface.co"]
-	proxy = http://xx.my:7890
+	proxy = http://proxy0.lan:7890
 [credential "https://codeup.aliyun.com"]
 	provider = generic
 [init]
 	defaultBranch = main
+[credential]
+	helper = store
