@@ -37,6 +37,7 @@
   pl = pull
   f = fetch
   fa = fetch --all
+  fp = fetch --prune
   
   # 状态和差异
   st = status
