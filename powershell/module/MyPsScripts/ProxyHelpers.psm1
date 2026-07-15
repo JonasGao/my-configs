@@ -134,19 +134,65 @@ function Set-EnvProxy {
   }
 }
 
+<#
+ .Synopsis
+  Set .NET default proxy for both WebRequest (WebClient, Windows PowerShell)
+  and HttpClient (PowerShell 7+ Invoke-RestMethod/Invoke-WebRequest).
+  Pass empty string to clear/reset.
+#>
 function Set-DotNetProxy {
+  [CmdletBinding()]
   param (
-    $Proxy
+    [Parameter(Mandatory = $true, Position = 0)]
+    [AllowEmptyString()]
+    [string]$Url
   )
-  [net.webrequest]::DefaultWebProxy = New-Object net.webproxy $Proxy
+
+  if ([string]::IsNullOrWhiteSpace($Url)) {
+    [System.Net.WebRequest]::DefaultWebProxy = $null
+    try {
+      [System.Net.Http.HttpClient]::DefaultProxy = $null
+    }
+    catch { }
+    return
+  }
+
+  $trimmed = $Url.Trim()
+  [System.Net.WebRequest]::DefaultWebProxy = New-Object System.Net.WebProxy $trimmed
+  try {
+    [System.Net.Http.HttpClient]::DefaultProxy = New-Object System.Net.WebProxy $trimmed
+  }
+  catch { }
 }
 
+<#
+ .Synopsis
+  Get .NET default proxy addresses from both WebRequest and HttpClient.
+  Returns a PSCustomObject with WebRequestProxy and HttpClientProxy properties.
+#>
 function Get-DotNetProxy {
-  $proxy = [net.webrequest]::DefaultWebProxy
+  [CmdletBinding()]
+  param ()
+
+  $webRequestProxy = $null
+  $proxy = [System.Net.WebRequest]::DefaultWebProxy
   if ($proxy -and $proxy.Address) {
-    return $proxy.Address.ToString()
+    $webRequestProxy = $proxy.Address.ToString()
   }
-  return $null
+
+  $httpClientProxy = $null
+  try {
+    $proxy = [System.Net.Http.HttpClient]::DefaultProxy
+    if ($proxy -and $proxy.Address) {
+      $httpClientProxy = $proxy.Address.ToString()
+    }
+  }
+  catch { }
+
+  return [PSCustomObject]@{
+    WebRequestProxy  = $webRequestProxy
+    HttpClientProxy  = $httpClientProxy
+  }
 }
 
 function Get-EnvProxy {
@@ -169,70 +215,7 @@ function Get-EnvProxy {
   }
 }
 
-<#
- .Synopsis
-  Run command or scriptblock with http proxy env temporarily set
-#>
-function Invoke-WithProxy {
-  [CmdletBinding(DefaultParameterSetName = 'Command')]
-  param (
-    [string]$Url,
-    [string]$NoProxy,
-
-    [Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'ScriptBlock')]
-    [scriptblock]$ScriptBlock,
-
-    # Avoid naming this -Command: it steals pwsh/cmd -Command from remaining args.
-    [Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'Command')]
-    [string]$FilePath,
-
-    [Parameter(ValueFromRemainingArguments = $true, ParameterSetName = 'Command')]
-    $ArgumentList,
-
-    [Parameter(ValueFromRemainingArguments = $true, ParameterSetName = 'ScriptBlock')]
-    $ScriptArguments
-  )
-
-  $resolved = Resolve-ProxyUrl -Url $Url
-  if (!$resolved) {
-    Write-Error @"
-没有可用的代理地址。请任选其一：
-  1. 传 -Url，例如：Invoke-WithProxy -Url http://127.0.0.1:7890 { git pull }
-  2. 创建配置文件：$HOME\.config\my-powershell\default-proxy
-  3. 先执行 Set-EnvProxy 设置当前会话代理
-"@
-    return
-  }
-
-  $snapshot = Get-ProxyEnvSnapshot
-
-  try {
-    if ($PSBoundParameters.ContainsKey('NoProxy')) {
-      Set-ProxyEnvVars -Url $resolved -NoProxy $NoProxy
-    }
-    else {
-      Set-ProxyEnvVars -Url $resolved
-    }
-
-    if ($PSCmdlet.ParameterSetName -eq 'ScriptBlock') {
-      if ($null -ne $ScriptArguments -and @($ScriptArguments).Count -gt 0) {
-        & $ScriptBlock @ScriptArguments
-      }
-      else {
-        & $ScriptBlock
-      }
-    }
-    else {
-      & $FilePath @ArgumentList
-    }
-  }
-  finally {
-    Restore-ProxyEnvSnapshot -Snapshot $snapshot
-  }
-}
-
 Export-ModuleMember -Function Set-EnvProxy
 Export-ModuleMember -Function Get-EnvProxy
 Export-ModuleMember -Function Set-DotNetProxy
 Export-ModuleMember -Function Get-DotNetProxy
-Export-ModuleMember -Function Invoke-WithProxy
