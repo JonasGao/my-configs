@@ -25,7 +25,18 @@ function Resolve-ProxyUrl {
     }
   }
 
-  return $null
+  foreach ($name in @('HTTP_PROXY', 'http_proxy', 'HTTPS_PROXY', 'https_proxy', 'ALL_PROXY', 'all_proxy')) {
+    $path = "Env:$name"
+    if (Test-Path -LiteralPath $path) {
+      $value = (Get-Item -LiteralPath $path).Value
+      if ($value) {
+        return $value.Trim()
+      }
+    }
+  }
+
+  # Same default as bash `.proxy_funcs` / git config in this repo.
+  return 'http://proxy0.lan:7890'
 }
 
 function Get-ProxyEnvSnapshot {
@@ -140,26 +151,22 @@ function Get-DotNetProxy {
 
 function Get-EnvProxy {
   $snapshot = Get-ProxyEnvSnapshot
-  $hasAny = $false
-  foreach ($name in $script:ProxyEnvNames) {
-    if ($null -ne $snapshot[$name]) {
-      $hasAny = $true
-      break
-    }
-  }
 
-  if (-not $hasAny) {
+  $httpProxy = if ($null -ne $snapshot['HTTP_PROXY']) { $snapshot['HTTP_PROXY'] } else { $snapshot['http_proxy'] }
+  $httpsProxy = if ($null -ne $snapshot['HTTPS_PROXY']) { $snapshot['HTTPS_PROXY'] } else { $snapshot['https_proxy'] }
+  $allProxy = if ($null -ne $snapshot['ALL_PROXY']) { $snapshot['ALL_PROXY'] } else { $snapshot['all_proxy'] }
+  $noProxy = if ($null -ne $snapshot['NO_PROXY']) { $snapshot['NO_PROXY'] } else { $snapshot['no_proxy'] }
+
+  if (-not ($httpProxy -or $httpsProxy -or $allProxy)) {
     return $null
   }
 
-  # Prefer uppercase canonical names (Windows Env: is case-insensitive).
-  $obj = [PSCustomObject]@{
-    HTTP_PROXY  = $(if ($null -ne $snapshot['HTTP_PROXY']) { $snapshot['HTTP_PROXY'] } else { $snapshot['http_proxy'] })
-    HTTPS_PROXY = $(if ($null -ne $snapshot['HTTPS_PROXY']) { $snapshot['HTTPS_PROXY'] } else { $snapshot['https_proxy'] })
-    ALL_PROXY   = $(if ($null -ne $snapshot['ALL_PROXY']) { $snapshot['ALL_PROXY'] } else { $snapshot['all_proxy'] })
-    NO_PROXY    = $(if ($null -ne $snapshot['NO_PROXY']) { $snapshot['NO_PROXY'] } else { $snapshot['no_proxy'] })
+  return [PSCustomObject]@{
+    HTTP_PROXY  = $httpProxy
+    HTTPS_PROXY = $httpsProxy
+    ALL_PROXY   = $allProxy
+    NO_PROXY    = $noProxy
   }
-  return $obj
 }
 
 <#
@@ -188,7 +195,12 @@ function Invoke-WithProxy {
 
   $resolved = Resolve-ProxyUrl -Url $Url
   if (!$resolved) {
-    Write-Error "没有指定 Url 参数，或者提供一个有效的 default-proxy 配置文件"
+    Write-Error @"
+没有可用的代理地址。请任选其一：
+  1. 传 -Url，例如：Invoke-WithProxy -Url http://127.0.0.1:7890 { git pull }
+  2. 创建配置文件：$HOME\.config\my-powershell\default-proxy
+  3. 先执行 Set-EnvProxy 设置当前会话代理
+"@
     return
   }
 
