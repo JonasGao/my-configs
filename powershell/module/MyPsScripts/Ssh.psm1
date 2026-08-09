@@ -268,64 +268,36 @@ function New-SshProxy
 
 # 内部函数：生成远程执行脚本
 function New-RemoteCopyScript {
-  [CmdletBinding()]
   param(
     [string]$PublicKeyContent,
     [switch]$Backup,
-    [string]$BackupTimestamp
+    [string]$BackupTimestamp,
+    [ValidateSet("Linux", "Windows")]
+    [string]$OSType = "Linux"
   )
   
-  # 使用 base64 编码防止命令注入
   $encodedKey = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($PublicKeyContent))
   
-  # 构建bash脚本
-  $script = @"
+  if ($OSType -eq "Linux") {
+    $script = @'
 set -e
-
-# 解码 base64 编码的公钥内容
-KEY_CONTENT=\$(echo '$encodedKey' | base64 -d)
-
-# 1. 计算指纹并检查是否已存在
-KEY_FP=\$(echo "\$KEY_CONTENT" | ssh-keygen -lf - 2>/dev/null | grep -o 'SHA256:[A-Za-z0-9+/=]+' || true)
-
-if [ -n "\$KEY_FP" ]; then
-  # Iterate through each existing key and compare fingerprints
-  while IFS= read -r line; do
-    [ -z "\$line" ] && continue
-    existing_fp=\$(echo "\$line" | ssh-keygen -lf - 2>/dev/null | grep -o 'SHA256:[A-Za-z0-9+/=]+' || true)
-    if [ "\$existing_fp" = "\$KEY_FP" ]; then
-      echo "ALREADY_EXISTS"
-      exit 0
-    fi
-  done < ~/.ssh/authorized_keys
-fi
-
-# 2. 备份（如果指定）
-if [ '$Backup' = 'True' ]; then
-  if [ -f ~/.ssh/authorized_keys ]; then
-    BACKUP_FILE=~/.ssh/authorized_keys.backup.$BackupTimestamp
-    cp ~/.ssh/authorized_keys "\$BACKUP_FILE" 2>/dev/null || true
-    echo "BACKUP_CREATED:\$BACKUP_FILE"
-  fi
-fi
-
-# 3. 确保目录和权限正确
-[ -d ~/.ssh ] || mkdir -p ~/.ssh
-chmod 700 ~/.ssh 2>/dev/null || true
-[ -f ~/.ssh/authorized_keys ] || touch ~/.ssh/authorized_keys
-chmod 600 ~/.ssh/authorized_keys 2>/dev/null || true
-
-# 4. 添加公钥
-echo "\$KEY_CONTENT" >> ~/.ssh/authorized_keys
-
-# 5. 验证添加成功
-if grep -qF "\$KEY_CONTENT" ~/.ssh/authorized_keys; then
-  echo "SUCCESS"
-else
-  echo "ERROR:Failed to verify key addition"
-  exit 1
-fi
-"@
+KEY=$(echo 'ENCODED_KEY' | base64 -d)
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+touch ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+echo "$KEY" >> ~/.ssh/authorized_keys
+echo "SUCCESS"
+'@ -replace 'ENCODED_KEY', $encodedKey
+  }
+  else {
+    $script = @'
+$key = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('ENCODED_KEY'))
+$null = New-Item -ItemType Directory -Path ~/.ssh -Force
+Add-Content -Path ~/.ssh/authorized_keys -Value $key
+Write-Output 'SUCCESS'
+'@ -replace 'ENCODED_KEY', $encodedKey
+  }
   
   return $script
 }
@@ -423,102 +395,36 @@ function Process-SingleHost {
   }
   
   try {
-    # 生成远程脚本
-    $backupTimestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-    $remoteScript = New-RemoteCopyScript -PublicKeyContent $PublicKeyContent -Backup:$Backup -BackupTimestamp $backupTimestamp
-    
-    # 配置SSH选项
-    $sshArgs = @()
-    if ($UseControlMaster) {
-      $tempDir = if ($IsWindows) { $env:TEMP } else { "/tmp" }
-      $controlPath = Join-Path $tempDir "ssh-control-%r@%h:%p"
-      $sshArgs += @("-o", "ControlMaster=auto", "-o", "ControlPath=$controlPath", "-o", "ControlPersist=$ControlPersistSeconds")
-      $result.ControlMasterUsed = $true
-    }
-    if ($ConnectionTimeout -gt 0) {
-      $sshArgs += @("-o", "ConnectTimeout=$ConnectionTimeout")
-    }
-    
-    # 执行远程脚本（带重试）
-    # 修复: 使用 $retry -lt $RetryCount + 1 确保正确次数（初始尝试 + N次重试 = N+1次总尝试）
+    $encodedKey = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($PublicKeyContent))
     $sshOutput = $null
-    for ($retry = 0; $retry -lt $RetryCount + 1; $retry++) {
-      try {
-        $sshOutput = ssh $sshArgs $Target "bash -c '$remoteScript'" 2>&1
-        if ($LASTEXITCODE -eq 0) { break }
-        if ($retry -lt $RetryCount) {  # 只在还有重试次数时显示消息并等待
-          Write-Verbose "[$Target] 尝试 $($retry + 1)/$($RetryCount + 1) 失败，等待 $RetryDelaySeconds 秒后重试"
-          Start-Sleep -Seconds $RetryDelaySeconds
-        }
-      }
-      catch {
-        if ($retry -lt $RetryCount) {
-          Write-Verbose "[$Target] 连接异常，重试中..."
-          Start-Sleep -Seconds $RetryDelaySeconds
-        }
-      }
+    
+    # Linux: base64 解码后添加
+    $linuxCmd = "mkdir -p ~/.ssh; chmod 700 ~/.ssh; echo $encodedKey | base64 -d >> ~/.ssh/authorized_keys; chmod 600 ~/.ssh/authorized_keys; echo SUCCESS"
+    
+    # Windows: PowerShell 解码后添加
+    $windowsCmd = "New-Item -ItemType Directory -Path ~/.ssh -Force | Out-Null; Add-Content -Path ~/.ssh/authorized_keys -Value ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('$encodedKey'))); Write-Output SUCCESS"
+    
+    # 先尝试 bash
+    $sshOutput = ssh $Target "bash -c '$linuxCmd'" 2>&1
+    
+    # 如果失败，尝试 PowerShell
+    if ($LASTEXITCODE -ne 0) {
+      $sshOutput = ssh $Target "powershell -Command \"$windowsCmd\"" 2>&1
     }
     
-    # 解析返回状态
     if ($sshOutput -match 'SUCCESS') {
       $result.Success = $true
-      $result.Message = "Key copied successfully"
-      Write-Host "[$Target] 公钥复制成功！" -ForegroundColor Green
+      $result.Message = "Key copied"
     }
-    elseif ($sshOutput -match 'ALREADY_EXISTS') {
-      $result.KeyAlreadyExists = $true
-      if (-not $Force) {
-        $result.Success = $true
-        $result.Message = "Key already exists (skipped)"
-        Write-Host "[$Target] 公钥已存在，已跳过" -ForegroundColor Yellow
-      }
-      else {
-        # Force模式下，强制添加（脚本已继续执行）
-        $result.Success = $true
-        $result.Message = "Key added (forced overwrite)"
-        Write-Host "[$Target] 公钥已强制添加" -ForegroundColor Yellow
-      }
+    else {
+      $result.Message = if ($sshOutput) { ($sshOutput | Out-String).Trim() } else { "Unknown error" }
     }
-    elseif ($sshOutput -match 'BACKUP_CREATED:([^\s]+)') {
-      $result.BackupCreated = $true
-      $backupFile = $Matches[1]
-      Write-Verbose "[$Target] 已创建备份: $backupFile"
-      # 继续检查后续状态
-      if ($sshOutput -match 'SUCCESS') {
-        $result.Success = $true
-        $result.Message = "Key copied with backup"
-      }
-    }
-    elseif ($sshOutput -match 'ERROR:(.+)' -or $LASTEXITCODE -ne 0) {
-      $errorMsg = if ($sshOutput -match 'ERROR:(.+)') { $Matches[1] } else { "SSH failed with exit code $LASTEXITCODE" }
-      
-      # 错误诊断
-      if ($sshOutput -match 'Connection refused') {
-        $errorMsg += " (SSH service not running or firewall blocking)"
-      }
-      elseif ($sshOutput -match 'Permission denied') {
-        $errorMsg += " (Invalid username or no SSH access)"
-      }
-      elseif ($sshOutput -match 'No space left') {
-        $errorMsg += " (Remote disk full)"
-      }
-      elseif ($sshOutput -match 'Network is unreachable') {
-        $errorMsg += " (Network connectivity issue)"
-      }
-      
-      $result.Message = $errorMsg
-      Write-Error "[$Target] 失败: $errorMsg"
-    }
-    
-    # 计算执行时长
-    $endTime = Get-Date
-    $result.Duration = $endTime - $startTime
   }
   catch {
     $result.Message = $_.Exception.Message
-    Write-Error "[$Target] 异常: $($_.Exception.Message)"
   }
   
+  $result.Duration = (Get-Date) - $startTime
   return $result
 }
 
@@ -887,20 +793,21 @@ function Copy-Sshid
       }
     }
     
-    # 输出总结
-    Write-Host "`n---------- 结果汇总 ----------" -ForegroundColor Cyan
     $successCount = ($results | Where-Object { $_.Success }).Count
     $failedCount = ($results | Where-Object { -not $_.Success }).Count
-    Write-Host ("总计: {0} 成功, {1} 失败" -f $successCount, $failedCount) -ForegroundColor $(if ($failedCount -eq 0) { 'Green' } else { 'Yellow' })
+    
+    Write-Host ""
+    Write-Host "--- 结果: $successCount 成功, $failedCount 失败 ---" -ForegroundColor $(if ($failedCount -eq 0) { 'Green' } else { 'Yellow' })
     
     foreach ($r in $results) {
-      $status = if ($r.Success) { 'Success' } else { 'Failed' }
-      $durationStr = "{0:N1}s" -f $r.Duration.TotalSeconds
-      Write-Host ("{0,-24}  {1,-7}  {2,6}  {3}" -f $r.Host, $status, $durationStr, $r.Message)
+      $icon = if ($r.Success) { "+" } else { "x" }
+      $color = if ($r.Success) { 'Green' } else { 'Red' }
+      Write-Host "  [$icon] $($r.Host)  $($r.Duration.TotalSeconds.ToString('0.0'))s" -ForegroundColor $color
+      if (-not $r.Success -and $r.Message) {
+        Write-Host "      $($r.Message)" -ForegroundColor DarkGray
+      }
     }
-    
-    # 返回结果数组
-    return $results
+    Write-Host ""
   }
   catch
   {
