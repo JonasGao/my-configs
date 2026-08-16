@@ -32,7 +32,7 @@ $null = Register-EngineEvent -SourceIdentifier PowerShell.OnIdle -MaxTriggerCoun
 }
 
 # Import-Module Terminal-Icons
-Import-Module "$env:MY_CONFIG_HOME\powershell\module\MyPsScripts"
+Import-Module "$env:MY_CONFIG_HOME\powershell\module\MyPsScripts" -DisableNameChecking
 
 # oh-my-posh init pwsh --config $env:POSH_CONFIG | Invoke-Expression
 
