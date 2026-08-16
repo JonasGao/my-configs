@@ -226,6 +226,187 @@ function Remove-GitWorktree
   Write-Host "Removed worktree and switched to main repository: $mainRepo"
 }
 
+<#
+ .Synopsis
+  Parse a URL into GitHub owner and repository parts.
+
+ .Description
+  Accepts https URLs (https://github.com/owner/repo[.git][/extra...]),
+  ssh URLs (git@github.com:owner/repo[.git], ssh://git@github.com/owner/repo)
+  and shorthand (owner/repo[.git], implying github.com).
+  Extra path segments, query strings and trailing slashes are ignored.
+  Throws for non-GitHub hosts or unparseable input.
+#>
+function Get-GitHubRepoParts
+{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Url
+  )
+
+  $url = $Url.Trim()
+
+  if ($url -match '^git@github\.com:(.+)$')
+  {
+    $path = $Matches[1]
+  }
+  elseif ($url -match '^(?:https?|ssh)://(?:[^/@]+@)?(?:www\.)?github\.com[:/](.*)$')
+  {
+    $path = $Matches[1]
+  }
+  elseif ($url -match '^([^/]+)/([^/]+)$')
+  {
+    $path = $url
+  }
+  elseif ($url -match '^(?:https?|ssh)://(?:[^/@]+@)?([^/:]+)')
+  {
+    throw "Unsupported git host: $($Matches[1])"
+  }
+  else
+  {
+    throw "Unsupported git URL: $Url"
+  }
+
+  # Drop query strings/fragments, trailing slashes and a single trailing .git
+  $path = ($path -split '[?#]')[0].TrimEnd('/')
+  if ($path -match '\.git$')
+  {
+    $path = $path.Substring(0, $path.Length - 4)
+  }
+
+  $segments = $path -split '/'
+  if ($segments.Count -lt 2 -or [string]::IsNullOrWhiteSpace($segments[0]) -or [string]::IsNullOrWhiteSpace($segments[1]))
+  {
+    throw "Unable to determine owner/repository from URL: $Url"
+  }
+
+  return @{ Owner = $segments[0]; Repo = $segments[1] }
+}
+
+<#
+ .Synopsis
+  Resolve the local GitHub home directory.
+
+ .Description
+  Returns $env:GITHUB_HOME when set, otherwise $HOME\github.
+  The path is normalized to an absolute path without trailing separator
+  and created if it does not exist.
+#>
+function Get-GitHubCloneRoot
+{
+  $root = if ($env:GITHUB_HOME) { $env:GITHUB_HOME } else { Join-Path $HOME "github" }
+  $root = $root.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+  if (-not [System.IO.Path]::IsPathRooted($root))
+  {
+    $root = Join-Path (Get-Location).Path $root
+  }
+  $root = [System.IO.Path]::GetFullPath($root)
+
+  if (-not (Test-Path -Path $root -PathType Container))
+  {
+    New-Item -ItemType Directory -Path $root -Force | Out-Null
+    Write-Host "Created github directory: $root"
+  }
+
+  return $root
+}
+
+<#
+ .Synopsis
+  Clone a GitHub repository into the local GitHub home directory.
+
+ .Description
+  Parses the given URL, determines the owner and repository, and clones the
+  repository into $GITHUB_HOME\<owner>\<repo> (default: $HOME\github\<owner>\<repo>).
+  Owner and repository directory names are lowercased. Accepts https, ssh and
+  shorthand (owner/repo) URLs; non-GitHub URLs are rejected.
+  If the target directory already exists and is non-empty, cloning is skipped.
+  An existing empty directory is cloned into (repairs an interrupted attempt).
+  After cloning (or skipping), switches to the target directory and outputs
+  its path.
+
+ .Parameter Url
+  GitHub repository URL: https://github.com/owner/repo[.git], ssh forms
+  (git@github.com:owner/repo.git, ssh://git@github.com/owner/repo) or shorthand
+  owner/repo[.git]. Extra path segments and trailing slashes are ignored.
+
+ .Parameter Shallow
+  Perform a shallow clone (git clone --depth 1).
+
+ .Parameter UseSsh
+  Rewrite the clone URL to ssh form (git@github.com:owner/repo.git).
+
+ .Parameter Branch
+  Check out the given branch after cloning (git clone -b <branch>).
+#>
+function Clone-GitRepo
+{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true, Position = 0)]
+    [ValidateNotNullOrEmpty()]
+    [string]$Url,
+
+    [switch]$Shallow,
+    [switch]$UseSsh,
+    [string]$Branch
+  )
+
+  $parts = Get-GitHubRepoParts -Url $Url
+  $ownerDirName = $parts.Owner.ToLowerInvariant()
+  $repoDirName = $parts.Repo.ToLowerInvariant()
+
+  $root = Get-GitHubCloneRoot
+
+  $ownerDir = Join-Path $root $ownerDirName
+  if (-not (Test-Path -Path $ownerDir -PathType Container))
+  {
+    New-Item -ItemType Directory -Path $ownerDir -Force | Out-Null
+  }
+
+  $target = Join-Path $ownerDir $repoDirName
+
+  if (Test-Path -Path $target)
+  {
+    $hasContent = @(Get-ChildItem -Path $target -Force -ErrorAction SilentlyContinue).Count -gt 0
+    if ($hasContent)
+    {
+      Write-Host "Directory already exists, skipping clone: $target"
+      Set-Location $target
+      return $target
+    }
+  }
+
+  $cloneUrl = $Url
+  if ($UseSsh)
+  {
+    $cloneUrl = "git@github.com:$($parts.Owner)/$($parts.Repo).git"
+  }
+
+  $gitArgs = @('clone')
+  if ($Shallow)
+  {
+    $gitArgs += @('--depth', '1')
+  }
+  if ($Branch)
+  {
+    $gitArgs += @('-b', $Branch)
+  }
+  $gitArgs += $cloneUrl
+  $gitArgs += $target
+
+  & git @gitArgs
+  if ($LASTEXITCODE -ne 0)
+  {
+    throw "git clone failed with exit code ${LASTEXITCODE}: $cloneUrl"
+  }
+
+  Set-Location $target
+  Write-Host "Cloned to: $target"
+  return $target
+}
+
 Register-ArgumentCompleter -CommandName Add-GitWorktree -ParameterName Branch -ScriptBlock {
   param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
 
@@ -254,3 +435,4 @@ Register-ArgumentCompleter -CommandName Add-GitWorktree -ParameterName Branch -S
 Export-ModuleMember -Function Add-GitWorktree
 Export-ModuleMember -Function Switch-GitWorktreeMain
 Export-ModuleMember -Function Remove-GitWorktree
+Export-ModuleMember -Function Clone-GitRepo
