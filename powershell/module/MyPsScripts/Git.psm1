@@ -228,16 +228,97 @@ function Remove-GitWorktree
 
 <#
  .Synopsis
-  Parse a URL into GitHub owner and repository parts.
+  Resolve the path to the clone mappings JSON file.
 
  .Description
-  Accepts https URLs (https://github.com/owner/repo[.git][/extra...]),
-  ssh URLs (git@github.com:owner/repo[.git], ssh://git@github.com/owner/repo)
-  and shorthand (owner/repo[.git], implying github.com).
-  Extra path segments, query strings and trailing slashes are ignored.
-  Throws for non-GitHub hosts or unparseable input.
+  Returns $env:LOCALAPPDATA\MyPsScripts\clone-mappings.json.
 #>
-function Get-GitHubRepoParts
+function Get-CloneMappingsFile
+{
+  $dir = Join-Path $env:LOCALAPPDATA "MyPsScripts"
+  return Join-Path $dir "clone-mappings.json"
+}
+
+<#
+ .Synopsis
+  Read all GitCloneMapping records from disk.
+
+ .Description
+  Returns a list of hashtables with 'prefix' (string array) and 'root'
+  (absolute path). Returns an empty list when the file does not exist;
+  returns an empty list and warns when the file is corrupted.
+#>
+function Read-CloneMappings
+{
+  $file = Get-CloneMappingsFile
+  if (-not (Test-Path -Path $file -PathType Leaf))
+  {
+    return @()
+  }
+  try
+  {
+    $json = Get-Content -Path $file -Raw | ConvertFrom-Json
+    if (-not $json.mappings)
+    {
+      return @()
+    }
+    return @($json.mappings | ForEach-Object {
+      @{ prefix = @($_.prefix); root = $_.root }
+    })
+  }
+  catch
+  {
+    Write-Warning "Failed to read clone mappings file: $file ($_)"
+    return @()
+  }
+}
+
+<#
+ .Synopsis
+  Persist GitCloneMapping records to disk.
+
+ .Description
+  Writes the given list of mapping hashtables to the clone mappings file,
+  creating the parent directory when needed.
+#>
+function Write-CloneMappings
+{
+  param(
+    [Parameter(Mandatory = $true)]
+    [AllowEmptyCollection()]
+    [object[]]$Mappings
+  )
+
+  $file = Get-CloneMappingsFile
+  $dir = Split-Path -Path $file -Parent
+  if (-not (Test-Path -Path $dir -PathType Container))
+  {
+    New-Item -ItemType Directory -Path $dir -Force | Out-Null
+  }
+
+  $payload = @{
+    version  = 1
+    mappings = @($Mappings | ForEach-Object {
+      @{ prefix = @($_.prefix); root = $_.root }
+    })
+  }
+  $payload | ConvertTo-Json -Depth 5 | Set-Content -Path $file -Encoding UTF8
+}
+
+<#
+ .Synopsis
+  Parse a git URL into host and path segments.
+
+ .Description
+  Accepts https/ssh URLs (https://host/owner/group/repo.git,
+  ssh://git@host/owner/repo), scp-like ssh URLs
+  (git@host:owner/group/repo.git) and shorthand (owner/repo, implying
+  github.com). Returns a hashtable with 'Host', 'PathSegments' (segments
+  after the host) and 'Segments' (host + path segments, lowercased).
+  Query strings, trailing slashes and a single trailing .git are dropped.
+  Throws for unparseable input.
+#>
+function Resolve-GitRepoUrl
 {
   [CmdletBinding()]
   param(
@@ -247,95 +328,325 @@ function Get-GitHubRepoParts
 
   $url = $Url.Trim()
 
-  if ($url -match '^git@github\.com:(.+)$')
+  $hostName = $null
+  $path = $null
+
+  if ($url -match '^[^@/:]+@([^/:]+):(.+)$')
   {
-    $path = $Matches[1]
+    $hostName = $Matches[1]
+    $path = $Matches[2]
   }
-  elseif ($url -match '^(?:https?|ssh)://(?:[^/@]+@)?(?:www\.)?github\.com[:/](.*)$')
+  elseif ($url -match '^(?:https?|ssh|git)://(?:[^/@]+@)?([^/:]+)(?::\d+)?/(.*)$')
   {
-    $path = $Matches[1]
+    $hostName = $Matches[1]
+    $path = $Matches[2]
   }
   elseif ($url -match '^([^/]+)/([^/]+)$')
   {
+    $hostName = 'github.com'
     $path = $url
-  }
-  elseif ($url -match '^(?:https?|ssh)://(?:[^/@]+@)?([^/:]+)')
-  {
-    throw "Unsupported git host: $($Matches[1])"
   }
   else
   {
     throw "Unsupported git URL: $Url"
   }
 
-  # Drop query strings/fragments, trailing slashes and a single trailing .git
+  $hostName = $hostName -replace '^www\.', ''
   $path = ($path -split '[?#]')[0].TrimEnd('/')
   if ($path -match '\.git$')
   {
     $path = $path.Substring(0, $path.Length - 4)
   }
 
-  $segments = $path -split '/'
-  if ($segments.Count -lt 2 -or [string]::IsNullOrWhiteSpace($segments[0]) -or [string]::IsNullOrWhiteSpace($segments[1]))
+  $pathSegments = @($path -split '/' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+  if ($pathSegments.Count -lt 1)
   {
-    throw "Unable to determine owner/repository from URL: $Url"
+    throw "Unable to determine repository from URL: $Url"
   }
 
-  return @{ Owner = $segments[0]; Repo = $segments[1] }
+  return @{
+    Host         = $hostName.ToLowerInvariant()
+    PathSegments = $pathSegments
+    Segments     = @($hostName.ToLowerInvariant()) + $pathSegments
+  }
 }
 
 <#
  .Synopsis
-  Resolve the local GitHub home directory.
+  Test whether A is a prefix of B (segment by segment).
 
  .Description
-  Returns $env:GITHUB_HOME when set, otherwise $HOME\github.
-  The path is normalized to an absolute path without trailing separator
-  and created if it does not exist.
+  A is a prefix of B when A has no more segments than B and every
+  segment of A equals the corresponding segment of B.
 #>
-function Get-GitHubCloneRoot
+function Test-PrefixOf
 {
-  $root = if ($env:GITHUB_HOME) { $env:GITHUB_HOME } else { Join-Path $HOME "github" }
-  $root = $root.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+  param(
+    [Parameter(Mandatory = $true)]
+    [string[]]$A,
+    [Parameter(Mandatory = $true)]
+    [string[]]$B
+  )
+
+  if ($A.Count -gt $B.Count)
+  {
+    return $false
+  }
+  for ($i = 0; $i -lt $A.Count; $i++)
+  {
+    if ($A[$i] -ne $B[$i])
+    {
+      return $false
+    }
+  }
+  return $true
+}
+
+<#
+ .Synopsis
+  Find the GitCloneMapping with the longest prefix matching the segments.
+
+ .Description
+  Returns the mapping whose prefix is a prefix of $Segments with the
+  greatest length, or $null when nothing matches.
+#>
+function Find-CloneMapping
+{
+  param(
+    [Parameter(Mandatory = $true)]
+    [string[]]$Segments
+  )
+
+  $best = $null
+  foreach ($m in Read-CloneMappings)
+  {
+    $p = @($m.prefix)
+    if (Test-PrefixOf -A $p -B $Segments)
+    {
+      if (-not $best -or $p.Count -gt @($best.prefix).Count)
+      {
+        $best = $m
+      }
+    }
+  }
+  return $best
+}
+
+<#
+ .Synopsis
+  Interactively ask the user to define a new GitCloneMapping.
+
+ .Description
+  Lists every prefix level from the host down to the second-to-last
+  segment and lets the user pick one level to map to a local root
+  directory. Uses Out-GridView when available and interactive, otherwise
+  falls back to a numbered menu. The root directory name is asked with a
+  default suggestion (the picked level's last segment, lowercased);
+  relative names are resolved against $HOME, absolute paths are used as-is.
+#>
+function Select-CloneMappingInteractive
+{
+  param(
+    [Parameter(Mandatory = $true)]
+    [string[]]$Segments
+  )
+
+  if ($Segments.Count -lt 2)
+  {
+    throw "Unable to determine a mapping level from URL: $($Segments -join '/')"
+  }
+
+  $options = @()
+  for ($i = 0; $i -lt $Segments.Count - 1; $i++)
+  {
+    $options += [PSCustomObject]@{
+      Level  = $i + 1
+      Prefix = ($Segments[0..$i] -join '/')
+    }
+  }
+
+  $selected = $null
+  if ((Get-Command Out-GridView -ErrorAction SilentlyContinue) -and [Environment]::UserInteractive)
+  {
+    $selected = $options | Out-GridView -Title 'Select the prefix level to map to a local root directory' -OutputMode Single
+  }
+  else
+  {
+    Write-Host 'No matching clone mapping. Select the prefix level to map to a local root directory:'
+    for ($n = 0; $n -lt $options.Count; $n++)
+    {
+      Write-Host ("{0}) {1}" -f ($n + 1), $options[$n].Prefix)
+    }
+    $choice = Read-Host "Enter a number (1-$($options.Count))"
+    $idx = [int]$choice - 1
+    if ($idx -lt 0 -or $idx -ge $options.Count)
+    {
+      throw "Invalid selection: $choice"
+    }
+    $selected = $options[$idx]
+  }
+
+  if (-not $selected)
+  {
+    throw 'No mapping level selected.'
+  }
+
+  $defaultName = $Segments[[int]$selected.Level - 1].ToLowerInvariant()
+  $input = Read-Host "Root directory name for '$($selected.Prefix)' (default: $defaultName)"
+  if ([string]::IsNullOrWhiteSpace($input))
+  {
+    $input = $defaultName
+  }
+
+  $root = if ([System.IO.Path]::IsPathRooted($input)) { $input } else { Join-Path $HOME $input }
+
+  return @{
+    prefix = @($Segments[0..([int]$selected.Level - 1)])
+    root   = $root
+  }
+}
+
+<#
+ .Synopsis
+  Get the GitCloneMapping records.
+
+ .Description
+  Lists every stored mapping from prefix segments to local root path.
+  Accepts -Prefix to filter; an empty result means no mapping exists.
+#>
+function Get-GitCloneMapping
+{
+  [CmdletBinding()]
+  param(
+    [Parameter()]
+    [string[]]$Prefix
+  )
+
+  $mappings = Read-CloneMappings
+  if ($Prefix)
+  {
+    $mappings = @($mappings | Where-Object { Test-PrefixOf -A @($_.prefix) -B $Prefix })
+  }
+  return $mappings
+}
+
+<#
+ .Synopsis
+  Create or update a GitCloneMapping record.
+
+ .Description
+  Maps the given prefix segment list to a local root path. Relative root
+  paths are resolved against $HOME; absolute paths are stored as-is.
+  Warns (but allows) when the new prefix overlaps an existing one.
+#>
+function Set-GitCloneMapping
+{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string[]]$Prefix,
+
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string]$Root
+  )
+
+  $root = $Root.Trim().TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
   if (-not [System.IO.Path]::IsPathRooted($root))
   {
-    $root = Join-Path (Get-Location).Path $root
+    $root = Join-Path $HOME $root
   }
   $root = [System.IO.Path]::GetFullPath($root)
 
-  if (-not (Test-Path -Path $root -PathType Container))
+  $mappings = @(Read-CloneMappings)
+  $updated = $false
+  $kept = @()
+
+  foreach ($m in $mappings)
   {
-    New-Item -ItemType Directory -Path $root -Force | Out-Null
-    Write-Host "Created github directory: $root"
+    $p = @($m.prefix)
+    if ($p.Count -eq $Prefix.Count -and (Test-PrefixOf -A $p -B $Prefix))
+    {
+      $updated = $true
+      $kept += @{ prefix = $Prefix; root = $root }
+    }
+    else
+    {
+      if ((Test-PrefixOf -A $p -B $Prefix) -or (Test-PrefixOf -A $Prefix -B $p))
+      {
+        Write-Warning "New mapping prefix '$($Prefix -join '/')' overlaps existing mapping '$($p -join '/')'; longest match wins."
+      }
+      $kept += $m
+    }
   }
 
-  return $root
+  if (-not $updated)
+  {
+    $kept += @{ prefix = $Prefix; root = $root }
+  }
+
+  Write-CloneMappings -Mappings $kept
+  Write-Host "Mapping saved: $($Prefix -join '/') -> $root"
 }
 
 <#
  .Synopsis
-  Clone a GitHub repository into the local GitHub home directory.
+  Remove a GitCloneMapping record.
 
  .Description
-  Parses the given URL, determines the owner and repository, and clones the
-  repository into $GITHUB_HOME\<owner>\<repo> (default: $HOME\github\<owner>\<repo>).
-  Owner and repository directory names are lowercased. Accepts https, ssh and
-  shorthand (owner/repo) URLs; non-GitHub URLs are rejected.
-  If the target directory already exists and is non-empty, cloning is skipped.
-  An existing empty directory is cloned into (repairs an interrupted attempt).
-  After cloning (or skipping), switches to the target directory and outputs
-  its path.
+  Removes the mapping whose prefix exactly equals the given prefix list.
+#>
+function Remove-GitCloneMapping
+{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string[]]$Prefix
+  )
+
+  $mappings = @(Read-CloneMappings)
+  $kept = @($mappings | Where-Object {
+    $p = @($_.prefix)
+    -not ($p.Count -eq $Prefix.Count -and (Test-PrefixOf -A $p -B $Prefix))
+  })
+
+  if ($kept.Count -eq $mappings.Count)
+  {
+    Write-Warning "No mapping found for prefix: $($Prefix -join '/')"
+    return
+  }
+
+  Write-CloneMappings -Mappings $kept
+  Write-Host "Mapping removed: $($Prefix -join '/')"
+}
+
+<#
+ .Synopsis
+  Clone a git repository from any hosting platform into a mapped root directory.
+
+ .Description
+  Parses the given URL into host and path segments, then finds the
+  GitCloneMapping whose prefix matches the segments (longest prefix wins).
+  On a hit, the remaining segments are created as directories under the
+  mapping root (names lowercased) and the repository is cloned into the
+  last one. When nothing matches, the user is interactively asked to
+  define the mapping first. If the target directory already exists and is
+  non-empty, cloning is skipped. After cloning (or skipping), switches to
+  the target directory and outputs its path.
 
  .Parameter Url
-  GitHub repository URL: https://github.com/owner/repo[.git], ssh forms
-  (git@github.com:owner/repo.git, ssh://git@github.com/owner/repo) or shorthand
-  owner/repo[.git]. Extra path segments and trailing slashes are ignored.
+  Git repository URL: https://host/owner/group/repo[.git], ssh forms
+  (git@host:owner/group/repo.git, ssh://git@host/owner/group/repo) or
+  shorthand owner/repo[.git] (implying github.com). Query strings and
+  trailing slashes are ignored.
 
  .Parameter Shallow
   Perform a shallow clone (git clone --depth 1).
 
  .Parameter UseSsh
-  Rewrite the clone URL to ssh form (git@github.com:owner/repo.git).
+  Rewrite the clone URL to ssh form (git@host:path.git).
 
  .Parameter Branch
   Check out the given branch after cloning (git clone -b <branch>).
@@ -353,19 +664,29 @@ function Clone-GitRepo
     [string]$Branch
   )
 
-  $parts = Get-GitHubRepoParts -Url $Url
-  $ownerDirName = $parts.Owner.ToLowerInvariant()
-  $repoDirName = $parts.Repo.ToLowerInvariant()
+  $parsed = Resolve-GitRepoUrl -Url $Url
+  $segments = $parsed.Segments
 
-  $root = Get-GitHubCloneRoot
-
-  $ownerDir = Join-Path $root $ownerDirName
-  if (-not (Test-Path -Path $ownerDir -PathType Container))
+  $mapping = Find-CloneMapping -Segments $segments
+  if (-not $mapping)
   {
-    New-Item -ItemType Directory -Path $ownerDir -Force | Out-Null
+    $mapping = Select-CloneMappingInteractive -Segments $segments
+    Set-GitCloneMapping -Prefix $mapping.prefix -Root $mapping.root
+    $mapping = Find-CloneMapping -Segments $segments
   }
 
-  $target = Join-Path $ownerDir $repoDirName
+  $prefixCount = @($mapping.prefix).Count
+  $remaining = $segments[$prefixCount..($segments.Count - 1)]
+  $repoName = $remaining[-1].ToLowerInvariant()
+
+  New-Item -ItemType Directory -Path $mapping.root -Force | Out-Null
+  $current = $mapping.root
+  for ($i = 0; $i -lt $remaining.Count - 1; $i++)
+  {
+    $current = Join-Path $current $remaining[$i].ToLowerInvariant()
+    New-Item -ItemType Directory -Path $current -Force | Out-Null
+  }
+  $target = Join-Path $current $repoName
 
   if (Test-Path -Path $target)
   {
@@ -381,7 +702,7 @@ function Clone-GitRepo
   $cloneUrl = $Url
   if ($UseSsh)
   {
-    $cloneUrl = "git@github.com:$($parts.Owner)/$($parts.Repo).git"
+    $cloneUrl = "git@$($parsed.Host):$(($parsed.PathSegments) -join '/').git"
   }
 
   $gitArgs = @('clone')
@@ -436,3 +757,6 @@ Export-ModuleMember -Function Add-GitWorktree
 Export-ModuleMember -Function Switch-GitWorktreeMain
 Export-ModuleMember -Function Remove-GitWorktree
 Export-ModuleMember -Function Clone-GitRepo
+Export-ModuleMember -Function Get-GitCloneMapping
+Export-ModuleMember -Function Set-GitCloneMapping
+Export-ModuleMember -Function Remove-GitCloneMapping

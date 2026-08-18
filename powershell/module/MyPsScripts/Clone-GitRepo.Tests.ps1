@@ -1,116 +1,174 @@
-# Tests for Clone-GitRepo
+# Tests for Clone-GitRepo and clone mappings
 
 # Module must be loaded before discovery so InModuleScope blocks can find it.
 Import-Module (Join-Path $PSScriptRoot "Git.psm1") -Force
 
-Describe "Get-GitHubRepoParts" {
+Describe "Resolve-GitRepoUrl" {
     InModuleScope Git {
-        It "parses https URL with .git suffix" {
-            $parts = Get-GitHubRepoParts -Url "https://github.com/Octocat/Hello-World.git"
-            $parts.Owner | Should -Be "Octocat"
-            $parts.Repo | Should -Be "Hello-World"
+        It "parses https URL into segments" {
+            $r = Resolve-GitRepoUrl -Url "https://github.com/Octocat/Hello-World.git"
+            $r.Host | Should -Be "github.com"
+            $r.Segments | Should -Be @("github.com", "octocat", "hello-world")
         }
 
-        It "parses https URL without .git suffix" {
-            $parts = Get-GitHubRepoParts -Url "https://github.com/octocat/hello-world"
-            $parts.Owner | Should -Be "octocat"
-            $parts.Repo | Should -Be "hello-world"
-        }
-
-        It "ignores trailing slash and extra path segments" {
-            $parts = Get-GitHubRepoParts -Url "https://github.com/octocat/hello-world/tree/main"
-            $parts.Owner | Should -Be "octocat"
-            $parts.Repo | Should -Be "hello-world"
-        }
-
-        It "ignores query strings" {
-            $parts = Get-GitHubRepoParts -Url "https://github.com/octocat/hello-world?tab=readme"
-            $parts.Repo | Should -Be "hello-world"
+        It "parses codeup multi-level URL" {
+            $r = Resolve-GitRepoUrl -Url "git@codeup.aliyun.com:6098a93e58f98c96956644dc/xxx/qingbaozhongxin/info-center.git"
+            $r.Host | Should -Be "codeup.aliyun.com"
+            $r.Segments | Should -Be @("codeup.aliyun.com", "6098a93e58f98c96956644dc", "xxx", "qingbaozhongxin", "info-center")
         }
 
         It "parses scp-like ssh URL" {
-            $parts = Get-GitHubRepoParts -Url "git@github.com:Octocat/Hello-World.git"
-            $parts.Owner | Should -Be "Octocat"
-            $parts.Repo | Should -Be "Hello-World"
+            $r = Resolve-GitRepoUrl -Url "git@github.com:Octocat/Hello-World.git"
+            $r.Host | Should -Be "github.com"
+            $r.Segments | Should -Be @("github.com", "octocat", "hello-world")
         }
 
         It "parses ssh:// URL" {
-            $parts = Get-GitHubRepoParts -Url "ssh://git@github.com/octocat/hello-world.git"
-            $parts.Owner | Should -Be "octocat"
-            $parts.Repo | Should -Be "hello-world"
+            $r = Resolve-GitRepoUrl -Url "ssh://git@codeup.aliyun.com/6098.../xxx/repo.git"
+            $r.Host | Should -Be "codeup.aliyun.com"
+            $r.Segments | Should -Be @("codeup.aliyun.com", "6098...", "xxx", "repo")
         }
 
-        It "parses www.github.com URL" {
-            $parts = Get-GitHubRepoParts -Url "https://www.github.com/octocat/hello-world"
-            $parts.Owner | Should -Be "octocat"
-            $parts.Repo | Should -Be "hello-world"
+        It "strips www. from host" {
+            $r = Resolve-GitRepoUrl -Url "https://www.github.com/octocat/hello-world"
+            $r.Host | Should -Be "github.com"
         }
 
-        It "parses shorthand owner/repo" {
-            $parts = Get-GitHubRepoParts -Url "octocat/hello-world"
-            $parts.Owner | Should -Be "octocat"
-            $parts.Repo | Should -Be "hello-world"
+        It "ignores query strings" {
+            $r = Resolve-GitRepoUrl -Url "https://github.com/octocat/hello-world?tab=readme"
+            $r.Segments | Should -Be @("github.com", "octocat", "hello-world")
         }
 
-        It "parses shorthand owner/repo with .git suffix" {
-            $parts = Get-GitHubRepoParts -Url "octocat/hello-world.git"
-            $parts.Owner | Should -Be "octocat"
-            $parts.Repo | Should -Be "hello-world"
+        It "ignores trailing slash" {
+            $r = Resolve-GitRepoUrl -Url "https://github.com/octocat/hello-world/"
+            $r.Segments | Should -Be @("github.com", "octocat", "hello-world")
         }
 
-        It "throws on non-GitHub host" {
-            { Get-GitHubRepoParts -Url "https://gitlab.com/octocat/hello-world" } |
-                Should -Throw "Unsupported git host: gitlab.com"
+        It "parses shorthand owner/repo implying github.com" {
+            $r = Resolve-GitRepoUrl -Url "octocat/hello-world"
+            $r.Host | Should -Be "github.com"
+            $r.Segments | Should -Be @("github.com", "octocat", "hello-world")
+        }
+
+        It "parses shorthand with .git suffix" {
+            $r = Resolve-GitRepoUrl -Url "octocat/hello-world.git"
+            $r.Segments | Should -Be @("github.com", "octocat", "hello-world")
+        }
+
+        It "parses URL with port" {
+            $r = Resolve-GitRepoUrl -Url "https://codeup.aliyun.com:8443/group/repo.git"
+            $r.Host | Should -Be "codeup.aliyun.com"
+            $r.Segments | Should -Be @("codeup.aliyun.com", "group", "repo")
         }
 
         It "throws on single segment" {
-            { Get-GitHubRepoParts -Url "https://github.com/octocat" } |
-                Should -Throw "Unable to determine owner/repository from URL: https://github.com/octocat"
+            { Resolve-GitRepoUrl -Url "https://github.com/octocat" } |
+                Should -Throw "Unable to determine repository from URL"
         }
 
         It "throws on garbage input" {
-            { Get-GitHubRepoParts -Url "not a url at all" } |
+            { Resolve-GitRepoUrl -Url "not a url at all" } |
                 Should -Throw "Unsupported git URL: not a url at all"
         }
     }
 }
 
-Describe "Get-GitHubCloneRoot" {
-    AfterEach {
-        Remove-Item Env:GITHUB_HOME -ErrorAction SilentlyContinue
-    }
-
+Describe "GitCloneMapping persistence" {
     InModuleScope Git {
-        It "uses GITHUB_HOME when set" {
-            $env:GITHUB_HOME = Join-Path $TestDrive "my-github"
-            Get-GitHubCloneRoot | Should -Be $env:GITHUB_HOME
+        BeforeEach {
+            Mock Get-CloneMappingsFile { Join-Path $TestDrive "clone-mappings.json" }
         }
 
-        It "creates the directory when it does not exist" {
-            $env:GITHUB_HOME = Join-Path $TestDrive "fresh-github"
-            Get-GitHubCloneRoot | Should -Be $env:GITHUB_HOME
-            Test-Path -Path $env:GITHUB_HOME -PathType Container | Should -BeTrue
+        AfterEach {
+            Remove-Item (Join-Path $TestDrive "clone-mappings.json") -Force -ErrorAction SilentlyContinue
         }
 
-        It "normalizes trailing separator" {
-            $env:GITHUB_HOME = "$TestDrive\my-github\"
-            Get-GitHubCloneRoot | Should -Be (Join-Path $TestDrive "my-github")
+        It "returns empty list when no file exists" {
+            Get-GitCloneMapping | Should -BeNullOrEmpty
         }
 
-        It "normalizes relative paths" {
-            $env:GITHUB_HOME = "rel-github"
-            Push-Location $TestDrive
-            try {
-                Get-GitHubCloneRoot | Should -Be (Join-Path $TestDrive "rel-github")
-            } finally {
-                Pop-Location
-            }
+        It "persists and reads back a mapping" {
+            Set-GitCloneMapping -Prefix @("codeup.aliyun.com", "6098a93e58f98c96956644dc") -Root (Join-Path $TestDrive "codeup") | Out-Null
+            $m = Get-GitCloneMapping
+            $m.Count | Should -Be 1
+            $m[0].prefix | Should -Be @("codeup.aliyun.com", "6098a93e58f98c96956644dc")
+            $m[0].root | Should -Be (Join-Path $TestDrive "codeup")
         }
 
-        It "falls back to HOME\github when GITHUB_HOME is not set" {
-            Remove-Item Env:GITHUB_HOME -ErrorAction SilentlyContinue
-            Mock New-Item { } -ParameterFilter { $Path -eq (Join-Path $HOME "github") }
-            Get-GitHubCloneRoot | Should -Be (Join-Path $HOME "github")
+        It "resolves relative root against HOME" {
+            Set-GitCloneMapping -Prefix @("github.com") -Root "repos/github" | Out-Null
+            $m = Get-GitCloneMapping
+            $m[0].root | Should -Be (Join-Path $HOME "repos/github")
+        }
+
+        It "normalizes trailing separator of absolute root" {
+            Set-GitCloneMapping -Prefix @("github.com") -Root "$TestDrive\github\" | Out-Null
+            $m = Get-GitCloneMapping
+            $m[0].root | Should -Be (Join-Path $TestDrive "github")
+        }
+
+        It "updates an existing mapping with same prefix" {
+            Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "a") | Out-Null
+            Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "b") | Out-Null
+            $m = Get-GitCloneMapping
+            $m.Count | Should -Be 1
+            $m[0].root | Should -Be (Join-Path $TestDrive "b")
+        }
+
+        It "warns on overlapping prefix but keeps both" {
+            Set-GitCloneMapping -Prefix @("codeup.aliyun.com") -Root (Join-Path $TestDrive "codeup") | Out-Null
+            { Set-GitCloneMapping -Prefix @("codeup.aliyun.com", "6098a93e58f98c96956644dc") -Root (Join-Path $TestDrive "aliyun") } |
+                Should -Not -Throw
+            (Get-GitCloneMapping).Count | Should -Be 2
+        }
+
+        It "filters by prefix" {
+            Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "github") | Out-Null
+            Set-GitCloneMapping -Prefix @("codeup.aliyun.com") -Root (Join-Path $TestDrive "codeup") | Out-Null
+            $m = Get-GitCloneMapping -Prefix @("github.com")
+            $m.Count | Should -Be 1
+            $m[0].prefix | Should -Be @("github.com")
+        }
+
+        It "removes a mapping" {
+            Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "github") | Out-Null
+            Remove-GitCloneMapping -Prefix @("github.com") | Out-Null
+            Get-GitCloneMapping | Should -BeNullOrEmpty
+        }
+
+        It "warns when removing unknown prefix" {
+            { Remove-GitCloneMapping -Prefix @("gitlab.com") } |
+                Should -Not -Throw
+        }
+    }
+}
+
+Describe "Find-CloneMapping" {
+    InModuleScope Git {
+        BeforeEach {
+            Mock Get-CloneMappingsFile { Join-Path $TestDrive "clone-mappings.json" }
+            Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "github") | Out-Null
+            Set-GitCloneMapping -Prefix @("codeup.aliyun.com", "6098a93e58f98c96956644dc") -Root (Join-Path $TestDrive "codeup") | Out-Null
+        }
+
+        It "returns null when nothing matches" {
+            Find-CloneMapping -Segments @("gitlab.com", "a", "b") | Should -BeNullOrEmpty
+        }
+
+        It "matches host-level prefix" {
+            $m = Find-CloneMapping -Segments @("github.com", "octocat", "hello-world")
+            $m.root | Should -Be (Join-Path $TestDrive "github")
+        }
+
+        It "picks longest prefix on codeup URL" {
+            $m = Find-CloneMapping -Segments @("codeup.aliyun.com", "6098a93e58f98c96956644dc", "xxx", "qingbaozhongxin", "info-center")
+            $m.root | Should -Be (Join-Path $TestDrive "codeup")
+            @($m.prefix).Count | Should -Be 2
+        }
+
+        It "falls back to shorter prefix when deeper one does not match" {
+            $m = Find-CloneMapping -Segments @("codeup.aliyun.com", "other-id", "xxx", "repo")
+            $m | Should -BeNullOrEmpty
         }
     }
 }
@@ -118,37 +176,44 @@ Describe "Get-GitHubCloneRoot" {
 Describe "Clone-GitRepo" {
     InModuleScope Git {
         BeforeEach {
-            $env:GITHUB_HOME = Join-Path $TestDrive "github"
+            Mock Get-CloneMappingsFile { Join-Path $TestDrive "clone-mappings.json" }
             Push-Location $TestDrive
-            # Clean state from the previous test (previous test may have left
-            # its current location inside the tree, so clean before, not after)
-            Remove-Item (Join-Path $TestDrive "github") -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item (Join-Path $TestDrive "clone-mappings.json") -Force -ErrorAction SilentlyContinue
+            Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "github") | Out-Null
+            Set-GitCloneMapping -Prefix @("codeup.aliyun.com", "6098a93e58f98c96956644dc") -Root (Join-Path $TestDrive "codeup") | Out-Null
             $script:gitCalls = @()
             Mock git {
                 $global:LASTEXITCODE = 0
                 $script:gitCalls += ,@($args)
-                # Simulate a real clone creating the target directory
                 $target = $args[-1]
                 New-Item -ItemType Directory -Path $target -Force | Out-Null
             }
         }
 
         AfterEach {
-            Remove-Item Env:GITHUB_HOME -ErrorAction SilentlyContinue
             Pop-Location
         }
 
-        It "clones https URL into GITHUB_HOME\owner\repo with lowercased directory names" {
+        It "clones GitHub repo into mapping root with lowercased directory names" {
             $result = Clone-GitRepo -Url "https://github.com/Octocat/Hello-World"
 
-            $result | Should -Be (Join-Path $env:GITHUB_HOME "octocat/hello-world")
-            (Get-Location).Path | Should -Be (Join-Path $env:GITHUB_HOME "octocat/hello-world")
+            $result | Should -Be (Join-Path $TestDrive "github/octocat/hello-world")
+            (Get-Location).Path | Should -Be (Join-Path $TestDrive "github/octocat/hello-world")
             Should -Invoke git -Times 1
         }
 
-        It "creates the owner directory" {
-            Clone-GitRepo -Url "https://github.com/octocat/hello-world" | Out-Null
-            Test-Path -Path (Join-Path $env:GITHUB_HOME "octocat") -PathType Container | Should -BeTrue
+        It "creates nested directories for codeup path under mapping root" {
+            $result = Clone-GitRepo -Url "git@codeup.aliyun.com:6098a93e58f98c96956644dc/xxx/qingbaozhongxin/info-center.git"
+
+            $expected = Join-Path $TestDrive "codeup/xxx/qingbaozhongxin/info-center"
+            $result | Should -Be $expected
+            Test-Path -Path (Join-Path $TestDrive "codeup/xxx/qingbaozhongxin") -PathType Container | Should -BeTrue
+            (Get-Location).Path | Should -Be $expected
+        }
+
+        It "clones directly under root when mapping covers all but the repo" {
+            $result = Clone-GitRepo -Url "https://github.com/octocat/hello-world"
+            $result | Should -Be (Join-Path $TestDrive "github/octocat/hello-world")
         }
 
         It "uses ssh clone URL with -UseSsh" {
@@ -156,7 +221,16 @@ Describe "Clone-GitRepo" {
             $script:gitCalls[0] | Should -Be @(
                 "clone",
                 "git@github.com:Octocat/Hello-World.git",
-                (Join-Path $env:GITHUB_HOME "octocat/hello-world")
+                (Join-Path $TestDrive "github/octocat/hello-world")
+            )
+        }
+
+        It "uses ssh clone URL with -UseSsh for codeup" {
+            Clone-GitRepo -Url "https://codeup.aliyun.com/6098a93e58f98c96956644dc/xxx/qingbaozhongxin/info-center" -UseSsh | Out-Null
+            $script:gitCalls[0] | Should -Be @(
+                "clone",
+                "git@codeup.aliyun.com:6098a93e58f98c96956644dc/xxx/qingbaozhongxin/info-center.git",
+                (Join-Path $TestDrive "codeup/xxx/qingbaozhongxin/info-center")
             )
         }
 
@@ -165,7 +239,7 @@ Describe "Clone-GitRepo" {
             $script:gitCalls[0] | Should -Be @(
                 "clone",
                 "git@github.com:octocat/hello-world.git",
-                (Join-Path $env:GITHUB_HOME "octocat/hello-world")
+                (Join-Path $TestDrive "github/octocat/hello-world")
             )
         }
 
@@ -174,7 +248,7 @@ Describe "Clone-GitRepo" {
             $script:gitCalls[0] | Should -Be @(
                 "clone", "--depth", "1",
                 "https://github.com/octocat/hello-world",
-                (Join-Path $env:GITHUB_HOME "octocat/hello-world")
+                (Join-Path $TestDrive "github/octocat/hello-world")
             )
         }
 
@@ -183,12 +257,12 @@ Describe "Clone-GitRepo" {
             $script:gitCalls[0] | Should -Be @(
                 "clone", "-b", "dev",
                 "https://github.com/octocat/hello-world",
-                (Join-Path $env:GITHUB_HOME "octocat/hello-world")
+                (Join-Path $TestDrive "github/octocat/hello-world")
             )
         }
 
         It "skips when target directory exists and is non-empty" {
-            $target = Join-Path $env:GITHUB_HOME "octocat/hello-world"
+            $target = Join-Path $TestDrive "github/octocat/hello-world"
             New-Item -ItemType Directory -Path $target -Force | Out-Null
             New-Item -ItemType File -Path (Join-Path $target "README.md") -Force | Out-Null
 
@@ -199,7 +273,7 @@ Describe "Clone-GitRepo" {
         }
 
         It "clones into an existing empty directory" {
-            $target = Join-Path $env:GITHUB_HOME "octocat/hello-world"
+            $target = Join-Path $TestDrive "github/octocat/hello-world"
             New-Item -ItemType Directory -Path $target -Force | Out-Null
 
             Clone-GitRepo -Url "https://github.com/octocat/hello-world" | Out-Null
@@ -208,15 +282,65 @@ Describe "Clone-GitRepo" {
             (Get-Location).Path | Should -Be $target
         }
 
-        It "throws on non-GitHub URL" {
-            { Clone-GitRepo -Url "https://gitlab.com/a/b" } |
-                Should -Throw "Unsupported git host: gitlab.com"
+        It "asks interactively for unmapped URL and persists the mapping" {
+            $mapping = @{
+                prefix = @("gitlab.com", "group")
+                root   = Join-Path $TestDrive "gitlab-root"
+            }
+            Mock Select-CloneMappingInteractive { $mapping }
+
+            $result = Clone-GitRepo -Url "https://gitlab.com/group/project"
+
+            $result | Should -Be (Join-Path $TestDrive "gitlab-root/project")
+            $saved = Get-GitCloneMapping -Prefix @("gitlab.com", "group")
+            $saved[0].root | Should -Be (Join-Path $TestDrive "gitlab-root")
         }
 
         It "throws when git clone fails" {
             Mock git { $global:LASTEXITCODE = 128 }
             { Clone-GitRepo -Url "https://github.com/octocat/hello-world" } |
                 Should -Throw "git clone failed with exit code 128: https://github.com/octocat/hello-world"
+        }
+    }
+}
+
+Describe "Select-CloneMappingInteractive" {
+    InModuleScope Git {
+        It "falls back to numbered menu when Out-GridView is unavailable" {
+            Mock Get-Command { $null } -ParameterFilter { $Name -eq "Out-GridView" }
+            Mock Read-Host {
+                if ($Prompt -like "Enter a number*") { return "2" }
+                if ($Prompt -like "Root directory name*") { return "" }
+            }
+            Mock Write-Host { }
+
+            $m = Select-CloneMappingInteractive -Segments @("codeup.aliyun.com", "6098a93e58f98c96956644dc", "xxx", "qingbaozhongxin", "info-center")
+
+            $m.prefix | Should -Be @("codeup.aliyun.com", "6098a93e58f98c96956644dc")
+            $m.root | Should -Be (Join-Path $HOME "6098a93e58f98c96956644dc")
+        }
+
+        It "accepts absolute root path" {
+            Mock Get-Command { $null } -ParameterFilter { $Name -eq "Out-GridView" }
+            Mock Read-Host {
+                if ($Prompt -like "Enter a number*") { return "1" }
+                if ($Prompt -like "Root directory name*") { return $TestDrive }
+            }
+            Mock Write-Host { }
+
+            $m = Select-CloneMappingInteractive -Segments @("github.com", "octocat", "hello-world")
+
+            $m.prefix | Should -Be @("github.com")
+            $m.root | Should -Be $TestDrive
+        }
+
+        It "throws on invalid menu selection" {
+            Mock Get-Command { $null } -ParameterFilter { $Name -eq "Out-GridView" }
+            Mock Read-Host { return "99" }
+            Mock Write-Host { }
+
+            { Select-CloneMappingInteractive -Segments @("github.com", "octocat", "hello-world") } |
+                Should -Throw "Invalid selection: 99"
         }
     }
 }
