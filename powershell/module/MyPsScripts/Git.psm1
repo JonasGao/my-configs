@@ -262,8 +262,10 @@ function Read-CloneMappings
     {
       return @()
     }
+    # NOTE: output unrolls naturally (scalar for a single mapping, array for
+    # several). All internal callers already handle both via @()/foreach.
     return @($json.mappings | ForEach-Object {
-      @{ prefix = @($_.prefix); root = $_.root }
+      [PSCustomObject]@{ prefix = @($_.prefix); root = $_.root }
     })
   }
   catch
@@ -297,7 +299,6 @@ function Write-CloneMappings
   }
 
   $payload = @{
-    version  = 1
     mappings = @($Mappings | ForEach-Object {
       @{ prefix = @($_.prefix); root = $_.root }
     })
@@ -313,10 +314,10 @@ function Write-CloneMappings
   Accepts https/ssh URLs (https://host/owner/group/repo.git,
   ssh://git@host/owner/repo), scp-like ssh URLs
   (git@host:owner/group/repo.git) and shorthand (owner/repo, implying
-  github.com). Returns a hashtable with 'Host', 'PathSegments' (segments
-  after the host) and 'Segments' (host + path segments, lowercased).
-  Query strings, trailing slashes and a single trailing .git are dropped.
-  Throws for unparseable input.
+  github.com). Returns a hashtable with 'Host' (lowercased, www. stripped),
+  'PathSegments' (segments after the host, original case) and 'Segments'
+  (host + path segments; host lowercased). Query strings, trailing slashes
+  and a single trailing .git are dropped. Throws for unparseable input.
 #>
 function Resolve-GitRepoUrl
 {
@@ -359,7 +360,7 @@ function Resolve-GitRepoUrl
   }
 
   $pathSegments = @($path -split '/' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-  if ($pathSegments.Count -lt 1)
+  if ($pathSegments.Count -lt 2)
   {
     throw "Unable to determine repository from URL: $Url"
   }
@@ -373,33 +374,54 @@ function Resolve-GitRepoUrl
 
 <#
  .Synopsis
-  Test whether A is a prefix of B (segment by segment).
+  Test whether Prefix is a prefix of Segments (segment by segment).
 
  .Description
-  A is a prefix of B when A has no more segments than B and every
-  segment of A equals the corresponding segment of B.
+  Prefix is a prefix of Segments when Prefix has no more segments than
+  Segments and every segment of Prefix equals the corresponding segment
+  of Segments.
 #>
 function Test-PrefixOf
 {
   param(
     [Parameter(Mandatory = $true)]
-    [string[]]$A,
+    [string[]]$Prefix,
     [Parameter(Mandatory = $true)]
-    [string[]]$B
+    [string[]]$Segments
   )
 
-  if ($A.Count -gt $B.Count)
+  if ($Prefix.Count -gt $Segments.Count)
   {
     return $false
   }
-  for ($i = 0; $i -lt $A.Count; $i++)
+  for ($i = 0; $i -lt $Prefix.Count; $i++)
   {
-    if ($A[$i] -ne $B[$i])
+    if ($Prefix[$i] -ne $Segments[$i])
     {
       return $false
     }
   }
   return $true
+}
+
+<#
+ .Synopsis
+  Test whether Prefix exactly equals Segments.
+
+ .Description
+  True when both lists have the same number of segments and every
+  segment matches.
+#>
+function Test-PrefixEquals
+{
+  param(
+    [Parameter(Mandatory = $true)]
+    [string[]]$Prefix,
+    [Parameter(Mandatory = $true)]
+    [string[]]$Segments
+  )
+
+  return ($Prefix.Count -eq $Segments.Count) -and (Test-PrefixOf -Prefix $Prefix -Segments $Segments)
 }
 
 <#
@@ -421,7 +443,7 @@ function Find-CloneMapping
   foreach ($m in Read-CloneMappings)
   {
     $p = @($m.prefix)
-    if (Test-PrefixOf -A $p -B $Segments)
+    if (Test-PrefixOf -Prefix $p -Segments $Segments)
     {
       if (-not $best -or $p.Count -gt @($best.prefix).Count)
       {
@@ -500,7 +522,7 @@ function Select-CloneMappingInteractive
 
   $root = if ([System.IO.Path]::IsPathRooted($input)) { $input } else { Join-Path $HOME $input }
 
-  return @{
+  return [PSCustomObject]@{
     prefix = @($Segments[0..([int]$selected.Level - 1)])
     root   = $root
   }
@@ -513,6 +535,11 @@ function Select-CloneMappingInteractive
  .Description
   Lists every stored mapping from prefix segments to local root path.
   Accepts -Prefix to filter; an empty result means no mapping exists.
+  A single result is returned as a scalar; wrap with @() for array
+  semantics.
+
+ .Parameter Prefix
+  Filter: return only mappings whose prefix is a prefix of this segment list.
 #>
 function Get-GitCloneMapping
 {
@@ -525,8 +552,10 @@ function Get-GitCloneMapping
   $mappings = Read-CloneMappings
   if ($Prefix)
   {
-    $mappings = @($mappings | Where-Object { Test-PrefixOf -A @($_.prefix) -B $Prefix })
+    $mappings = @($mappings | Where-Object { Test-PrefixOf -Prefix @($_.prefix) -Segments $Prefix })
   }
+  # NOTE: output unrolls naturally (scalar for a single result); callers that
+  # need array semantics should wrap with @().
   return $mappings
 }
 
@@ -537,7 +566,15 @@ function Get-GitCloneMapping
  .Description
   Maps the given prefix segment list to a local root path. Relative root
   paths are resolved against $HOME; absolute paths are stored as-is.
-  Warns (but allows) when the new prefix overlaps an existing one.
+  A mapping with the exact same prefix is updated; overlapping prefixes
+  are kept with a warning (longest match wins at clone time).
+
+ .Parameter Prefix
+  The segment list (starting from the host) this mapping applies to,
+  e.g. @("codeup.aliyun.com", "6098a93e58f98c96956644dc").
+
+ .Parameter Root
+  Local root path for this prefix; relative paths resolve against $HOME.
 #>
 function Set-GitCloneMapping
 {
@@ -566,14 +603,14 @@ function Set-GitCloneMapping
   foreach ($m in $mappings)
   {
     $p = @($m.prefix)
-    if ($p.Count -eq $Prefix.Count -and (Test-PrefixOf -A $p -B $Prefix))
+    if (Test-PrefixEquals -Prefix $p -Segments $Prefix)
     {
       $updated = $true
-      $kept += @{ prefix = $Prefix; root = $root }
+      $kept += [PSCustomObject]@{ prefix = $Prefix; root = $root }
     }
     else
     {
-      if ((Test-PrefixOf -A $p -B $Prefix) -or (Test-PrefixOf -A $Prefix -B $p))
+      if ((Test-PrefixOf -Prefix $p -Segments $Prefix) -or (Test-PrefixOf -Prefix $Prefix -Segments $p))
       {
         Write-Warning "New mapping prefix '$($Prefix -join '/')' overlaps existing mapping '$($p -join '/')'; longest match wins."
       }
@@ -583,7 +620,7 @@ function Set-GitCloneMapping
 
   if (-not $updated)
   {
-    $kept += @{ prefix = $Prefix; root = $root }
+    $kept += [PSCustomObject]@{ prefix = $Prefix; root = $root }
   }
 
   Write-CloneMappings -Mappings $kept
@@ -596,6 +633,11 @@ function Set-GitCloneMapping
 
  .Description
   Removes the mapping whose prefix exactly equals the given prefix list.
+  Warns when no such mapping exists.
+
+ .Parameter Prefix
+  The exact segment list of the mapping to remove,
+  e.g. @("github.com").
 #>
 function Remove-GitCloneMapping
 {
@@ -609,7 +651,7 @@ function Remove-GitCloneMapping
   $mappings = @(Read-CloneMappings)
   $kept = @($mappings | Where-Object {
     $p = @($_.prefix)
-    -not ($p.Count -eq $Prefix.Count -and (Test-PrefixOf -A $p -B $Prefix))
+    -not (Test-PrefixEquals -Prefix $p -Segments $Prefix)
   })
 
   if ($kept.Count -eq $mappings.Count)

@@ -120,7 +120,7 @@ Host github.com
             Enable-SshConnectionReuse -PersistMinutes 10
             
             $configContent = Get-Content $script:testConfigFile -Raw
-            $configContent | Should -Match "ControlPath.*\\.ssh\\.sockets\\%r@%h-%p"
+            $configContent | Should -Match "ControlPath.*\.ssh\\sockets\\%r@%h-%p"
         }
 
         It "Should use forward slashes in ControlPath on Linux/Mac" {

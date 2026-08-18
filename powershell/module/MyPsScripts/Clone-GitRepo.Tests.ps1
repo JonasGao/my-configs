@@ -63,7 +63,7 @@ Describe "Resolve-GitRepoUrl" {
 
         It "throws on single segment" {
             { Resolve-GitRepoUrl -Url "https://github.com/octocat" } |
-                Should -Throw "Unable to determine repository from URL"
+                Should -Throw "Unable to determine repository from URL: https://github.com/octocat"
         }
 
         It "throws on garbage input" {
@@ -89,7 +89,7 @@ Describe "GitCloneMapping persistence" {
 
         It "persists and reads back a mapping" {
             Set-GitCloneMapping -Prefix @("codeup.aliyun.com", "6098a93e58f98c96956644dc") -Root (Join-Path $TestDrive "codeup") | Out-Null
-            $m = Get-GitCloneMapping
+            $m = @(Get-GitCloneMapping)
             $m.Count | Should -Be 1
             $m[0].prefix | Should -Be @("codeup.aliyun.com", "6098a93e58f98c96956644dc")
             $m[0].root | Should -Be (Join-Path $TestDrive "codeup")
@@ -97,20 +97,20 @@ Describe "GitCloneMapping persistence" {
 
         It "resolves relative root against HOME" {
             Set-GitCloneMapping -Prefix @("github.com") -Root "repos/github" | Out-Null
-            $m = Get-GitCloneMapping
+            $m = @(Get-GitCloneMapping)
             $m[0].root | Should -Be (Join-Path $HOME "repos/github")
         }
 
         It "normalizes trailing separator of absolute root" {
             Set-GitCloneMapping -Prefix @("github.com") -Root "$TestDrive\github\" | Out-Null
-            $m = Get-GitCloneMapping
+            $m = @(Get-GitCloneMapping)
             $m[0].root | Should -Be (Join-Path $TestDrive "github")
         }
 
         It "updates an existing mapping with same prefix" {
             Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "a") | Out-Null
             Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "b") | Out-Null
-            $m = Get-GitCloneMapping
+            $m = @(Get-GitCloneMapping)
             $m.Count | Should -Be 1
             $m[0].root | Should -Be (Join-Path $TestDrive "b")
         }
@@ -125,7 +125,7 @@ Describe "GitCloneMapping persistence" {
         It "filters by prefix" {
             Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "github") | Out-Null
             Set-GitCloneMapping -Prefix @("codeup.aliyun.com") -Root (Join-Path $TestDrive "codeup") | Out-Null
-            $m = Get-GitCloneMapping -Prefix @("github.com")
+            $m = @(Get-GitCloneMapping -Prefix @("github.com"))
             $m.Count | Should -Be 1
             $m[0].prefix | Should -Be @("github.com")
         }
@@ -178,7 +178,10 @@ Describe "Clone-GitRepo" {
         BeforeEach {
             Mock Get-CloneMappingsFile { Join-Path $TestDrive "clone-mappings.json" }
             Push-Location $TestDrive
-            Remove-Item (Join-Path $TestDrive "clone-mappings.json") -Force -ErrorAction SilentlyContinue
+            # Clean everything from the previous test (repos dirs + mappings file).
+            # The previous test may have switched the location into the tree, so
+            # clean here (after pushing), not in AfterEach.
+            Get-ChildItem -Path $TestDrive -Force | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
             Set-GitCloneMapping -Prefix @("github.com") -Root (Join-Path $TestDrive "github") | Out-Null
             Set-GitCloneMapping -Prefix @("codeup.aliyun.com", "6098a93e58f98c96956644dc") -Root (Join-Path $TestDrive "codeup") | Out-Null
             $script:gitCalls = @()
@@ -214,6 +217,14 @@ Describe "Clone-GitRepo" {
         It "clones directly under root when mapping covers all but the repo" {
             $result = Clone-GitRepo -Url "https://github.com/octocat/hello-world"
             $result | Should -Be (Join-Path $TestDrive "github/octocat/hello-world")
+        }
+
+        It "clones with full-coverage mapping whose prefix includes the repo name" {
+            Set-GitCloneMapping -Prefix @("github.com", "octocat", "hello-world") -Root (Join-Path $TestDrive "exact-root") | Out-Null
+
+            $result = Clone-GitRepo -Url "https://github.com/octocat/hello-world"
+
+            $result | Should -Be (Join-Path $TestDrive "exact-root/hello-world")
         }
 
         It "uses ssh clone URL with -UseSsh" {
@@ -283,16 +294,18 @@ Describe "Clone-GitRepo" {
         }
 
         It "asks interactively for unmapped URL and persists the mapping" {
-            $mapping = @{
+            # NOTE: variable must not be named $mapping - inside the mock it would
+            # resolve to Clone-GitRepo's own local $mapping (null at that point).
+            $fakeMapping = @{
                 prefix = @("gitlab.com", "group")
                 root   = Join-Path $TestDrive "gitlab-root"
             }
-            Mock Select-CloneMappingInteractive { $mapping }
+            Mock Select-CloneMappingInteractive { $fakeMapping }
 
             $result = Clone-GitRepo -Url "https://gitlab.com/group/project"
 
             $result | Should -Be (Join-Path $TestDrive "gitlab-root/project")
-            $saved = Get-GitCloneMapping -Prefix @("gitlab.com", "group")
+            $saved = @(Get-GitCloneMapping -Prefix @("gitlab.com", "group"))
             $saved[0].root | Should -Be (Join-Path $TestDrive "gitlab-root")
         }
 
