@@ -460,9 +460,8 @@ function Find-CloneMapping
 
  .Description
   Lists every prefix level from the host down to the second-to-last
-  segment and lets the user pick one level to map to a local root
-  directory. Uses Out-GridView when available and interactive, otherwise
-  falls back to a numbered menu. The root directory name is asked with a
+  segment as a numbered menu and lets the user pick one level to map to
+  a local root directory. The root directory name is asked with a
   default suggestion (the picked level's last segment, lowercased);
   relative names are resolved against $HOME, absolute paths are used as-is.
 #>
@@ -487,31 +486,23 @@ function Select-CloneMappingInteractive
     }
   }
 
-  $selected = $null
-  if ((Get-Command Out-GridView -ErrorAction SilentlyContinue) -and [Environment]::UserInteractive)
+  Write-Host 'No matching clone mapping. Select the prefix level to map to a local root directory:'
+  for ($n = 0; $n -lt $options.Count; $n++)
   {
-    $selected = $options | Out-GridView -Title 'Select the prefix level to map to a local root directory' -OutputMode Single
+    Write-Host ("{0}) {1}" -f ($n + 1), $options[$n].Prefix)
   }
-  else
+  $choice = Read-Host "Enter a number (1-$($options.Count))"
+  $parsed = 0
+  if (-not [int]::TryParse($choice, [ref]$parsed))
   {
-    Write-Host 'No matching clone mapping. Select the prefix level to map to a local root directory:'
-    for ($n = 0; $n -lt $options.Count; $n++)
-    {
-      Write-Host ("{0}) {1}" -f ($n + 1), $options[$n].Prefix)
-    }
-    $choice = Read-Host "Enter a number (1-$($options.Count))"
-    $idx = [int]$choice - 1
-    if ($idx -lt 0 -or $idx -ge $options.Count)
-    {
-      throw "Invalid selection: $choice"
-    }
-    $selected = $options[$idx]
+    throw "Invalid selection: $choice"
   }
-
-  if (-not $selected)
+  $idx = $parsed - 1
+  if ($idx -lt 0 -or $idx -ge $options.Count)
   {
-    throw 'No mapping level selected.'
+    throw "Invalid selection: $choice"
   }
+  $selected = $options[$idx]
 
   $defaultName = $Segments[[int]$selected.Level - 1].ToLowerInvariant()
   $input = Read-Host "Root directory name for '$($selected.Prefix)' (default: $defaultName)"

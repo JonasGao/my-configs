@@ -319,8 +319,7 @@ Describe "Clone-GitRepo" {
 
 Describe "Select-CloneMappingInteractive" {
     InModuleScope Git {
-        It "falls back to numbered menu when Out-GridView is unavailable" {
-            Mock Get-Command { $null } -ParameterFilter { $Name -eq "Out-GridView" }
+        It "selects the prefix level via numbered menu" {
             Mock Read-Host {
                 if ($Prompt -like "Enter a number*") { return "2" }
                 if ($Prompt -like "Root directory name*") { return "" }
@@ -334,7 +333,6 @@ Describe "Select-CloneMappingInteractive" {
         }
 
         It "accepts absolute root path" {
-            Mock Get-Command { $null } -ParameterFilter { $Name -eq "Out-GridView" }
             Mock Read-Host {
                 if ($Prompt -like "Enter a number*") { return "1" }
                 if ($Prompt -like "Root directory name*") { return $TestDrive }
@@ -347,13 +345,20 @@ Describe "Select-CloneMappingInteractive" {
             $m.root | Should -Be $TestDrive
         }
 
-        It "throws on invalid menu selection" {
-            Mock Get-Command { $null } -ParameterFilter { $Name -eq "Out-GridView" }
+        It "throws on out-of-range menu selection" {
             Mock Read-Host { return "99" }
             Mock Write-Host { }
 
             { Select-CloneMappingInteractive -Segments @("github.com", "octocat", "hello-world") } |
                 Should -Throw "Invalid selection: 99"
+        }
+
+        It "throws on non-numeric menu input" {
+            Mock Read-Host { return "abc" }
+            Mock Write-Host { }
+
+            { Select-CloneMappingInteractive -Segments @("github.com", "octocat", "hello-world") } |
+                Should -Throw "Invalid selection: abc"
         }
     }
 }
